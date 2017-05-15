@@ -1,0 +1,5 @@
+
+setting_parser:
+    build: .
+    dockerfile: ./Docker-compose/setting_parser/dockerfile
+    container_name: setting_parser
