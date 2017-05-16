@@ -1,12 +1,12 @@
-#ifndef _SETTING_MANAGER_
-#define _SETTING_MANAGER_
+#ifndef _SETTING_MANAGER_H_
+#define _SETTING_MANAGER_H_
 
 /*
  * @Author: angelini.mattia 
  * @StudentCode: 502688
  * @Date: 2017-05-15 07:59:04 
  * @Last Modified by: mattia.angelini
- * @Last Modified time: 2017-05-16 14:23:06
+ * @Last Modified time: 2017-05-16 14:52:28
  */
 
 /* @Description: 
@@ -69,5 +69,5 @@ void SettingManager_destroy_settings_struct(Settings* settings);
  */
 Settings* SettingManager_load_settings_form_file(char settingFilePath[256]);
 
-#endif /*!_SETTING_MANAGER_*/
+#endif /*!_SETTING_MANAGER_H_*/
 

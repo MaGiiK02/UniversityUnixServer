@@ -30,9 +30,15 @@
  */
 
 #define TRY do { jmp_buf ex_buf__; switch( setjmp(ex_buf__) ) { case 0: while(1) {
+
 #define CATCH(x) break; case x: 
+
 #define FINALLY break; } default: {
+
 #define CLOSETRY break; } } }while(0) /* In the original library was ETRY for avoid collisions with the ERRNO the name is changed to CLOSETRY */
+
 #define THROW(x) longjmp(ex_buf__, x)
+
+#define EXCEPTION (0)
 
 #endif /*!_TRY_THROW_CATCH_H_*/
