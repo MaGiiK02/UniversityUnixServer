@@ -5,8 +5,8 @@
  * @Author: angelini.mattia 
  * @StudentCode: 502688
  * @Date: 2017-05-15 07:59:04 
- * @Last Modified by: mattia.angelini
- * @Last Modified time: 2017-05-16 14:52:28
+ * @Last Modified by: angelini.mattia
+ * @Last Modified time: 2017-05-16 22:13:30
  */
 
 /* @Description: 
@@ -36,14 +36,14 @@
 
 /* The structure that will be used to store the application settings */
 typedef struct {
-    char unixPath[256];
+    char* unixPath;
     unsigned short int maxConnections;
     unsigned short int threadsInPool;
     unsigned short int maxMsgSize;
     unsigned short int maxFileSize;
     unsigned short int maxHistMsgs;
-    char dirName[256];
-    char statFileName[256];
+    char* dirName;
+    char* statFileName;
 } Settings;
 
 /**
@@ -56,9 +56,44 @@ Settings* SettingManager_new_settings_struct();
 
 /**
  * Destroy a Settings structure from the heap given it's pointer.
- * @throws ...
+ * NOTE : The function assumes that the inner pointer (strings) can be removed!
  */
-void SettingManager_destroy_settings_struct(Settings* settings);
+void SettingManager_destroy_settings_struct(Settings** settings);
+
+/**
+ * Sefe setter for the unixPath in the settings structure, it performs the copy of the value from the parameter.
+ */
+void SettingManager_settings_set_unix_path (Settings *settings, char *unix_path);
+
+/**
+ * Sefe getter for the unixPath in the settings structure, it performs the copy of the value in the out parameter.
+ */
+void SettingManager_settings_get_unix_path (Settings *settings,char *out_unix_path);
+
+/**
+ * Sefe setter for the dirName in the settings structure, it performs the copy of the value from the parameter.
+ */
+void SettingManager_settings_set_dir_name (Settings *settings, char *dir_name);
+
+/**
+ * Sefe getter for the dirName in the settings structure, it performs the copy of the value in the out parameter.
+ */
+void SettingManager_settings_get_dir_name (Settings *settings,char *out_unix_path);
+
+/**
+ * Sefe setter for the statFileName in the settings structure, it performs the copy of the value from the parameter.
+ */
+void SettingManager_settings_set_stat_file_name (Settings *settings, char *stat_file_name);
+
+/**
+ * Sefe getter for the statFileName in the settings structure, it performs the copy of the value in the out parameter.
+ */
+void SettingManager_settings_get_stat_file_name (Settings *settings,char *out_stat_file_name);
+
+/**
+ * Print in the stdout the give Sttings struct
+ */
+void SettingManager_print_settings_struct(Settings* settings);
 
 /**
  * This function load in a Setting structure, all the settings defined in the file located by the prameter path,

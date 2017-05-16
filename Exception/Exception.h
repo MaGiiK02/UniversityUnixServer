@@ -24,6 +24,7 @@
 
 #include <stdio.h>
 #include <setjmp.h>
+#include <errno.h>
 
 /* For the full documentation and explanation of the code below, please refer to
  * http://www.di.unipi.it/~nids/docs/longjump_try_trow_catch.html
@@ -35,7 +36,7 @@
 
 #define FINALLY break; } default: {
 
-#define CLOSETRY break; } } }while(0) /* In the original library was ETRY for avoid collisions with the ERRNO the name is changed to CLOSETRY */
+#define CLOSE_TRY break; } } }while(0) /* In the original library was ETRY for avoid collisions with the ERRNO the name is changed to CLOSETRY */
 
 #define THROW(x) longjmp(ex_buf__, x)
 
