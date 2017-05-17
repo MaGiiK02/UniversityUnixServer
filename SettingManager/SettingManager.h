@@ -5,8 +5,8 @@
  * @Author: angelini.mattia 
  * @StudentCode: 502688
  * @Date: 2017-05-15 07:59:04 
- * @Last Modified by: angelini.mattia
- * @Last Modified time: 2017-05-16 22:13:30
+ * @Last Modified by: mattia.angelini
+ * @Last Modified time: 2017-05-17 17:36:15
  */
 
 /* @Description: 
@@ -22,7 +22,18 @@
  *      -> StatFileName = The file where the server will store his statistics.
  */
 
-#include "SettingManagerException.h"
+/* Project Include */
+#include "../Exception/Exception.h"
+
+/* Settings Fields names */
+#define SETTING_FIELD_NAME_UNIX_PATH "unixpath"
+#define SETTING_FIELD_NAME_MAX_CONNECTIONS "servermaxconnections"
+#define SETTING_FIELD_NAME_THREADS_IN_POOL "poolthreadsinpool"
+#define SETTING_FIELD_NAME_MAX_MSG_SIZE "maxmsgsize"
+#define SETTING_FIELD_NAME_MAX_FILE_SIZE "maxfilesize"
+#define SETTING_FIELD_NAME_MAX_HITS_MSG "clientmaxhistmsgs"
+#define SETTING_FIELD_NAME_DIR_NAME "dirname"
+#define SETTING_FIELD_NAME_STAT_FILE_NAME "statfilename"
 
 /* Default settings */
 #define SETTING_DEFAULT_UNIX_PATH "./tmp/chatty_socket"
@@ -63,7 +74,7 @@ void SettingManager_destroy_settings_struct(Settings** settings);
 /**
  * Sefe setter for the unixPath in the settings structure, it performs the copy of the value from the parameter.
  */
-void SettingManager_settings_set_unix_path (Settings *settings, char *unix_path);
+void SettingManager_settings_set_unix_path (Settings *settings, const char *unix_path);
 
 /**
  * Sefe getter for the unixPath in the settings structure, it performs the copy of the value in the out parameter.
@@ -73,7 +84,7 @@ void SettingManager_settings_get_unix_path (Settings *settings,char *out_unix_pa
 /**
  * Sefe setter for the dirName in the settings structure, it performs the copy of the value from the parameter.
  */
-void SettingManager_settings_set_dir_name (Settings *settings, char *dir_name);
+void SettingManager_settings_set_dir_name (Settings *settings, const char *dir_name);
 
 /**
  * Sefe getter for the dirName in the settings structure, it performs the copy of the value in the out parameter.
@@ -83,7 +94,7 @@ void SettingManager_settings_get_dir_name (Settings *settings,char *out_unix_pat
 /**
  * Sefe setter for the statFileName in the settings structure, it performs the copy of the value from the parameter.
  */
-void SettingManager_settings_set_stat_file_name (Settings *settings, char *stat_file_name);
+void SettingManager_settings_set_stat_file_name (Settings *settings, const char *stat_file_name);
 
 /**
  * Sefe getter for the statFileName in the settings structure, it performs the copy of the value in the out parameter.
@@ -102,7 +113,7 @@ void SettingManager_print_settings_struct(Settings* settings);
  * @throws ...
  * @return The Settings struct's pointer.
  */
-Settings* SettingManager_load_settings_form_file(char settingFilePath[256]);
+Settings* SettingManager_load_settings_form_file(const char * settingFilePath);
 
 #endif /*!_SETTING_MANAGER_H_*/
 
