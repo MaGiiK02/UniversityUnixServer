@@ -6,20 +6,22 @@
  * @StudentCode: 502688
  * @Date: 2017-05-16 21:25:18 
  * @Last Modified by: mattia.angelini
- * @Last Modified time: 2017-05-17 17:43:40
+ * @Last Modified time: 2017-05-18 15:03:21
  */
+
+#include "../Exception/Exception.h"
 
 /**
  * Remove all occourrences of the given character in the string,
  * returning the resulting string.
  */
-void Utils_str_remove_character(const char* str,const char c);
+char* Utils_str_remove_character(const char* str,const char c);
 
 /**
  * Remove all the spaces in the given string,
  * returning the resulting string.
  */
-void Utils_str_remove_spaces(const char* str);
+char* Utils_str_remove_spaces(const char* str);
 
 /**
  * Cut the string given a character and
