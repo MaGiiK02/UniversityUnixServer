@@ -28,7 +28,7 @@
 /* Settings Fields names */
 #define SETTING_FIELD_NAME_UNIX_PATH "unixpath"
 #define SETTING_FIELD_NAME_MAX_CONNECTIONS "servermaxconnections"
-#define SETTING_FIELD_NAME_THREADS_IN_POOL "poolthreadsinpool"
+#define SETTING_FIELD_NAME_THREADS_IN_POOL "threadsinpool"
 #define SETTING_FIELD_NAME_MAX_MSG_SIZE "maxmsgsize"
 #define SETTING_FIELD_NAME_MAX_FILE_SIZE "maxfilesize"
 #define SETTING_FIELD_NAME_MAX_HITS_MSG "clientmaxhistmsgs"

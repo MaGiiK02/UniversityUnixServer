@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <ctype.h>
+#include <stdio.h>
 
 char* Utils_str_remove_character(const char* str,const char c){
     char *cleared_str = strdup(str);
@@ -38,16 +39,18 @@ char* Utils_str_remove_spaces(const char* str){
     return Utils_str_remove_character(str,' ');   
 }
 
-int Utils_str_split_by_first_char(const char* str,const char cutter_character,char* left_part,char* right_part){
-    char* str_cpy = strdup(str); 
-    char* cutter_position = strchr(str,cutter_character);
-    if(cutter_position == NULL)
+int Utils_str_split_by_first_char(const char* str,const char* cutter_character,char** left_part,char** right_part){
+
+    char *str_cpy = strdup(str);
+    char *saveptr;
+
+    *left_part = strdup(strtok_r(str_cpy, cutter_character,&saveptr));
+    *right_part = strdup(strtok_r(NULL, cutter_character,&saveptr));
+
+    if(*left_part == 0 || *right_part == 0){
         return 1;
-    
-    left_part = str_cpy;
-    right_part = cutter_position + 1;
-    *cutter_position = '\0';                /*Put a string terminator in the position on the cutter_character, in order to split the string in 2 */  
- 
+    } 
+
     return 0; 
 }
 
@@ -79,11 +82,16 @@ int Utils_string_to_integer(const char* str){
 
 char* Utils_str_lowercase(char const *str)
 {
-    char* str_lower = strdup(str);
     int i;
+    char* str_lower = strdup(str);
+
     for(i=0;i<strlen(str_lower);i++){
-        *(str_lower+i) = tolower(*(str_lower+i)); 
+        *(str_lower+i) = tolower(*(str_lower+i));
     }
 
     return str_lower;
+}
+
+void Utils_str_clear(char *str){
+    memset(str,0,strlen(str));
 }

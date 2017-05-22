@@ -26,12 +26,12 @@
  * Set a Setting struct field buy the field name aand a string value, casted to the correct field type
  */
 void _settings_set_value_by_field_name(Settings* settings,const char* field_name,const char* value){
+
     if (strcmp(Utils_str_lowercase(field_name), SETTING_FIELD_NAME_UNIX_PATH) == 0){
         SettingManager_settings_set_unix_path(settings,value);
-
     } else if ( strcmp(Utils_str_lowercase(field_name),SETTING_FIELD_NAME_MAX_CONNECTIONS) == 0){
         settings->maxConnections = Utils_string_to_integer(value);
-
+        
     } else if ( strcmp(Utils_str_lowercase(field_name),SETTING_FIELD_NAME_THREADS_IN_POOL) == 0){
         settings->threadsInPool = Utils_string_to_integer(value);
 
@@ -56,28 +56,25 @@ void _settings_set_value_by_field_name(Settings* settings,const char* field_name
 
 /*
  * Load all the settings from a given file pointer, if some setting can't be retreived then the default is used.
+ * TODO : the parser have error if the files have blanks lines
  */
 Settings* _load_settings_from_file_ptr(FILE* fptr){
 
     Settings* settings = SettingManager_new_settings_struct();
 
     char* file_line = malloc( 512 * sizeof(char) );
-    char* setting_value = NULL;
-    char* setting_name = NULL;
+    char* setting_value =  malloc( 256 * sizeof(char) );
+    char* setting_name =  malloc( 256 * sizeof(char) );
 
-
-    fgets(file_line,512,fptr);
     // TODO Handle row longer than 512 characters
-    while(file_line){
+    while(fgets(file_line,512,fptr) != NULL){
+        file_line = Utils_str_remove_character(file_line,'\n');
         file_line = Utils_str_remove_spaces(file_line);
-        if( *file_line != '#' ){
-            /*The line isn't a comment*/
-            /*Yes, I know that strtok exists*/
-            if(Utils_str_split_by_first_char(file_line,'=',setting_name,setting_value) == 0 ){ /* If no problem occoured in the splitting, the function return a 0 code */
+        if( *file_line != '#' && *file_line != 0 && *file_line != 13){                                /*The readed line isn't a comment*/         
+            if( Utils_str_split_by_first_char(file_line,"=",&setting_name,&setting_value) == 0 ){     /* If no problem occoured in the splitting, the function return a 0 code */
                 _settings_set_value_by_field_name(settings,setting_name,setting_value);
             }
         }
-        fgets(file_line,512,fptr);
     }                    
     return settings;
 }
@@ -138,7 +135,7 @@ void SettingManager_print_settings_struct(Settings* settings){
     printf("    unixPath: %s\n",settings->unixPath);
     printf("    maxConnections: %d\n",settings->maxConnections);
     printf("    threadsInPool: %d\n",settings->threadsInPool);
-    printf("    maxMsgSize: %d\n",settings->threadsInPool);
+    printf("    maxMsgSize: %d\n",settings->maxMsgSize);
     printf("    maxFileSize: %d\n",settings->maxFileSize);
     printf("    maxHistMsgs: %d\n",settings->maxHistMsgs);
     printf("    dirName: %s\n",settings->dirName);
