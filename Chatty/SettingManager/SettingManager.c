@@ -1,6 +1,6 @@
 /*
- * @Author: mattia.angelini 
- * @Date: 2017-05-16 11:12:03 
+ * @Author: mattia.angelini
+ * @Date: 2017-05-16 11:12:03
  * @StudentCode: 502688
  * @Last Modified by: mattia.angelini
  * @Last Modified time: 2017-05-18 16:29:47
@@ -21,9 +21,8 @@
 
 /* Private functions */
 
-
 /*
- * Set a Setting struct field buy the field name aand a string value, casted to the correct field type
+ * Set a Setting struct's field buy the field name and a string value, casted to the correct field type.
  */
 void _settings_set_value_by_field_name(Settings* settings,const char* field_name,const char* value){
 
@@ -31,7 +30,7 @@ void _settings_set_value_by_field_name(Settings* settings,const char* field_name
         SettingManager_settings_set_unix_path(settings,value);
     } else if ( strcmp(Utils_str_lowercase(field_name),SETTING_FIELD_NAME_MAX_CONNECTIONS) == 0){
         settings->maxConnections = Utils_string_to_integer(value);
-        
+
     } else if ( strcmp(Utils_str_lowercase(field_name),SETTING_FIELD_NAME_THREADS_IN_POOL) == 0){
         settings->threadsInPool = Utils_string_to_integer(value);
 
@@ -49,14 +48,17 @@ void _settings_set_value_by_field_name(Settings* settings,const char* field_name
 
     } else if ( strcmp(Utils_str_lowercase(field_name),SETTING_FIELD_NAME_STAT_FILE_NAME) == 0){
         SettingManager_settings_set_stat_file_name(settings,value);
-        
+
     }
 }
 
+int is_a_setting_line(const char* file_line){
+    return (*file_line != '#' && *file_line != 0 && *file_line != 13);
+}
 
 /*
- * Load all the settings from a given file pointer, if some setting can't be retreived then the default is used.
- * TODO : the parser have error if the files have blanks lines
+ * Load all the settings from a given file pointer, creatiing first a default setting struct that is update as the file is readed.
+ * TODO : the parser have problem with special characters
  */
 Settings* _load_settings_from_file_ptr(FILE* fptr){
 
@@ -66,16 +68,16 @@ Settings* _load_settings_from_file_ptr(FILE* fptr){
     char* setting_value =  malloc( 256 * sizeof(char) );
     char* setting_name =  malloc( 256 * sizeof(char) );
 
-    // TODO Handle row longer than 512 characters
-    while(fgets(file_line,512,fptr) != NULL){
-        file_line = Utils_str_remove_character(file_line,'\n');
+    // TODO Handle row longer than 1024 characters
+    while(fgets(file_line,1024,fptr) != NULL){
+        file_line = Utils_str_remove_special_chars(file_line);
         file_line = Utils_str_remove_spaces(file_line);
-        if( *file_line != '#' && *file_line != 0 && *file_line != 13){                                /*The readed line isn't a comment*/         
+        if(is_a_setting_line(file_line)){
             if( Utils_str_split_by_first_char(file_line,"=",&setting_name,&setting_value) == 0 ){     /* If no problem occoured in the splitting, the function return a 0 code */
                 _settings_set_value_by_field_name(settings,setting_name,setting_value);
             }
         }
-    }                    
+    }
     return settings;
 }
 
@@ -88,12 +90,24 @@ Settings* SettingManager_new_settings_struct(){
     return settings;
 }
 
+Settings* SettingManager_new_default_settings_struct(){
+    Settings* settings = SettingManager_new_settings_struct();
+    settings->dirName = SETTING_DEFAULT_DIR_NAME;
+    settings->statFileName = SETTING_DEFAULT_STAT_FILE_NAME;
+    settings->unixPath = SETTING_DEFAULT_UNIX_PATH;
+    settings->maxMsgSize = SETTING_DEFAULT_MAX_MSG_SIZE;
+    settings->maxFileSize = SETTING_DEFAULT_MAX_FILE_SIZE;
+    settings->maxConnections = SETTING_DEFAULT_MAX_CONNECTIONS;
+    settings->threadsInPool = SETTING_DEFAULT_THREADS_IN_POOL;
+    settings->maxHistMsgs = SETTING_DEFAULT_MAX_HITS_MSG;
+    return settings;
+}
 
 void SettingManager_destroy_settings_struct(Settings** settings_ptr){
     Settings* settings = *settings_ptr;
     if(settings == NULL)
         return;
-  
+
     free(settings->dirName);
     free(settings->statFileName);
     free(settings->unixPath);
@@ -130,7 +144,7 @@ void SettingManager_settings_get_stat_file_name (Settings* settings,char* out_st
 void SettingManager_print_settings_struct(Settings* settings){
     if(settings == NULL)
         return;
-        
+
     printf("Printing the Settings object -> %p\n",settings);
     printf("    unixPath: %s\n",settings->unixPath);
     printf("    maxConnections: %d\n",settings->maxConnections);
@@ -140,7 +154,7 @@ void SettingManager_print_settings_struct(Settings* settings){
     printf("    maxHistMsgs: %d\n",settings->maxHistMsgs);
     printf("    dirName: %s\n",settings->dirName);
     printf("    statFileName: %s\n",settings->statFileName);
-    printf("End Settings struct.\n");    
+    printf("End Settings struct.\n");
 }
 
 Settings* SettingManager_load_settings_form_file(const char* settingFilePath){
@@ -150,6 +164,3 @@ Settings* SettingManager_load_settings_form_file(const char* settingFilePath){
     fclose(fp);                                /*Close the file*/
     return s;
 }
-
-
-

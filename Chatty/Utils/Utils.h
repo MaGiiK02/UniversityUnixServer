@@ -2,25 +2,17 @@
 #define _UTILS_H_
 
 /*
- * @Author: angelini.mattia 
+ * @Author: angelini.mattia
  * @StudentCode: 502688
- * @Date: 2017-05-16 21:25:18 
+ * @Date: 2017-05-16 21:25:18
  * @Last Modified by: mattia.angelini
  * @Last Modified time: 2017-05-18 15:03:21
  */
 
 #include "../Exception/Exception.h"
 
-/**
- * Remove all occourrences of the given character in the string,
- * returning the resulting string.
- */
 char* Utils_str_remove_character(const char* str,const char c);
 
-/**
- * Remove all the spaces in the given string,
- * returning the resulting string.
- */
 char* Utils_str_remove_spaces(const char* str);
 
 /**
@@ -32,11 +24,14 @@ int Utils_str_split_by_first_char(const char* str,const char* cutter_character,c
 
 int Utils_string_to_integer(const char* str);
 
-/**
- * Make a lowercase of the given string, returning a new lowercase setting of the given one. 
- */
 char* Utils_str_lowercase(char const *str);
 
-
 void Utils_str_clear(char *str);
+
+/*
+ * Remove the listed special character form the given string.
+ * -> \n,\a,\b,\f,\r,\t,\v.
+ */
+char* Utils_str_remove_special_chars(char const *str);
+
 #endif

@@ -2,14 +2,14 @@
 #define _SETTING_MANAGER_H_
 
 /*
- * @Author: angelini.mattia 
+ * @Author: angelini.mattia
  * @StudentCode: 502688
- * @Date: 2017-05-15 07:59:04 
+ * @Date: 2017-05-15 07:59:04
  * @Last Modified by: mattia.angelini
  * @Last Modified time: 2017-05-17 17:36:15
  */
 
-/* @Description: 
+/* @Description:
  *  This component provide a structure and the system to load the project settings.
  *  Settings list:
  *      -> UnixPath = The path for the AF_UNIX socket.
@@ -25,7 +25,6 @@
 /* Project Include */
 #include "../Exception/Exception.h"
 
-/* Settings Fields names */
 #define SETTING_FIELD_NAME_UNIX_PATH "unixpath"
 #define SETTING_FIELD_NAME_MAX_CONNECTIONS "servermaxconnections"
 #define SETTING_FIELD_NAME_THREADS_IN_POOL "threadsinpool"
@@ -35,7 +34,6 @@
 #define SETTING_FIELD_NAME_DIR_NAME "dirname"
 #define SETTING_FIELD_NAME_STAT_FILE_NAME "statfilename"
 
-/* Default settings */
 #define SETTING_DEFAULT_UNIX_PATH "./tmp/chatty_socket"
 #define SETTING_DEFAULT_MAX_CONNECTIONS 32
 #define SETTING_DEFAULT_THREADS_IN_POOL 8
@@ -58,12 +56,18 @@ typedef struct {
 } Settings;
 
 /**
- * Create a Settings structure in the heap, and returns it's pointer. 
+ * Create a Settings structure in the heap, and returns it's pointer.
  * @throws ...
  * @return The Settings struct's pointer.
  */
- 
 Settings* SettingManager_new_settings_struct();
+
+/**
+ * Create a Settings structure in the heap, filling it with the settings default values, and returning it's pointer.
+ * @throws ...
+ * @return The Settings struct's pointer.
+ */
+Settings* SettingManager_new_default_settings_struct();
 
 /**
  * Destroy a Settings structure from the heap given it's pointer.
@@ -108,7 +112,7 @@ void SettingManager_print_settings_struct(Settings* settings);
 
 /**
  * This function load in a Setting structure, all the settings defined in the file located by the prameter path,
- * if some settings can't be found, the default falue will be used. 
+ * if some settings can't be found, the default falue will be used.
  * @param settingFilePath a string with the path to the settings file.
  * @throws ...
  * @return The Settings struct's pointer.
@@ -116,4 +120,3 @@ void SettingManager_print_settings_struct(Settings* settings);
 Settings* SettingManager_load_settings_form_file(const char * settingFilePath);
 
 #endif /*!_SETTING_MANAGER_H_*/
-
