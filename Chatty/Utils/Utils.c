@@ -110,7 +110,6 @@ int _is_a_special_char(char const c){
 
 /*It's a little rendoundant naut in this way is more efficent.*/
 char* Utils_str_remove_special_chars(char const *str){
-    printf("%s\n",str);
     char *cleared_str = calloc(strlen(str),sizeof(char));
     int writed = 0;
     int readed = 0;
@@ -122,8 +121,7 @@ char* Utils_str_remove_special_chars(char const *str){
         if ( !_is_a_special_char(str[readed]) )
             cleared_str[writed++] = str[readed];
     }
-    printf("%s\n",cleared_str);
     cleared_str[writed] = '\0'; /* adding the string terminator */
-    printf("%s\n",cleared_str);
+
     return cleared_str;
 }

@@ -1,5 +1,8 @@
+gcc_gdb_server:
+  build: .
+  dockerfile: ./Docker-compose/gcc_gdb_server/Dockerfile
 
 setting_parser:
     build: .
-    dockerfile: ./Docker-compose/setting_parser/dockerfile
+    dockerfile: ./Docker-compose/setting_parser/Dockerfile
     container_name: setting_parser
