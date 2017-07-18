@@ -19,67 +19,11 @@
 #include "SettingManager.h"
 
 
-/* Private functions */
+/* Private functions Def*/
+void _settings_set_value_by_field_name(Settings* settings,const char* field_name,const char* value);
+int is_a_setting_line(const char* file_line);
+Settings* _load_settings_from_file_ptr(FILE* fptr);
 
-/*
- * Set a Setting struct's field buy the field name and a string value, casted to the correct field type.
- */
-void _settings_set_value_by_field_name(Settings* settings,const char* field_name,const char* value){
-
-    if (strcmp(Utils_str_lowercase(field_name), SETTING_FIELD_NAME_UNIX_PATH) == 0){
-        SettingManager_settings_set_unix_path(settings,value);
-    } else if ( strcmp(Utils_str_lowercase(field_name),SETTING_FIELD_NAME_MAX_CONNECTIONS) == 0){
-        settings->maxConnections = Utils_string_to_integer(value);
-
-    } else if ( strcmp(Utils_str_lowercase(field_name),SETTING_FIELD_NAME_THREADS_IN_POOL) == 0){
-        settings->threadsInPool = Utils_string_to_integer(value);
-
-    } else if ( strcmp(Utils_str_lowercase(field_name),SETTING_FIELD_NAME_MAX_MSG_SIZE) == 0){
-        settings->maxMsgSize = Utils_string_to_integer(value);
-
-    } else if ( strcmp(Utils_str_lowercase(field_name),SETTING_FIELD_NAME_MAX_FILE_SIZE) == 0){
-        settings->maxFileSize = Utils_string_to_integer(value);
-
-    } else if ( strcmp(Utils_str_lowercase(field_name),SETTING_FIELD_NAME_MAX_HITS_MSG) == 0){
-        settings->maxHistMsgs = Utils_string_to_integer(value);
-
-    } else if ( strcmp(Utils_str_lowercase(field_name),SETTING_FIELD_NAME_DIR_NAME) == 0){
-        SettingManager_settings_set_dir_name(settings,value);
-
-    } else if ( strcmp(Utils_str_lowercase(field_name),SETTING_FIELD_NAME_STAT_FILE_NAME) == 0){
-        SettingManager_settings_set_stat_file_name(settings,value);
-
-    }
-}
-
-int is_a_setting_line(const char* file_line){
-    return (*file_line != '#' && *file_line != 0 && *file_line != 13);
-}
-
-/*
- * Load all the settings from a given file pointer, creatiing first a default setting struct that is update as the file is readed.
- * TODO : the parser have problem with special characters
- */
-Settings* _load_settings_from_file_ptr(FILE* fptr){
-
-    Settings* settings = SettingManager_new_settings_struct();
-
-    char* file_line = malloc( 512 * sizeof(char) );
-    char* setting_value =  malloc( 256 * sizeof(char) );
-    char* setting_name =  malloc( 256 * sizeof(char) );
-
-    // TODO Handle row longer than 1024 characters
-    while(fgets(file_line,1024,fptr) != NULL){
-        file_line = Utils_str_remove_special_chars(file_line);
-        file_line = Utils_str_remove_spaces(file_line);
-        if(is_a_setting_line(file_line)){
-            if( Utils_str_split_by_first_char(file_line,"=",&setting_name,&setting_value) == 0 ){     /* If no problem occoured in the splitting, the function return a 0 code */
-                _settings_set_value_by_field_name(settings,setting_name,setting_value);
-            }
-        }
-    }
-    return settings;
-}
 
 /* Header's functions definition */
 Settings* SettingManager_new_settings_struct(){
@@ -163,4 +107,64 @@ Settings* SettingManager_load_settings_form_file(const char* settingFilePath){
     s = _load_settings_from_file_ptr(fp);      /*Read the file loading setting in the settings struct*/
     fclose(fp);                                /*Close the file*/
     return s;
+}
+
+/*
+ * Load all the settings from a given file pointer, creatiing first a default setting struct that is update as the file is readed.
+ * TODO : the parser have problem with special characters
+ */
+Settings* _load_settings_from_file_ptr(FILE* fptr){
+
+    Settings* settings = SettingManager_new_settings_struct();
+
+    char* file_line = malloc( 512 * sizeof(char) );
+    char* setting_value =  malloc( 256 * sizeof(char) );
+    char* setting_name =  malloc( 256 * sizeof(char) );
+
+    // TODO Handle row longer than 1024 characters
+    while(fgets(file_line,1024,fptr) != NULL){
+        file_line = Utils_str_remove_special_chars(file_line);
+        file_line = Utils_str_remove_spaces(file_line);
+        if(is_a_setting_line(file_line)){
+            if( Utils_str_split_by_first_char(file_line,"=",&setting_name,&setting_value) == 0 ){     /* If no problem occoured in the splitting, the function return a 0 code */
+                _settings_set_value_by_field_name(settings,setting_name,setting_value);
+            }
+        }
+    }
+    return settings;
+}
+
+int is_a_setting_line(const char* file_line){
+    return (*file_line != '#' && *file_line != 0 && *file_line != 13);
+}
+
+/*
+ * Set a Setting struct's field buy the field name and a string value, casted to the correct field type.
+ */
+void _settings_set_value_by_field_name(Settings* settings,const char* field_name,const char* value){
+
+    if (strcmp(Utils_str_lowercase(field_name), SETTING_FIELD_NAME_UNIX_PATH) == 0){
+        SettingManager_settings_set_unix_path(settings,value);
+    } else if ( strcmp(Utils_str_lowercase(field_name),SETTING_FIELD_NAME_MAX_CONNECTIONS) == 0){
+        settings->maxConnections = Utils_string_to_integer(value);
+
+    } else if ( strcmp(Utils_str_lowercase(field_name),SETTING_FIELD_NAME_THREADS_IN_POOL) == 0){
+        settings->threadsInPool = Utils_string_to_integer(value);
+
+    } else if ( strcmp(Utils_str_lowercase(field_name),SETTING_FIELD_NAME_MAX_MSG_SIZE) == 0){
+        settings->maxMsgSize = Utils_string_to_integer(value);
+
+    } else if ( strcmp(Utils_str_lowercase(field_name),SETTING_FIELD_NAME_MAX_FILE_SIZE) == 0){
+        settings->maxFileSize = Utils_string_to_integer(value);
+
+    } else if ( strcmp(Utils_str_lowercase(field_name),SETTING_FIELD_NAME_MAX_HITS_MSG) == 0){
+        settings->maxHistMsgs = Utils_string_to_integer(value);
+
+    } else if ( strcmp(Utils_str_lowercase(field_name),SETTING_FIELD_NAME_DIR_NAME) == 0){
+        SettingManager_settings_set_dir_name(settings,value);
+
+    } else if ( strcmp(Utils_str_lowercase(field_name),SETTING_FIELD_NAME_STAT_FILE_NAME) == 0){
+        SettingManager_settings_set_stat_file_name(settings,value);
+
+    }
 }
