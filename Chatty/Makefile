@@ -1,6 +1,6 @@
 #
-# chatterbox Progetto del corso di LSO 2017 
-# 
+# chatterbox Progetto del corso di LSO 2017
+#
 # Dipartimento di Informatica Università di Pisa
 # Docenti: Prencipe, Torquati
 #
@@ -8,26 +8,36 @@
 
 ##########################################################
 # IMPORTANTE: completare la lista dei file da consegnare
-# 
-FILE_DA_CONSEGNARE=Makefile chatty.c message.h ops.h stats.h config.h \
-		   DATA/chatty.conf1 DATA/chatty.conf2 connections.h 
+#
+FILE_DA_CONSEGNARE= Makefile \
+										Server/chatty.c \
+										Message/message.h \
+										Operations/ops.h \
+										Statistic/stats.h \
+										config.h \
+									  Config/chatty.conf1 \
+										Config/chatty.conf2 \
+										Connections/connections.h  \
+										Utils/Utils.h \
+										Utils/Utils.c
+
 # inserire il nome del tarball: es. NinoBixio
-TARNAME=NomeCognome
+TARNAME=MattiaAngelini
 # inserice il corso di appartenenza: CorsoA oppure CorsoB
-CORSO=CorsoX
+CORSO=CorsoA
 #
 ###########################################################
 
 ###################################################################
-# NOTA: Il nome riportato in UNIX_PATH deve corrispondere al nome 
-#       usato per l'opzione UnixPath nel file di configurazione del 
+# NOTA: Il nome riportato in UNIX_PATH deve corrispondere al nome
+#       usato per l'opzione UnixPath nel file di configurazione del
 #       server (vedere i file nella directory DATA).
 #       Lo stesso vale per il nome riportato in STAT_PATH e DIR_PATH
-#       che deveno corrispondere con l'opzione StatFileName e 
+#       che deveno corrispondere con l'opzione StatFileName e
 #       DirName, rispettivamente.
 #
-# ATTENZIONE: se il codice viene sviluppato sulle macchine del 
-#             laboratorio utilizzare come nomi, nomi unici, 
+# ATTENZIONE: se il codice viene sviluppato sulle macchine del
+#             laboratorio utilizzare come nomi, nomi unici,
 #             ad esempo /tmp/chatty_sock_<numero-di-matricola> e
 #             /tmp/chatty_stats_<numero-di-matricola>.
 #
@@ -42,7 +52,7 @@ CFLAGS	        += -std=c99 -Wall -pedantic -g -DMAKE_VALGRIND_HAPPY
 ARFLAGS         =  rvs
 INCLUDES	= -I.
 LDFLAGS 	= -L.
-OPTFLAGS	= #-O3 
+OPTFLAGS	= #-O3
 LIBS            = -pthread
 
 # aggiungere qui altri targets se necessario
@@ -51,9 +61,9 @@ TARGETS		= chatty        \
 
 
 # aggiungere qui i file oggetto da compilare
-OBJECTS		= 
+OBJECTS		=
 
-# aggiungere qui gli altri include 
+# aggiungere qui gli altri include
 INCLUDE_FILES   = connections.h \
 		  message.h     \
 		  ops.h	  	\
@@ -66,7 +76,7 @@ INCLUDE_FILES   = connections.h \
 .SUFFIXES: .c .h
 
 %: %.c
-	$(CC) $(CFLAGS) $(INCLUDES) $(OPTFLAGS) -o $@ $< $(LDFLAGS) 
+	$(CC) $(CFLAGS) $(INCLUDES) $(OPTFLAGS) -o $@ $< $(LDFLAGS)
 
 %.o: %.c
 	$(CC) $(CFLAGS) $(INCLUDES) $(OPTFLAGS) -c -o $@ $<
@@ -85,7 +95,7 @@ client: client.o connections.o message.h
 libchatty.a: $(OBJECTS)
 	$(AR) $(ARFLAGS) $@ $^
 
-clean		: 
+clean		:
 	rm -f $(TARGETS)
 
 cleanall	: clean
@@ -96,11 +106,11 @@ killchatty:
 	killall -9 chatty
 
 # test base
-test1: 
+test1:
 	make cleanall
 	\mkdir -p $(DIR_PATH)
 	make all
-	./chatty -f DATA/chatty.conf1&
+	./chatty -f Config/chatty.conf1&
 	./client -l $(UNIX_PATH) -c pippo
 	./client -l $(UNIX_PATH) -c pluto
 	./client -l $(UNIX_PATH) -c minni
@@ -112,12 +122,12 @@ test1:
 	killall -QUIT -w chatty
 	@echo "********** Test1 superato!"
 
-# test scambio file 
+# test scambio file
 test2:
 	make cleanall
 	\mkdir -p $(DIR_PATH)
 	make all
-	./chatty -f DATA/chatty.conf1&
+	./chatty -f Config/chatty.conf1&
 	./testfile.sh $(UNIX_PATH) $(DIR_PATH)
 	killall -QUIT -w chatty
 	@echo "********** Test2 superato!"
@@ -127,13 +137,13 @@ test3:
 	make cleanall
 	\mkdir -p $(DIR_PATH)
 	make all
-	./chatty -f DATA/chatty.conf2&
+	./chatty -f Config/chatty.conf2&
 	./testconf.sh $(UNIX_PATH) $(STAT_PATH)
 	killall -QUIT -w chatty
 	@echo "********** Test3 superato!"
 
 
-# verifica di memory leaks 
+# verifica di memory leaks
 test4:
 	make cleanall
 	\mkdir -p $(DIR_PATH)
@@ -146,7 +156,7 @@ test5:
 	make cleanall
 	\mkdir -p $(DIR_PATH)
 	make all
-	./chatty -f DATA/chatty.conf1&
+	./chatty -f Config/chatty.conf1&
 	./teststress.sh $(UNIX_PATH)
 	killall -QUIT -w chatty
 	@echo "********** Test5 superato!"
@@ -164,8 +174,8 @@ consegna:
 	sleep 3
 	make test5
 	sleep 3
-	tar -cvf $(TARNAME)_$(CORSO)_chatty.tar $(FILE_DA_CONSEGNARE) 
+	tar -cvf $(TARNAME)_$(CORSO)_chatty.tar $(FILE_DA_CONSEGNARE)
 	@echo "*** TAR PRONTO $(TARNAME)_$(CORSO)_chatty.tar "
 	@echo "Per la consegna seguire le istruzioni specificate nella pagina del progetto:"
 	@echo " http://didawiki.di.unipi.it/doku.php/informatica/sol/laboratorio17/progetto"
-	@echo 
+	@echo

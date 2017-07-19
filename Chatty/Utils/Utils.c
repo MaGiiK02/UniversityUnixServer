@@ -110,18 +110,21 @@ int _is_a_special_char(char const c){
 
 /*It's a little rendoundant naut in this way is more efficent.*/
 char* Utils_str_remove_special_chars(char const *str){
-    char *cleared_str = calloc(strlen(str),sizeof(char));
+
+    int str_length = strlen(str);
+    char *cleared_str = calloc(str_length,sizeof(char));
     int writed = 0;
     int readed = 0;
 
     if( str == NULL )
         return NULL;
 
-    for(readed = 0;readed<strlen(str);readed ++){
-        if ( !_is_a_special_char(str[readed]) )
+    for(readed = 0;readed<str_length-1;readed ++){
+        if (!_is_a_special_char(str[readed]))
             cleared_str[writed++] = str[readed];
     }
-    cleared_str[writed] = '\0'; /* adding the string terminator */
 
+    cleared_str[writed] = '\0'; /* adding the string terminator */
+    
     return cleared_str;
 }

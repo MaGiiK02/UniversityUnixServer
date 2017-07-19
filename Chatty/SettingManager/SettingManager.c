@@ -117,25 +117,37 @@ Settings* _load_settings_from_file_ptr(FILE* fptr){
 
     Settings* settings = SettingManager_new_settings_struct();
 
-    char* file_line = malloc( 512 * sizeof(char) );
-    char* setting_value =  malloc( 256 * sizeof(char) );
-    char* setting_name =  malloc( 256 * sizeof(char) );
-
+    char* file_line = malloc(1024 * sizeof(char));
+    char* setting_value =  malloc(1024 * sizeof(char));
+    char* setting_name =  malloc(1024 * sizeof(char));
+    printf("1\n");
     // TODO Handle row longer than 1024 characters
     while(fgets(file_line,1024,fptr) != NULL){
+        printf("2\n");
         file_line = Utils_str_remove_special_chars(file_line);
+        printf("3\n");
         file_line = Utils_str_remove_spaces(file_line);
-        if(is_a_setting_line(file_line)){
+        printf("4\n");
+        if(_is_a_setting_line(file_line)){
+            printf("start splitting\n");
             if( Utils_str_split_by_first_char(file_line,"=",&setting_name,&setting_value) == 0 ){     /* If no problem occoured in the splitting, the function return a 0 code */
+                printf("magia\n");
                 _settings_set_value_by_field_name(settings,setting_name,setting_value);
             }
         }
+        file_line = "";
     }
+
+    free(file_line);
+    free(setting_value);
+    free(setting_name);
+
     return settings;
 }
 
-int is_a_setting_line(const char* file_line){
-    return (*file_line != '#' && *file_line != 0 && *file_line != 13);
+int _is_a_setting_line(const char* file_line){
+  printf("cosa ?");
+    return (file_line[0] != '\0' && file_line[0] != '#' && file_line[0] != 13);
 }
 
 /*
