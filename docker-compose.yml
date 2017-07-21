@@ -6,3 +6,4 @@ setting_parser:
     build: .
     dockerfile: ./Docker-compose/setting_parser/Dockerfile
     container_name: setting_parser
+    privileged: true

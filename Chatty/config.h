@@ -3,7 +3,7 @@
  *
  * Dipartimento di Informatica Università di Pisa
  * Docenti: Prencipe, Torquati
- * 
+ *
  */
 /**
  * @file config.h
@@ -16,7 +16,6 @@
 #define MAX_NAME_LENGTH                  32
 
 /* aggiungere altre define qui */
-
 
 
 // to avoid warnings like "ISO C forbids an empty translation unit"x

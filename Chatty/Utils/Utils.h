@@ -4,34 +4,36 @@
 /*
  * @Author: angelini.mattia
  * @StudentCode: 502688
- * @Date: 2017-05-16 21:25:18
- * @Last Modified by: mattia.angelini
- * @Last Modified time: 2017-05-18 15:03:21
  */
 
 #include "../Exception/Exception.h"
+#include "../Booleans/Booleans.h"
 
-char* Utils_str_remove_character(const char* str,const char c);
+void Utils_str_remove_character(char* str,const char c);
 
-char* Utils_str_remove_spaces(const char* str);
+void Utils_str_remove_characters(char* str, const char *to_be_removed);
+
+void Utils_str_remove_spaces(char* str);
+
+/*
+ * Creates a string based on the given one where the listed special characterr will be removed.
+ * -> \n,\a,\b,\f,\r,\t,\v.
+ */
+void Utils_str_remove_special_chars(char* str);
 
 /**
  * Cut the string given a character and
  * the string will be splitted in a left and right parts retuned in the relative parameters.
  * The function return a integer that can be thus 0 or 1, where 0 mean no problem, 1 vice versa.
  */
-int Utils_str_split_by_first_char(const char* str,const char* cutter_character,char** left_part,char** right_part);
+int Utils_str_split_by_first_char(char* str,const char* cutter_character,char* left_part,char* right_part);
 
 int Utils_string_to_integer(const char* str);
 
-char* Utils_str_lowercase(char const *str);
+void Utils_str_lowercase(char* str);
 
-void Utils_str_clear(char *str);
+int Utils_str_compare_case_insensitive(const char* str_1, const char* str_2);
 
-/*
- * Remove the listed special character form the given string.
- * -> \n,\a,\b,\f,\r,\t,\v.
- */
-char* Utils_str_remove_special_chars(char const *str);
+void Utils_str_clear(char* str);
 
 #endif

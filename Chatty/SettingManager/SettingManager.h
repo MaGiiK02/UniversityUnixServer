@@ -4,9 +4,6 @@
 /*
  * @Author: angelini.mattia
  * @StudentCode: 502688
- * @Date: 2017-05-15 07:59:04
- * @Last Modified by: mattia.angelini
- * @Last Modified time: 2017-05-17 17:36:15
  */
 
 /* @Description:

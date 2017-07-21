@@ -1,9 +1,6 @@
 /*
  * @Author: angelini.mattia
  * @StudentCode: 502688
- * @Date: 2017-05-16 21:25:18
- * @Last Modified by: mattia.angelini
- * @Last Modified time: 2017-05-18 16:00:48
  */
 
 /* Header Include */
@@ -17,38 +14,47 @@
 #include <ctype.h>
 #include <stdio.h>
 
-char* Utils_str_remove_character(const char* str,const char c){
-    char *cleared_str = malloc(sizeof(char)*strlen(str));
-    char *write = &cleared_str[0];
-    char *read = &str[0];
-
-    if( cleared_str == NULL )
-        return NULL;
-
-    do {
-        if ( *read != c && *read != '\0' ) /* Want to controll better the string termination. */
-            *write++ = *read;
-    } while ( *read++ );
-
-    *write = '\0'; /* adding the string terminator */
-
-    return cleared_str;
+void Utils_str_remove_spaces(char* str){
+    Utils_str_remove_character(str,' ');
 }
 
-char* Utils_str_remove_spaces(const char* str){
-    return Utils_str_remove_character(str,' ');
+void Utils_str_remove_character(char* str,const char c){
+    char space[1] = {c};
+    Utils_str_remove_characters(str,space);
 }
 
-int Utils_str_split_by_first_char(const char* str,const char* cutter_character,char** left_part,char** right_part){
+void Utils_str_remove_special_chars(char* str){
+    char special_chars[7] = {'\n', '\a', '\b', '\f', '\r', '\t', '\v'};
+    Utils_str_remove_characters(str,special_chars);
+}
 
-    char *str_cpy = strdup(str);
-    char *saveptr;
+void Utils_str_remove_characters(char* str,const char *to_be_removed){
 
-    *left_part = strdup(strtok_r(str_cpy, cutter_character,&saveptr));
-    *right_part = strdup(strtok_r(NULL, cutter_character,&saveptr));
+    if( str == NULL )
+        return;
+
+    char* writer = str;
+    char* reader = str;
+
+    while( *reader != '\0'){
+        if (strchr(to_be_removed,*reader) == NULL){
+            *writer = *reader;
+            writer++;
+        }
+        reader++;
+    }
+    *writer = '\0';
+}
+
+int Utils_str_split_by_first_char(char* str,const char* cutter_character,char* left_part,char* right_part){
+
+    char* saveptr;
+
+    strcpy(left_part,strtok_r(str, cutter_character,&saveptr));
+    strcpy(right_part,strtok_r(NULL, cutter_character,&saveptr));
 
     if(*left_part == 0 || *right_part == 0){
-        return 1;
+        return -1;
     }
 
     return 0;
@@ -80,51 +86,28 @@ int Utils_string_to_integer(const char* str){
     return converted_val;
 }
 
-char* Utils_str_lowercase(char const *str)
+void Utils_str_lowercase(char* str)
 {
-    int i;
-    char* str_lower = strdup(str);
+    char* current_char = str;
 
-    for(i=0;i<strlen(str_lower);i++){
-        *(str_lower+i) = tolower(*(str_lower+i));
+    while(current_char++){
+        *(current_char) = tolower(*current_char);
     }
-
-    return str_lower;
 }
 
-void Utils_str_clear(char *str){
+int Utils_str_compare_case_insensitive(const char* str_1,const char* str_2){
+
+    int equals = 0;
+
+    while( (*str_1 != '\0') && (*str_2 != '\0') && (equals == 0) ) {
+       equals = tolower(*str_1) - tolower(*str_2);
+       str_1++;
+       str_2++;
+    }
+
+    return equals;
+}
+
+void Utils_str_clear(char* str){
     memset(str,0,strlen(str));
-}
-
-int _is_a_special_char(char const c){
-    return (
-        c == '\n' ||
-        c == '\a' ||
-        c == '\b' ||
-        c == '\f' ||
-        c == '\r' ||
-        c == '\t' ||
-        c == '\v'
-    );
-}
-
-/*It's a little rendoundant naut in this way is more efficent.*/
-char* Utils_str_remove_special_chars(char const *str){
-
-    int str_length = strlen(str);
-    char *cleared_str = calloc(str_length,sizeof(char));
-    int writed = 0;
-    int readed = 0;
-
-    if( str == NULL )
-        return NULL;
-
-    for(readed = 0;readed<str_length-1;readed ++){
-        if (!_is_a_special_char(str[readed]))
-            cleared_str[writed++] = str[readed];
-    }
-
-    cleared_str[writed] = '\0'; /* adding the string terminator */
-    
-    return cleared_str;
 }

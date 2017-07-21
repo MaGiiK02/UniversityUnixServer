@@ -1,9 +1,6 @@
 /*
- * @Author: mattia.angelini
- * @Date: 2017-05-16 11:12:03
+ * @Author: angelini.mattia
  * @StudentCode: 502688
- * @Last Modified by: mattia.angelini
- * @Last Modified time: 2017-05-18 16:29:47
  */
 
 /* System Includes */
@@ -21,7 +18,7 @@
 
 /* Private functions Def*/
 void _settings_set_value_by_field_name(Settings* settings,const char* field_name,const char* value);
-int is_a_setting_line(const char* file_line);
+int _is_a_setting_line(const char* file_line);
 Settings* _load_settings_from_file_ptr(FILE* fptr);
 
 
@@ -111,7 +108,6 @@ Settings* SettingManager_load_settings_form_file(const char* settingFilePath){
 
 /*
  * Load all the settings from a given file pointer, creatiing first a default setting struct that is update as the file is readed.
- * TODO : the parser have problem with special characters
  */
 Settings* _load_settings_from_file_ptr(FILE* fptr){
 
@@ -120,22 +116,18 @@ Settings* _load_settings_from_file_ptr(FILE* fptr){
     char* file_line = malloc(1024 * sizeof(char));
     char* setting_value =  malloc(1024 * sizeof(char));
     char* setting_name =  malloc(1024 * sizeof(char));
-    printf("1\n");
+
     // TODO Handle row longer than 1024 characters
     while(fgets(file_line,1024,fptr) != NULL){
-        printf("2\n");
-        file_line = Utils_str_remove_special_chars(file_line);
-        printf("3\n");
-        file_line = Utils_str_remove_spaces(file_line);
-        printf("4\n");
+
+        Utils_str_remove_special_chars(file_line);
+        Utils_str_remove_spaces(file_line);
+
         if(_is_a_setting_line(file_line)){
-            printf("start splitting\n");
-            if( Utils_str_split_by_first_char(file_line,"=",&setting_name,&setting_value) == 0 ){     /* If no problem occoured in the splitting, the function return a 0 code */
-                printf("magia\n");
+            if( Utils_str_split_by_first_char(file_line,"=",setting_name,setting_value) == 0 ){     /* If no problem occoured in the splitting, the function return a 0 code */
                 _settings_set_value_by_field_name(settings,setting_name,setting_value);
             }
         }
-        file_line = "";
     }
 
     free(file_line);
@@ -146,7 +138,6 @@ Settings* _load_settings_from_file_ptr(FILE* fptr){
 }
 
 int _is_a_setting_line(const char* file_line){
-  printf("cosa ?");
     return (file_line[0] != '\0' && file_line[0] != '#' && file_line[0] != 13);
 }
 
@@ -155,27 +146,28 @@ int _is_a_setting_line(const char* file_line){
  */
 void _settings_set_value_by_field_name(Settings* settings,const char* field_name,const char* value){
 
-    if (strcmp(Utils_str_lowercase(field_name), SETTING_FIELD_NAME_UNIX_PATH) == 0){
+    if (Utils_str_compare_case_insensitive(field_name, SETTING_FIELD_NAME_UNIX_PATH) == 0){
         SettingManager_settings_set_unix_path(settings,value);
-    } else if ( strcmp(Utils_str_lowercase(field_name),SETTING_FIELD_NAME_MAX_CONNECTIONS) == 0){
+
+    } else if ( Utils_str_compare_case_insensitive(field_name,SETTING_FIELD_NAME_MAX_CONNECTIONS) == 0){
         settings->maxConnections = Utils_string_to_integer(value);
 
-    } else if ( strcmp(Utils_str_lowercase(field_name),SETTING_FIELD_NAME_THREADS_IN_POOL) == 0){
+    } else if ( Utils_str_compare_case_insensitive(field_name,SETTING_FIELD_NAME_THREADS_IN_POOL) == 0){
         settings->threadsInPool = Utils_string_to_integer(value);
 
-    } else if ( strcmp(Utils_str_lowercase(field_name),SETTING_FIELD_NAME_MAX_MSG_SIZE) == 0){
+    } else if ( Utils_str_compare_case_insensitive(field_name,SETTING_FIELD_NAME_MAX_MSG_SIZE) == 0){
         settings->maxMsgSize = Utils_string_to_integer(value);
 
-    } else if ( strcmp(Utils_str_lowercase(field_name),SETTING_FIELD_NAME_MAX_FILE_SIZE) == 0){
+    } else if ( Utils_str_compare_case_insensitive(field_name,SETTING_FIELD_NAME_MAX_FILE_SIZE) == 0){
         settings->maxFileSize = Utils_string_to_integer(value);
 
-    } else if ( strcmp(Utils_str_lowercase(field_name),SETTING_FIELD_NAME_MAX_HITS_MSG) == 0){
+    } else if ( Utils_str_compare_case_insensitive(field_name,SETTING_FIELD_NAME_MAX_HITS_MSG) == 0){
         settings->maxHistMsgs = Utils_string_to_integer(value);
 
-    } else if ( strcmp(Utils_str_lowercase(field_name),SETTING_FIELD_NAME_DIR_NAME) == 0){
+    } else if ( Utils_str_compare_case_insensitive(field_name,SETTING_FIELD_NAME_DIR_NAME) == 0){
         SettingManager_settings_set_dir_name(settings,value);
 
-    } else if ( strcmp(Utils_str_lowercase(field_name),SETTING_FIELD_NAME_STAT_FILE_NAME) == 0){
+    } else if ( Utils_str_compare_case_insensitive(field_name,SETTING_FIELD_NAME_STAT_FILE_NAME) == 0){
         SettingManager_settings_set_stat_file_name(settings,value);
 
     }

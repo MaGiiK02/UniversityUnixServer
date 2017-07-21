@@ -1,14 +1,11 @@
 /*
- * @Author: angelini.mattia 
+ * @Author: angelini.mattia
  * @StudentCode: 502688
- * @Date: 2017-05-15 07:54:03 
- * @Last Modified by: mattia.angelini
- * @Last Modified time: 2017-05-18 16:17:16
  */
 
-/* @Description: 
+/* @Description:
  *  This file is used to test the SettingManager component of the project,
- *  is a simple test that controll given a defined setting file if it is correctly loaded.
+ *  is a simple test that control given a defined setting file if it is correctly loaded.
  */
 
 #include <stdio.h>
@@ -23,14 +20,14 @@ int main(int argc, char *argv[]){
         SettingManager_print_settings_struct(s);
 
         SettingManager_settings_set_dir_name(s,"Prova!!");
-        SettingManager_print_settings_struct(s); 
+        SettingManager_print_settings_struct(s);
 
         SettingManager_settings_get_dir_name(s,str);
         printf("Readed string : %s \n",str);
 
         SettingManager_destroy_settings_struct(&s);
         SettingManager_print_settings_struct(s);
-        
+
         printf("File path: %s \n",argv[1]);
 
         s = SettingManager_load_settings_form_file(argv[1]);
@@ -42,6 +39,3 @@ int main(int argc, char *argv[]){
         return 1;
     }CLOSETRY;
 }
- 
-
-
