@@ -57,29 +57,29 @@ void SettingManager_destroy_settings_struct(Settings** settings_ptr){
 }
 
 void SettingManager_settings_set_unix_path (Settings* settings,const char* unix_path){
-    strcpy (settings->unixPath, unix_path);
+    strcpy(settings->unixPath, unix_path);
 }
 
 void SettingManager_settings_get_unix_path (Settings* settings,char* out_unix_path){
-    strcpy (out_unix_path, settings->unixPath);
+    strcpy(out_unix_path, settings->unixPath);
 }
 
 
 void SettingManager_settings_set_dir_name (Settings* settings,const char* dir_name){
-    strcpy (settings->dirName, dir_name);
+    strcpy(settings->dirName, dir_name);
 }
 
 void SettingManager_settings_get_dir_name (Settings* settings,char* out_dir_name){
-    strcpy (out_dir_name, settings->dirName);
+    strcpy(out_dir_name, settings->dirName);
 }
 
 
 void SettingManager_settings_set_stat_file_name (Settings* settings,const char* stat_file_name){
-    strcpy (settings->statFileName, stat_file_name);
+    strcpy(settings->statFileName, stat_file_name);
 }
 
 void SettingManager_settings_get_stat_file_name (Settings* settings,char* out_stat_file_name){
-    strcpy (out_stat_file_name, settings->statFileName);
+    strcpy(out_stat_file_name, settings->statFileName);
 }
 
 void SettingManager_print_settings_struct(Settings* settings){
