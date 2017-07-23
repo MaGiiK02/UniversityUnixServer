@@ -1,2 +1,8 @@
 # SO generated files
 .DS_Store
+
+# Tool generated stuffs
+.settings/
+.vs/
+.vscode/
+.autotools
