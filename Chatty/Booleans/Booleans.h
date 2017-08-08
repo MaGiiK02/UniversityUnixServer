@@ -9,4 +9,6 @@
 #define TRUE  1
 #define FALSE 0
 
+typedef enum { false, true } bool;
+
 #endif /* _BOOLEANS_H_ */

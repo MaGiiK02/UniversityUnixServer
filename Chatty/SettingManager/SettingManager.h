@@ -4,10 +4,9 @@
 /*
  * @Author: angelini.mattia
  * @StudentCode: 502688
- */
-
-/* @Description:
- *  This component provide a structure and the system to load the project settings.
+ * @Brief: This file contains the struct of the setting as well as,
+ *          the functions to work with the setting, such as the load setting
+ *          and some safe setter and getter for the structure.
  *  Settings list:
  *      -> UnixPath = The path for the AF_UNIX socket.
  *      -> MaxConnections = The max client that the server can handle.
@@ -20,7 +19,7 @@
  */
 
 /* Project Include */
-#include "../Exception/Exception.h"
+
 
 #define SETTING_FIELD_NAME_UNIX_PATH "unixpath"
 #define SETTING_FIELD_NAME_MAX_CONNECTIONS "servermaxconnections"

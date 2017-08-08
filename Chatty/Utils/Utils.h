@@ -6,7 +6,6 @@
  * @StudentCode: 502688
  */
 
-#include "../Exception/Exception.h"
 #include "../Booleans/Booleans.h"
 
 void Utils_str_remove_character(char* str,const char c);

@@ -7,3 +7,9 @@ setting_parser:
     dockerfile: ./Docker-compose/setting_parser/Dockerfile
     container_name: setting_parser
     privileged: true
+
+list:
+    build: .
+    dockerfile: ./Docker-compose/list/Dockerfile
+    container_name: list
+    privileged: true
