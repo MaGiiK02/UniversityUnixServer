@@ -16,4 +16,3 @@ RUN gcc -Wall -g -o myapp \
       ./Booleans/Booleans.h
 
 EXPOSE 5555
-CMD ["gdb","-args","./myapp"]

@@ -1,17 +1,19 @@
 /*
- * chatterbox Progetto del corso di LSO 2017 
+ * chatterbox Progetto del corso di LSO 2017
  *
  * Dipartimento di Informatica Università di Pisa
  * Docenti: Prencipe, Torquati
- * 
+ *
  */
 #ifndef MESSAGE_H_
 #define MESSAGE_H_
 
 #include <assert.h>
 #include <string.h>
-#include <config.h>
-#include <ops.h>
+#include <stdio.h>
+
+#include "../config.h"
+#include "../Operations/ops.h"
 
 /**
  * @file  message.h
@@ -21,13 +23,13 @@
 
 /**
  *  @struct header
- *  @brief header del messaggio 
+ *  @brief header del messaggio
  *
  *  @var op tipo di operazione richiesta al server
- *  @var sender nickname del mittente 
+ *  @var sender nickname del mittente
  */
 typedef struct {
-    op_t     op;   
+    op_t     op;
     char sender[MAX_NAME_LENGTH+1];
 } message_hdr_t;
 
@@ -40,12 +42,12 @@ typedef struct {
  */
 typedef struct {
     char receiver[MAX_NAME_LENGTH+1];
-    unsigned int   len;  
+    unsigned int   len;
 } message_data_hdr_t;
 
 /**
  *  @struct data
- *  @brief body del messaggio 
+ *  @brief body del messaggio
  *
  *  @var hdr header della parte dati
  *  @var buf buffer dati
@@ -57,7 +59,7 @@ typedef struct {
 
 /**
  *  @struct messaggio
- *  @brief tipo del messaggio 
+ *  @brief tipo del messaggio
  *
  *  @var hdr header
  *  @var data dati
@@ -90,7 +92,7 @@ static inline void setHeader(message_hdr_t *hdr, op_t op, char *sender) {
  *
  * @param msg puntatore al body del messaggio
  * @param rcv nickname o groupname del destinatario
- * @param buf puntatore al buffer 
+ * @param buf puntatore al buffer
  * @param len lunghezza del buffer
  */
 static inline void setData(message_data_t *data, char *rcv, const char *buf, unsigned int len) {
@@ -101,6 +103,33 @@ static inline void setData(message_data_t *data, char *rcv, const char *buf, uns
     strncpy(data->hdr.receiver, rcv, strlen(rcv)+1);
     data->hdr.len  = len;
     data->buf      = (char *)buf;
+}
+
+/**
+ * @function printMessage
+ * @brief Stampa il contenuto sullo stdout
+ *
+ * @param msg puntatore al messaggio
+ */
+static inline void printMessageTo(FILE* fd,message_t *data) {
+  fprintf(fd,"##### Header ######\n");
+  fprintf(fd,"op : %d\n",data->hdr.op);
+  fprintf(fd,"sender : %s\n",data->hdr.sender);
+  fprintf(fd,"##### Data ########\n");
+  fprintf(fd,"receiver: %s\n",data->data.hdr.receiver);
+  fprintf(fd,"message size: %d\n",data->data.hdr.len);
+  fprintf(fd,"message: %s\n",data->data.buf);
+  fprintf(fd,"###################\n");
+}
+
+/**
+ * @function printMessage
+ * @brief Stampa il contenuto sullo stdout
+ *
+ * @param msg puntatore al messaggio
+ */
+static inline void printMessage(message_t *data) {
+  printMessageTo(stdout,data);
 }
 
 

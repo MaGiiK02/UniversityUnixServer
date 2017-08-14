@@ -3,13 +3,29 @@ gcc_gdb_server:
   dockerfile: ./Docker-compose/gcc_gdb_server/Dockerfile
 
 setting_parser:
-    build: .
-    dockerfile: ./Docker-compose/setting_parser/Dockerfile
-    container_name: setting_parser
-    privileged: true
+  build: .
+  dockerfile: ./Docker-compose/setting_parser/Dockerfile
+  container_name: setting_parser
+  privileged: true
 
 list:
-    build: .
-    dockerfile: ./Docker-compose/list/Dockerfile
-    container_name: list
-    privileged: true
+  build: .
+  dockerfile: ./Docker-compose/list/Dockerfile
+  container_name: list
+  privileged: true
+
+connect_server:
+  build: .
+  dockerfile: ./Docker-compose/connection_test_server/Dockerfile
+  container_name: connect_server
+  volumes:
+    - tmp:/tmp
+  privileged: true
+
+connect_client:
+  build: .
+  dockerfile: ./Docker-compose/connection_test_client/Dockerfile
+  container_name: connect_client
+  volumes:
+    - tmp:/tmp
+  privileged: true
