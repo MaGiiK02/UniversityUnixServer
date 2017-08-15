@@ -12,7 +12,7 @@ to find where the server store it's media files.
 
 Script usage:
 
-  ./ServerFileUtil.sh [-h] -t <int> config_file
+  $0 [-h] -t <int> config_file
 
 #########################################################################
 -h           : print this usage message.
