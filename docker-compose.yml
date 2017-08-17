@@ -21,21 +21,21 @@ list_memtest:
   dockerfile: ./Docker-compose/list/Dockerfile
   container_name: list_memtest
   privileged: true
-  entrypoint: "valgrind myapp"
+  entrypoint: "valgrind --leak-check=yes ./myapp"
 
 hash_table:
   build: .
   dockerfile: ./Docker-compose/hash_table/Dockerfile
-  container_name: list
+  container_name: hash_table
   privileged: true
   entrypoint: "gdb myapp"
 
 hash_table_memtest:
   build: .
   dockerfile: ./Docker-compose/hash_table/Dockerfile
-  container_name: list_memtest
+  container_name: hash_table_memtest
   privileged: true
-  entrypoint: "valgrind myapp"
+  entrypoint: "valgrind --leak-check=yes ./myapp"
 
 connect_server:
   build: .
