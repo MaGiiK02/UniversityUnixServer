@@ -22,8 +22,8 @@ void _insert_first_element(List* list,void* element);
 
 List* List_new(
   int elementSize,
-  FreeFunction freeFn,
-  CompareFunction cmpFn
+  ListFreeFunction freeFn,
+  ListCompareFunction cmpFn
 ){
   assert(elementSize > 0);
   assert(freeFn != NULL);
@@ -141,7 +141,7 @@ void List_tail(List* list, void** out_element,bool remove_el){
   }
 }
 
-void List_remove(List* list,void* el){
+void List_remove_element(List* list,void* el,void** out_element){
   ListNode* iterator = list->head;
   bool finded = false;
 
@@ -152,6 +152,20 @@ void List_remove(List* list,void* el){
     }
   }
   _remove_list_element(list,iterator,false);
+  *out_element = iterator;
+}
+
+void List_destroy_element(List* list,void* el){
+  ListNode* iterator = list->head;
+  bool finded = false;
+
+  while(iterator && !finded){
+    iterator = iterator->next;
+    if(list->cmpFn(iterator,el)){
+      finded = true;
+    }
+  }
+  _remove_list_element(list,iterator,true);
 }
 
 void _destroy_list_element(List* list,ListNode* node){
