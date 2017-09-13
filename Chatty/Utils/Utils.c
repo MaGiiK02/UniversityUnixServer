@@ -50,14 +50,27 @@ int Utils_str_split_by_first_char(char* str,const char* cutter_character,char* l
 
     char* saveptr;
 
-    strcpy(left_part,strtok_r(str, cutter_character,&saveptr));
-    strcpy(right_part,strtok_r(NULL, cutter_character,&saveptr));
+    left_part = Utils_str_tokenize(str, cutter_character,&saveptr);
+    right_part= Utils_str_tokenize(NULL, cutter_character,&saveptr);
 
     if(*left_part == 0 || *right_part == 0){
         return -1;
     }
 
     return 0;
+}
+
+char* Utils_str_tokenize(char* str,const char* cutter_character,char** pos){
+    if(str != NULL){
+        *pos = str;    
+    }
+    int readed = 0;
+    while((pos+readed)!='\0' && (pos+readed)!=NULL){    
+        readed++;
+    }
+    char* token = malloc(sizeof(char)*readed);
+    strncpy(token,*pos,readed);
+    return token;
 }
 
 int Utils_string_to_integer(const char* str){

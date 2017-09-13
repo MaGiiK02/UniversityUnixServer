@@ -19,6 +19,7 @@
 void _destroy_list_element(List* list,ListNode* node);
 void _remove_list_element(List* list,ListNode* node,bool free_removed);
 void _insert_first_element(List* list,void* element);
+bool _find_node(List* list,void* key,ListNode** out_element);
 
 List* List_new(
   int elementSize,
@@ -91,6 +92,7 @@ void List_append(List* list, void* element){
 
 void _insert_first_element(List* list,void* element){
   ListNode* new_node = malloc(sizeof(ListNode));
+  new_node->prev = new_node->next = NULL;
   new_node->data = element;
   list->head = list->tail = new_node;
   list->logicalLength ++;
@@ -142,30 +144,20 @@ void List_tail(List* list, void** out_element,bool remove_el){
 }
 
 void List_remove_element(List* list,void* el,void** out_element){
-  ListNode* iterator = list->head;
-  bool finded = false;
+  ListNode* to_delete;
 
-  while(iterator && !finded){
-    iterator = iterator->next;
-    if(list->cmpFn(iterator,el)){
-      finded = true;
-    }
+  if(_find_node(list,el,&to_delete)){
+    *out_element = to_delete->data;
+    _remove_list_element(list,to_delete,false);   
   }
-  _remove_list_element(list,iterator,false);
-  *out_element = iterator;
 }
 
 void List_destroy_element(List* list,void* el){
-  ListNode* iterator = list->head;
-  bool finded = false;
+  ListNode* to_delete;
 
-  while(iterator && !finded){
-    iterator = iterator->next;
-    if(list->cmpFn(iterator,el)){
-      finded = true;
-    }
+  if(_find_node(list,el,&to_delete)){
+    _remove_list_element(list,to_delete,true);
   }
-  _remove_list_element(list,iterator,true);
 }
 
 void _destroy_list_element(List* list,ListNode* node){
@@ -176,16 +168,18 @@ void _remove_list_element(List* list,ListNode* node,bool free_removed){
 
   if(node == NULL) return;
 
-  if(node->prev == NULL){
+  if((node->prev == NULL) && (node->next == NULL)){
+    list->head = list->tail = NULL;
+  }else if(node->prev == NULL){
     ListNode* next_node = node->next;
     next_node->prev = NULL;
     list->head = next_node;
-  }else if(node->next == NULL){
+  }else if(node->next == NULL){    
     ListNode * prev_node = node->prev;
     prev_node->next = NULL;
     list->tail = prev_node;
   }else{
-   ListNode *prev_node = node ->prev;
+   ListNode *prev_node = node->prev;
    ListNode *next_node = node->next;
    next_node->prev = prev_node;
    prev_node->next = next_node;
@@ -199,26 +193,28 @@ void _remove_list_element(List* list,ListNode* node,bool free_removed){
 }
 
 bool List_find(List* list,void* key,void** out_element){
+  ListNode* node;
+  bool finded = _find_node(list,key,&node);
+  if(finded){
+    *out_element = node->data;
+  }
+  return finded;
+}
+
+bool _find_node(List* list,void* key,ListNode** out_element){
   assert(list != NULL);
-  assert(out_element == NULL);
 
   ListNode* current_el = list->head;
-  void* el = NULL;
   bool finded = false;
 
   while(current_el && !finded){
     if(list->cmpFn(current_el->data,key) == 0){
-      el = current_el->data;
+      *out_element = current_el;
       finded = true;
     }else{
       current_el = current_el->next;
     }
   }
 
-  if(finded){
-    *out_element = el;
-    return true;
-  }else{
-    return false;
-  }
+  return finded;
 }

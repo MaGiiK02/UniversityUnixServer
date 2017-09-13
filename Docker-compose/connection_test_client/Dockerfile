@@ -9,7 +9,7 @@ COPY . /usr/src/myapp
 
 WORKDIR /usr/src/myapp/Chatty
 
-RUN gcc -Wall -g -o client \
+RUN gcc -std=c99 -Wall -pedantic -g -DMAKE_VALGRIND_HAPPY -o client \
       ./Connections/test_client.c \
       ./Connections/connections.c \
       ./Utils/Utils.c \
@@ -18,5 +18,3 @@ RUN gcc -Wall -g -o client \
       ./Message/message.h
 
 EXPOSE 5556
-
-CMD ["gdb","client"]

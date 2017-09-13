@@ -27,6 +27,8 @@ void Utils_str_remove_special_chars(char* str);
  */
 int Utils_str_split_by_first_char(char* str,const char* cutter_character,char* left_part,char* right_part);
 
+char* Utils_str_tokenize(char* str,const char* cutter_character,char** pos);
+
 int Utils_string_to_integer(const char* str);
 
 void Utils_str_lowercase(char* str);

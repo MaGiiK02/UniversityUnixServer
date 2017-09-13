@@ -1,18 +1,41 @@
 gcc_gdb_server:
   build: .
   dockerfile: ./Docker-compose/gcc_gdb_server/Dockerfile
-
+  
 setting_parser:
   build: .
   dockerfile: ./Docker-compose/setting_parser/Dockerfile
   container_name: setting_parser
   privileged: true
+  entrypoint: "gdb myapp"
 
 list:
   build: .
   dockerfile: ./Docker-compose/list/Dockerfile
   container_name: list
   privileged: true
+  entrypoint: "gdb myapp"
+
+list_memtest:
+  build: .
+  dockerfile: ./Docker-compose/list/Dockerfile
+  container_name: list_memtest
+  privileged: true
+  entrypoint: "valgrind --leak-check=yes ./myapp"
+
+hash_table:
+  build: .
+  dockerfile: ./Docker-compose/hash_table/Dockerfile
+  container_name: hash_table
+  privileged: true
+  entrypoint: "gdb myapp"
+
+hash_table_memtest:
+  build: .
+  dockerfile: ./Docker-compose/hash_table/Dockerfile
+  container_name: hash_table_memtest
+  privileged: true
+  entrypoint: "valgrind --leak-check=yes ./myapp"
 
 connect_server:
   build: .
@@ -21,6 +44,7 @@ connect_server:
   volumes:
     - tmp:/tmp
   privileged: true
+  entrypoint: "gdb server" 
 
 connect_client:
   build: .
@@ -29,3 +53,4 @@ connect_client:
   volumes:
     - tmp:/tmp
   privileged: true
+  entrypoint: "gdb client"
