@@ -5,5 +5,7 @@
 .settings/
 .vs/
 .vscode/
+cmake-build-debug/
+.idea/
 .autotools
-.gch
+*.gch
