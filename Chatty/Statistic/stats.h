@@ -56,7 +56,7 @@ static inline int printStats(FILE *fout) {
 }
 
 /*############### INCREMENTS ##########################*/
-static inline int StatsIncNUser() {
+static inline int StatsIncNUser_S() {
   extern struct statistics chattyStats;
   int ris = -1;
   LOCK_MUTEX_EXIT(MUTEX_NUSER)
@@ -68,7 +68,7 @@ static inline int StatsIncNUser() {
   return ris;
 }
 
-static inline int StatsIncNOnline() {
+static inline int StatsIncNOnline_S() {
   extern struct statistics chattyStats;
   LOCK_MUTEX_EXIT(MUTEX_NONLINE)
   int ris = -1;
@@ -80,7 +80,7 @@ static inline int StatsIncNOnline() {
   return ris;
 }
 
-static inline int StatsIncNDelivered() {
+static inline int StatsIncNDelivered_S() {
   extern struct statistics chattyStats;
   int ris = -1;
   LOCK_MUTEX_EXIT(MUTEX_NDELIVERED)
@@ -92,7 +92,7 @@ static inline int StatsIncNDelivered() {
   return ris;
 }
 
-static inline int StatsIncNNotDelivered() {
+static inline int StatsIncNNotDelivered_S() {
   extern struct statistics chattyStats;
   int ris = -1;
   LOCK_MUTEX_EXIT(MUTEX_NNOTDELIVERED)
@@ -104,7 +104,7 @@ static inline int StatsIncNNotDelivered() {
   return ris;
 }
 
-static inline int StatsIncNFileDelivered() {
+static inline int StatsIncNFileDelivered_S() {
   extern struct statistics chattyStats;
   int ris = -1;
   LOCK_MUTEX_EXIT(MUTEX_NFILEDELIVERED)
@@ -116,7 +116,7 @@ static inline int StatsIncNFileDelivered() {
   return ris;
 }
 
-static inline int StatsIncNNotFileDelivered() {
+static inline int StatsIncNNotFileDelivered_S() {
   extern struct statistics chattyStats;
   int ris = -1;
   LOCK_MUTEX_EXIT(MUTEX_NFILENOTDELIVERED)
@@ -142,7 +142,7 @@ static inline int StatsIncNErrors(int Inc_val) {
 
 /*############### DECREMENTS ##########################*/
 
-static inline int StatsDecNUser() {
+static inline int StatsDecNUser_S() {
   extern struct statistics chattyStats;
   int ris = -1;
   LOCK_MUTEX_EXIT(MUTEX_NUSER)
@@ -154,7 +154,7 @@ static inline int StatsDecNUser() {
   return ris;
 }
 
-static inline int StatsDecNOnline() {
+static inline int StatsDecNOnline_S() {
   extern struct statistics chattyStats;
   LOCK_MUTEX_EXIT(MUTEX_NONLINE)
   int ris = -1;
@@ -166,7 +166,7 @@ static inline int StatsDecNOnline() {
   return ris;
 }
 
-static inline int StatsDecNDelivered() {
+static inline int StatsDecNDelivered_S() {
   extern struct statistics chattyStats;
   int ris = -1;
   LOCK_MUTEX_EXIT(MUTEX_NDELIVERED)
@@ -178,7 +178,7 @@ static inline int StatsDecNDelivered() {
   return ris;
 }
 
-static inline int StatsDecNNotDelivered() {
+static inline int StatsDecNNotDelivered_S() {
   extern struct statistics chattyStats;
   int ris = -1;
   LOCK_MUTEX_EXIT(MUTEX_NNOTDELIVERED)
@@ -190,7 +190,7 @@ static inline int StatsDecNNotDelivered() {
   return ris;
 }
 
-static inline int StatsDecNFileDelivered() {
+static inline int StatsDecNFileDelivered_S() {
   extern struct statistics chattyStats;
   int ris = -1;
   LOCK_MUTEX_EXIT(MUTEX_NFILEDELIVERED)
@@ -202,7 +202,7 @@ static inline int StatsDecNFileDelivered() {
   return ris;
 }
 
-static inline int StatsDecNNotFileDelivered() {
+static inline int StatsDecNNotFileDelivered_S() {
   extern struct statistics chattyStats;
   int ris = -1;
   LOCK_MUTEX_EXIT(MUTEX_NFILENOTDELIVERED)
@@ -214,7 +214,7 @@ static inline int StatsDecNNotFileDelivered() {
   return ris;
 }
 
-static inline int StatsDecNErrors() {
+static inline int StatsDecNErrors_S() {
   extern struct statistics chattyStats;
   int ris = -1;
   LOCK_MUTEX_EXIT(MUTEX_NERRORS)
