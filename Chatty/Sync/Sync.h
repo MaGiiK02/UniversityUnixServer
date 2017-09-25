@@ -1,8 +1,9 @@
 #ifndef _SYNC_H_
 #define _SYNC_H_
 
-#include "pthread.h"
-#include "stdio.h"
+#include <stdlib.h>
+#include <pthread.h>
+#include <stdio.h>
 
 #define LOCK_MUTEX_EXIT(mutex) \
   if(pthread_mutex_unlock(&mutex)!=0){ \
