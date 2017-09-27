@@ -14,6 +14,7 @@
 
 #include "../config.h"
 #include "../Operations/ops.h"
+#include "../List/list.h"
 
 /**
  * @file  message.h
@@ -132,6 +133,10 @@ static inline void printMessage(message_t *data) {
   printMessageTo(stdout,data);
 }
 
+/** LIST FUNCTIONS **/
 
+List* NewMessageList();
+void freeMessage(void* msg);
+int cmpMessage(void* el1,void* el2);
 
 #endif /* MESSAGE_H_ */
