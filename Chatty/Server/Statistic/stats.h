@@ -6,7 +6,7 @@
 #include <pthread.h>
 #include <limits.h>
 
-#include "../Sync/Sync.h"
+#include "../../Sync/Sync.h"
 
 struct statistics {
     unsigned long nusers;                       // n. di utenti registrati
@@ -42,17 +42,39 @@ static inline int printStats(FILE *fout) {
     extern struct statistics chattyStats;
 
     if (fprintf(fout, "%ld - %ld %ld %ld %ld %ld %ld %ld\n",
-		(unsigned long)time(NULL),
-		chattyStats.nusers,
-		chattyStats.nonline,
-		chattyStats.ndelivered,
-		chattyStats.nnotdelivered,
-		chattyStats.nfiledelivered,
-		chattyStats.nfilenotdelivered,
-		chattyStats.nerrors
-		) < 0) return -1;
+      (unsigned long)time(NULL),
+      chattyStats.nusers,
+      chattyStats.nonline,
+      chattyStats.ndelivered,
+      chattyStats.nnotdelivered,
+      chattyStats.nfiledelivered,
+      chattyStats.nfilenotdelivered,
+      chattyStats.nerrors
+    ) < 0)return -1;
     fflush(fout);
     return 0;
+}
+
+static inline int printStats_S(FILE *fout) {
+  LOCK_MUTEX_EXIT(MUTEX_NUSER)
+  LOCK_MUTEX_EXIT(MUTEX_NONLINE)
+  LOCK_MUTEX_EXIT(MUTEX_NDELIVERED)
+  LOCK_MUTEX_EXIT(MUTEX_NNOTDELIVERED)
+  LOCK_MUTEX_EXIT(MUTEX_NFILEDELIVERED)
+  LOCK_MUTEX_EXIT(MUTEX_NFILENOTDELIVERED)
+  LOCK_MUTEX_EXIT(MUTEX_NERRORS)
+
+  int ris = printStats(fout);
+
+  UNLOCK_MUTEX_EXIT(MUTEX_NUSER)
+  UNLOCK_MUTEX_EXIT(MUTEX_NONLINE)
+  UNLOCK_MUTEX_EXIT(MUTEX_NDELIVERED)
+  UNLOCK_MUTEX_EXIT(MUTEX_NNOTDELIVERED)
+  UNLOCK_MUTEX_EXIT(MUTEX_NFILEDELIVERED)
+  UNLOCK_MUTEX_EXIT(MUTEX_NFILENOTDELIVERED)
+  UNLOCK_MUTEX_EXIT(MUTEX_NERRORS)
+
+  return ris;
 }
 
 /*############### INCREMENTS ##########################*/
