@@ -15,6 +15,7 @@
 typedef void (*ListFreeFunction)(void *);
 
 typedef int (*ListCompareFunction)(void *,void *);
+typedef int (*ListCopyFunction)(void *,void *);
 
 typedef struct _listNode {
    void* data;
@@ -29,9 +30,10 @@ typedef struct {
   ListNode *tail;
   ListFreeFunction freeFn;
   ListCompareFunction cmpFn;
+  ListCopyFunction cpyFn;
 } List;
 
-List* List_new(int elementSize, ListFreeFunction freeFn, ListCompareFunction cmpFn);
+List* List_new(int elementSize, ListFreeFunction freeFn, ListCompareFunction cmpFn,ListCopyFunction cpyFn);
 void List_destroy(List* list);
 
 void List_prepend(List* list, void* element);
@@ -39,17 +41,19 @@ void List_append(List* list, void* element);
 
 int List_length(List* list);
 
-void List_head(List* list, void** out_element,bool remove_el);
-void List_get_head(List* list, void** out_element);
-void List_drop_head(List* list, void** out_element);
+void List_head(List* list, void* out_element,bool remove_el);
+void List_get_head(List* list, void* out_element);
+void List_remove_head(List* list, void* out_element);
+void List_drop_head(List* list);
 
-void List_tail(List* list, void** out_element,bool remove_el);
-void List_get_tail(List* list, void** out_element);
-void List_drop_tail(List* list, void** out_element);
+void List_tail(List* list, void* out_element,bool remove_el);
+void List_get_tail(List* list, void* out_element);
+void List_remove_tail(List* list, void* out_element);
+void List_drop_tail(List* list);
 
-void List_remove_element(List* list,void* el,void** out_element);
+bool List_remove_element(List* list,void* el,void* out_element);
 void List_destroy_element(List* list,void* el);
 
-bool List_find(List* list,void* key,void** out_element);
+bool List_find(List* list,void* key,void* out_element);
 
 #endif /* _LIST_H_ */

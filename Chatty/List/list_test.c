@@ -29,7 +29,10 @@ void str_free(void* el){
 }
 
 int int_cmp(void* el1,void* el2){
-  return el1 - el2;
+  int* n1 = (int*)el1;
+  int* n2 = (int*)el2;
+
+  return (*n1) - (*n2);
 }
 
 void int_free(void* el){
@@ -53,50 +56,58 @@ void struct_free(void* el){
 
 int main(int argc, char *argv[]){
   List* int_list = List_new(sizeof(int),&int_free,&int_cmp);
-  int* temp = malloc (sizeof(int));
-  *temp = 12;
-  List_append(int_list,(void*)temp);
+  int* read = malloc (sizeof(int));
+  int* write = malloc (sizeof(int));
+  *write = 12;
+  List_append(int_list,(void*)write);
   assert(List_length(int_list) == 1);
 
-  List_get_head(int_list,&temp);
-  assert(*temp == 12);
-  List_get_tail(int_list,&temp);
-  assert(*temp == 12);
+  List_get_head(int_list,(void*)read);
+  assert(*read == 12);
+  List_get_tail(int_list,(void*)read);
+  assert(*read == 12);
 
-  temp = malloc (sizeof(int));
-  *temp = 4;
-  List_append(int_list,(void*)temp);
+  *write = 4;
+  List_append(int_list,(void*)write);
   assert(List_length(int_list) == 2);
 
-  List_get_head(int_list,&temp);
-  assert(*temp == 12);
-  List_get_tail(int_list,&temp);
-  assert(*temp == 4);
+  List_get_head(int_list,(void*)read);
+  assert(*read == 12);
+  List_get_tail(int_list,(void*)read);
+  assert(*read == 4);
 
-  temp = malloc (sizeof(int));
-  *temp = 1;
-  List_prepend(int_list,(void*)temp);
+  *write = 1;
+  List_prepend(int_list,(void*)write);
   assert(List_length(int_list) == 3);
 
-  List_get_head(int_list,&temp);
-  assert(*temp == 1);
-  List_get_tail(int_list,&temp);
-  assert(*temp == 4);
+  List_get_head(int_list,(void*)read);
+  assert(*read == 1);
+  List_get_tail(int_list,(void*)read);
+  assert(*read == 4);
 
-  List_drop_tail(int_list,NULL);
-  List_get_tail(int_list,&temp);
-  assert(*temp == 12);
+  List_drop_tail(int_list);
+  List_get_tail(int_list,(void*)read);
+  assert(*read == 12);
   assert(List_length(int_list) == 2);
-  List_get_head(int_list,&temp);
-  assert(*temp == 1);
+  List_get_head(int_list,(void*)read);
+  assert(*read == 1);
 
-  List_drop_head(int_list,NULL);
-  List_get_tail(int_list,&temp);
-  assert(*temp == 12);
+  List_drop_head(int_list);
+  List_get_tail(int_list,(void*)read);
+  assert(*read == 12);
   assert(List_length(int_list) == 1);
-  List_get_head(int_list,&temp);
-  assert(*temp == 12);
+  List_get_head(int_list,(void*)read);
+  assert(*read == 12);
+
+  //stress
+  for(int i=0; i < 10000; i++){
+    *write = i;
+    List_append(int_list,(void*)write);
+  }
 
   List_destroy(int_list);
+
+  free(write);
+  free(read);
 
 }

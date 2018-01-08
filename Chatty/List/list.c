@@ -11,20 +11,22 @@
 
 /* Project Includes */
 #include "../Utils/Utils.h"
+#include "../MemoryHelper/MemoryHelper.h"
 
 /*Module Includes */
 #include "list.h"
 
 /* private */
-void _destroy_list_element(List* list,ListNode* node);
-void _remove_list_element(List* list,ListNode* node,bool free_removed);
+void _remove_list_element(List* list,ListNode* node);
 void _insert_first_element(List* list,void* element);
 bool _find_node(List* list,void* key,ListNode** out_element);
+
 
 List* List_new(
   int elementSize,
   ListFreeFunction freeFn,
-  ListCompareFunction cmpFn
+  ListCompareFunction cmpFn,
+  ListCopyFunction  cpyFn
 ){
   assert(elementSize > 0);
   assert(freeFn != NULL);
@@ -37,6 +39,7 @@ List* List_new(
   list->head = list->tail = NULL;
   list->freeFn = freeFn;
   list->cmpFn = cmpFn;
+  list->cpyFn = cpyFn;
 
   return list;
 }
@@ -48,10 +51,10 @@ void List_destroy(List* list){
   while(iterator != NULL){
     iterator = iterator->next;
     list->freeFn(tmp->data);
-    free(tmp);
+    FREE(tmp)
     tmp = iterator;
   }
-  free(list);
+  FREE(list)
 }
 
 void List_prepend(List* list, void* element){
@@ -62,7 +65,8 @@ void List_prepend(List* list, void* element){
     _insert_first_element(list,element);
   }else{
     ListNode* new_node = malloc(sizeof(ListNode));
-    new_node->data = element;
+    new_node->data = malloc(list->elementSize);
+    list->cpyFn(new_node->data,element);
 
     list->head->prev = new_node;
     new_node->next = list->head;
@@ -80,7 +84,8 @@ void List_append(List* list, void* element){
     _insert_first_element(list,element);
   }else{
     ListNode* new_node = malloc(sizeof(ListNode));
-    new_node->data = element;
+    new_node->data = malloc(list->elementSize);
+    memcpy(new_node->data,element,list->elementSize);
 
     list->tail->next = new_node;
     new_node->prev = list->tail;
@@ -93,7 +98,8 @@ void List_append(List* list, void* element){
 void _insert_first_element(List* list,void* element){
   ListNode* new_node = malloc(sizeof(ListNode));
   new_node->prev = new_node->next = NULL;
-  new_node->data = element;
+  new_node->data = malloc(list->elementSize);
+  memcpy(new_node->data,element,list->elementSize);
   list->head = list->tail = new_node;
   list->logicalLength ++;
 }
@@ -103,68 +109,70 @@ int List_length(List* list){
   return list->logicalLength;
 }
 
-void List_get_head(List* list, void** out_element){
+void List_get_head(List* list, void* out_element){
   List_head(list,out_element,false);
 }
 
-void List_drop_head(List* list, void** out_element){
+void List_remove_head(List* list, void* out_element){
   List_head(list,out_element,true);
 }
 
-void List_head(List* list, void** out_element,bool remove_el){
+void List_drop_head(List* list){
   assert(list != NULL);
 
-  if(out_element != NULL){
-    *out_element = list->head->data;
-  }
+  _remove_list_element(list,list->head);
+}
 
+void List_head(List* list, void* out_element,bool remove_el){
+  assert(list != NULL);
+  list->cpyFn(out_element, list->head->data);
   if(remove_el){
-    _remove_list_element(list,list->head,remove_el);
+    _remove_list_element(list,list->head);
   }
 }
 
-void List_get_tail(List* list, void** out_element){
+void List_get_tail(List* list, void* out_element){
   List_tail(list,out_element,false);
 }
 
-void List_drop_tail(List* list, void** out_element){
+void List_remove_tail(List* list, void* out_element){
   List_tail(list,out_element,true);
 }
 
-void List_tail(List* list, void** out_element,bool remove_el){
+void List_drop_tail(List* list){
   assert(list != NULL);
 
-  if(out_element != NULL){
-    *out_element = list->tail->data;
-  }
+  _remove_list_element(list,list->tail);
+}
 
+void List_tail(List* list, void* out_element,bool remove_el){
+  assert(list != NULL);
+  list->cpyFn(out_element, list->tail->data);
   if(remove_el){
-    _remove_list_element(list,list->tail,remove_el);
+    _remove_list_element(list,list->tail);
   }
 }
 
-void List_remove_element(List* list,void* el,void** out_element){
+bool List_remove_element(List* list,void* el,void* out_element){
   ListNode* to_delete;
 
   if(_find_node(list,el,&to_delete)){
-    *out_element = to_delete->data;
-    _remove_list_element(list,to_delete,false);   
+    list->cpyFn(out_element, to_delete->data);
+    _remove_list_element(list,to_delete);
+    return true;
   }
+  return false;
 }
 
 void List_destroy_element(List* list,void* el){
   ListNode* to_delete;
 
   if(_find_node(list,el,&to_delete)){
-    _remove_list_element(list,to_delete,true);
+    _remove_list_element(list,to_delete);
   }
 }
 
-void _destroy_list_element(List* list,ListNode* node){
-  _remove_list_element(list,node,true);
-}
-
-void _remove_list_element(List* list,ListNode* node,bool free_removed){
+void _remove_list_element(List* list,ListNode* node){
 
   if(node == NULL) return;
 
@@ -186,35 +194,34 @@ void _remove_list_element(List* list,ListNode* node,bool free_removed){
   }
 
   list->logicalLength --;
-  if(free_removed){
-    list->freeFn(node->data);
-  }
-  free(node);
+  list->freeFn(node->data);
+
+  FREE(node)
 }
 
-bool List_find(List* list,void* key,void** out_element){
+bool List_find(List* list,void* key,void* out_element){
   ListNode* node;
-  bool finded = _find_node(list,key,&node);
-  if(finded){
-    *out_element = node->data;
+  bool found = _find_node(list,key,&node);
+  if(found && out_element != NULL){
+    list->cpyFn(out_element, node->data);
   }
-  return finded;
+  return found;
 }
 
 bool _find_node(List* list,void* key,ListNode** out_element){
   assert(list != NULL);
 
   ListNode* current_el = list->head;
-  bool finded = false;
+  bool found = false;
 
-  while(current_el && !finded){
+  while(current_el && !found){
     if(list->cmpFn(current_el->data,key) == 0){
       *out_element = current_el;
-      finded = true;
+      found = true;
     }else{
       current_el = current_el->next;
     }
   }
 
-  return finded;
+  return found;
 }
