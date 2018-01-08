@@ -1,5 +1,6 @@
 project("sol_2017")
-
+cmake_minimum_required(VERSION 3.8)
+add_definitions(-DDEBUG)
 set(CMAKE_C_FLAGS "-std=c99 -g -Wall -pedantic")
 
 set(SOURCE_FILE
@@ -26,11 +27,11 @@ set(SOURCE_FILE
         Chatty/Utils/Utils.h
         Chatty/config.h
         Chatty/MemoryHelper/MemoryHelper.h
-        )
-
-find_package (Threads)
+        Chatty/Debugger/Debugger.h Chatty/HashTable/HashTableSyncronized.c Chatty/HashTable/HashTableSyncronized.h)
 
 #add_executable(TEST-CHANNEL "${SOURCE_FILE}" Chatty/Channel/Channel_Test.c)
-
 add_executable(TEST-HASH-TABLES  "${SOURCE_FILE}" Chatty/HashTable/HashTable_Test.c)
+add_executable(TEST-LIST  "${SOURCE_FILE}" Chatty/List/list_test.c)
+find_package (Threads)
 target_link_libraries (TEST-HASH-TABLES ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries (TEST-LIST ${CMAKE_THREAD_LIBS_INIT})
