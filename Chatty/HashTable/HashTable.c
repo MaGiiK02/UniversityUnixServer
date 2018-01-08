@@ -1,9 +1,13 @@
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
+
 #include "../Error/Error.h"
+#include "../MemoryHelper/MemoryHelper.h"
+#include "../Debugger/Debugger.h"
 
 #include "HashTable.h"
+
 
 int _hash_element_compare(void* hashEl,void* key){
   HashElement* h_el = (HashElement*)hashEl;
@@ -11,13 +15,21 @@ int _hash_element_compare(void* hashEl,void* key){
 }
 
 void _hash_element_free(void* hashEl){
-    HashElement* el = (HashElement*)hashEl;
-    el->freeFn(el->value);
-    free(el);
-    hashEl = NULL;
+  if(hashEl == NULL) return;
+  HashElement* el = (HashElement*)hashEl;
+  if(el->value == NULL) return;
+  el->freeFn(el->value);
+  FREE(el)
 }
 
-HashTable* Hash_new(long size,HashFreeFunction freeFn){
+void _hash_element_copy(void* dst, void* src){
+  HashElement* destination = (HashElement*) dst;
+  HashElement* source = (HashElement*) src;
+  memcpy(destination,source,sizeof(HashElement));
+  source->cpyFn(destination->value,source->value);
+}
+
+HashTable* Hash_new(long size,long elementSize,HashFreeFunction freeFn,HashFreeFunction cpyFn){
   assert(size > 0);
   assert(freeFn != NULL);
 
@@ -27,15 +39,14 @@ HashTable* Hash_new(long size,HashFreeFunction freeFn){
   }
 
   h->size = size;
-  h->array = malloc(sizeof(List)*size);
+  h->array = malloc(sizeof(List*)*size);
+  h->elementSize = elementSize;
+  h->workingElement = malloc(sizeof(HashElement));
+  memset(h->array,0,sizeof(List*)*size);
   h->freeFn = freeFn;
+  h->cpyFn = cpyFn;
 
   return h;
-}
-
-void Hash_destroy_safe(HashTable** hash){
-  Hash_destroy(*hash);
-  *hash = NULL;
 }
 
 void Hash_destroy(HashTable* hash){
@@ -45,7 +56,10 @@ void Hash_destroy(HashTable* hash){
       List_destroy(hash->array[i]);
     }
   }
-  free (hash);
+  FREE(hash->workingElement->value);
+  FREE(hash->workingElement) //the inner pointed values are already freed in List_destroy called before
+  FREE(hash->array)
+  FREE(hash)
 }
 
 int Hash_function(HashTable* hash,char* key){
@@ -62,28 +76,33 @@ int Hash_function(HashTable* hash,char* key){
 
 int Hash_add_element(HashTable* hash,char* key,void* value){
   int index = Hash_function(hash,key);
+  Log(("Hash Value For %s is %d\n",key,index));
   List* value_list = hash->array[index];
 
   if(value_list == NULL){
-    value_list = hash->array[index] = List_new(sizeof(HashElement),_hash_element_free,_hash_element_compare);
+    value_list = hash->array[index] = List_new(sizeof(HashElement),&_hash_element_free,&_hash_element_compare,&_hash_element_copy);
+  } else if(List_find(value_list,(void*)key,NULL)) {
+    return 1;//Key already exist
   }
 
-  HashElement* el = malloc(sizeof(HashElement));
-  el->value = value;
+  HashElement* el = hash->workingElement;
+  el->value = malloc(hash->elementSize);
+  hash->cpyFn(el->value,value);
   el->key = key;
   el->freeFn = hash->freeFn;
-
-  List_append(value_list,el);//TO DO solo se la chiave e' diversa
+  el->cpyFn = hash->cpyFn;
+  List_append(value_list,el);
   return 0;
 }
 
-void Hash_remove_element(HashTable* hash,char* key,void** out_removed){
+void Hash_remove_element(HashTable* hash,char* key,void* out_removed){
   int index = Hash_function(hash,key);
   List* value_list = hash->array[index];
   if(value_list != NULL){
-    HashElement* el;
-    List_remove_element(value_list,(void*)key,(void**)&el);
-    *out_removed = el->value;
+    HashElement* el = hash->workingElement;
+    if(List_remove_element(value_list,(void*)key,(void*)el)){
+      hash->cpyFn(out_removed,el->value);
+    }
   }
 }
 
@@ -96,7 +115,7 @@ void Hash_destroy_element(HashTable* hash,char* key){
   } 
 }
 
-int Hash_get_element(HashTable* hash,char* key,void** out_element){
+int Hash_get_element(HashTable* hash,char* key,void* out_element){
   int index = Hash_function(hash,key);
   List* value_list = hash->array[index];
 
@@ -104,14 +123,13 @@ int Hash_get_element(HashTable* hash,char* key,void** out_element){
     return -1;
   }
   
-  HashElement* el;
-  List_find(value_list,key,(void**)&el);
-  if(el == NULL){
-    return -1;
+  HashElement* el = hash->workingElement;
+  if(!List_find(value_list,key,(void*)el)){
+    return -1; // some ide can give unreachable code but it's not the case
   }
 
-  *out_element = el->value;
-  free(el);
+  hash->cpyFn(out_element, el->value);
+
 
   return 0;
 }

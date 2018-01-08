@@ -10,34 +10,37 @@
 
 #include "../List/list.h"
 
-typedef void (*HashFreeFunction)(void *);
-
-typedef struct{
-  List** array;
-  long size;
-  HashFreeFunction freeFn;
-} HashTable;
+typedef void (*HashFreeFunction)(void*);
+typedef void (*HashCopyFunction)(void*, void*);
 
 typedef struct{
   char* key;
   void* value;
   HashFreeFunction freeFn;
+  HashCopyFunction cpyFn;
 } HashElement;
 
-HashTable* Hash_new(long size,HashFreeFunction freeFn);
+typedef struct{
+    List** array;
+    long size;
+    HashCopyFunction cpyFn;
+    HashFreeFunction freeFn;
+    long elementSize;
+    HashElement* workingElement; //used to avoid the continue malloc and free
+} HashTable;
+
+HashTable* Hash_new(long size,long elementSize,HashFreeFunction freeFn,HashFreeFunction cpyFn);
 
 void Hash_destroy(HashTable* hash);
-
-void Hash_destroy_safe(HashTable** hash);
 
 int Hash_function(HashTable* hash,char* key);
 
 int Hash_add_element(HashTable* hash,char* key,void* value);
 
-void Hash_remove_element(HashTable* hash,char* key,void** out_removed);
+void Hash_remove_element(HashTable* hash,char* key,void* out_removed);
 
 void Hash_destroy_element(HashTable* hash,char* key);
 
-int Hash_get_element(HashTable* hash,char* key,void** out_element);
+int Hash_get_element(HashTable* hash,char* key,void* out_element);
 
 #endif
