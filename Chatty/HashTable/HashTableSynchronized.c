@@ -3,7 +3,7 @@
 // Created by Mattia Angelini on 03/01/2018.
 //
 
-#include "HashTableSyncronized.h"
+#include "HashTableSynchronized.h"
 
 int _lock_by_index(HashTableSync* hash, int i){
   int mutexIndex = i%(hash->mutexCount);
