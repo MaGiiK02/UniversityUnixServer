@@ -6,8 +6,10 @@
 
 ListSync* ListSync_new(int elementSize, ListFreeFunction freeFn, ListCompareFunction cmpFn,ListCopyFunction cpyFn){
   ListSync* list = ListSync_new(elementSize,freeFn,cmpFn,cpyFn);
-  pthread_mutex_init(list->mutex,NULL);
+  pthread_mutex_init(&(list->mutex),NULL);
+  return list;
 }
+
 void ListSync_destroy(ListSync* list){
   ListNode* iterator;
   ListNode* tmp;
@@ -18,7 +20,7 @@ void ListSync_destroy(ListSync* list){
     FREE(tmp)
     tmp = iterator;
   }
-  pthread_mutex_destroy(list->mutex);
+  pthread_mutex_destroy(&(list->mutex));
   FREE(list)
 }
 
@@ -73,17 +75,27 @@ void ListSync_drop_tail_S(ListSync* list){
 
 bool ListSync_remove_element_S(ListSync* list,void* el,void* out_element){
   LOCK_MUTEX_EXIT(list->mutex);
-  List_remove_element(list,el,out_element);
+  bool ris = List_remove_element(list,el,out_element);
   UNLOCK_MUTEX_EXIT(list->mutex);
+  return ris;
 }
 void ListSync_destroy_element_S(ListSync* list,void* el){
   LOCK_MUTEX_EXIT(list->mutex);
-  List_destroy_element(list,el);
+  bool ris = List_destroy_element(list,el);
   UNLOCK_MUTEX_EXIT(list->mutex);
+  return ris;
 }
 
 bool ListSync_find_S(ListSync* list,void* key,void* out_element){
   LOCK_MUTEX_EXIT(list->mutex);
-  List_find(list,key,out_element);
+  bool ris = List_find(list,key,out_element);
   UNLOCK_MUTEX_EXIT(list->mutex);
+  return ris;
+}
+
+bool ListSync_update_by_find_S(ListSync* list,void* key,void* element){
+  LOCK_MUTEX_EXIT(list->mutex);
+  bool ris = List_update_by_find(list,key,element);
+  UNLOCK_MUTEX_EXIT(list->mutex);
+  return ris;
 }

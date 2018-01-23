@@ -26,7 +26,7 @@ HashTableSync* HashSync_new(long size,long elementSize,HashFreeFunction freeFn,H
   hash->mutexCount = _calculate_mutex_array_size(hash->size);
   hash->mutex = malloc(sizeof(pthread_mutex_t*)*hash->mutexCount);
   for(int i = 0; i<hash->mutexCount; i++ ){
-    pthread_mutex_init(hash->mutex[i], NULL);
+    pthread_mutex_init(&(hash->mutex[i]), NULL);
   }
   return hash;
 }
@@ -39,7 +39,7 @@ void HashSync_destroy(HashTableSync* hash){
     }
   }
   for(i=0; i<hash->mutexCount; i++){
-    pthread_attr_destroy(hash->mutex[i]);
+    pthread_attr_destroy(&(hash->mutex[i]));
   }
   FREE(hash->mutex)
   FREE(hash->workingElement->value);
@@ -49,29 +49,39 @@ void HashSync_destroy(HashTableSync* hash){
 }
 
 int HashSync_add_element_S(HashTableSync* hash,char* key,void* value){
-  int hashValue = Hash_function((HashTable*)hash,);
+  int hashValue = Hash_function((HashTable*)hash,key);
   _lock_by_index(hash,hashValue);
-  Hash_add_element((HashTable*)hash, key,value);
+  int res = Hash_add_element((HashTable*)hash, key,value);
   _unlock_by_index(hash,hashValue);
+  return res;
 }
 
 void HashSync_remove_element_S(HashTableSync* hash,char* key,void* out_removed){
-  int hashValue = Hash_function((HashTable*)hash,);
+  int hashValue = Hash_function((HashTable*)hash,key);
   _lock_by_index(hash,hashValue);
   Hash_remove_element((HashTable*)hash, key,out_removed);
   _unlock_by_index(hash,hashValue);
 }
 
 void HashSync_destroy_element_S(HashTableSync* hash,char* key){
-  int hashValue = Hash_function((HashTable*)hash,);
+  int hashValue = Hash_function((HashTable*)hash,key);
   _lock_by_index(hash,hashValue);
   Hash_destroy_element((HashTable*)hash, key;
   _unlock_by_index(hash,hashValue);
 }
 
 int Hash_get_element_S(HashTableSync* hash,char* key,void* out_element){
+  int hashValue = Hash_function((HashTable*)hash,key);
+  _lock_by_index(hash,hashValue);
+  int res = Hash_add_element((HashTable*)hash, key,out_element);
+  _unlock_by_index(hash,hashValue);
+  return res;
+}
+
+int HashSync_update_element_S(HashTable* hash,char* key,void* element){
   int hashValue = Hash_function((HashTable*)hash,);
   _lock_by_index(hash,hashValue);
-  Hash_add_element((HashTable*)hash, key,out_element);
+  int res = Hash_add_element((HashTable*)hash, key,element);
   _unlock_by_index(hash,hashValue);
+  return res;
 }

@@ -55,5 +55,7 @@ bool List_remove_element(List* list,void* el,void* out_element);
 void List_destroy_element(List* list,void* el);
 
 bool List_find(List* list,void* key,void* out_element);
+bool List_update_by_find(List* list,void* key,void* element);
+
 
 #endif /* _LIST_H_ */

@@ -20,7 +20,7 @@ typedef struct{
     long elementSize;
     HashElement* workingElement; //used to avoid the continue malloc and free
     int mutexCount;
-    pthread_mutex_t* mutex[];
+    pthread_mutex_t* mutex;
 } HashTableSync;
 
 HashTableSync* HashSync_new(long size,long elementSize,HashFreeFunction freeFn,HashFreeFunction cpyFn);
@@ -34,5 +34,7 @@ void HashSync_remove_element_S(HashTableSync* hash,char* key,void* out_removed);
 void HashSync_destroy_element_S(HashTableSync* hash,char* key);
 
 int HashSync_get_element_S(HashTableSync* hash,char* key,void* out_element);
+
+int HashSync_update_element_S(HashTable* hash,char* key,void* element);
 
 #endif //SOL_2017_HASHTABLESYNCRONIZED_H

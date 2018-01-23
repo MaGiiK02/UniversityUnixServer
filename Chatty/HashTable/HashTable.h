@@ -43,4 +43,6 @@ void Hash_destroy_element(HashTable* hash,char* key);
 
 int Hash_get_element(HashTable* hash,char* key,void* out_element);
 
+int Hash_update_element(HashTable* hash,char* key,void* element);
+
 #endif

@@ -133,3 +133,22 @@ int Hash_get_element(HashTable* hash,char* key,void* out_element){
 
   return 0;
 }
+
+int Hash_update_element(HashTable* hash,char* key,void* element){
+  int index = Hash_function(hash,key);
+  List* value_list = hash->array[index];
+
+  if(value_list == NULL || List_length(value_list)<=0){
+    return -1;
+  }
+
+  HashElement* el = hash->workingElement;
+  if(!List_find(value_list,key,(void*)el)){
+    return -1; // some ide can give unreachable code but it's not the case
+  }
+
+  hash->cpyFn(el->value,element);
+
+  return 0;
+}
+

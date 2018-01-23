@@ -18,7 +18,7 @@ typedef struct {
     ListFreeFunction freeFn;
     ListCompareFunction cmpFn;
     ListCopyFunction cpyFn;
-    pthread_mutex_t* mutex;
+    pthread_mutex_t mutex;
 } ListSync;
 
 ListSync* ListSync_new(int elementSize, ListFreeFunction freeFn, ListCompareFunction cmpFn,ListCopyFunction cpyFn);
@@ -43,5 +43,6 @@ bool ListSync_remove_element_S(ListSync* list,void* el,void* out_element);
 void ListSync_destroy_element_S(ListSync* list,void* el);
 
 bool ListSync_find_S(ListSync* list,void* key,void* out_element);
+bool ListSync_update_by_find_S(List* list,void* key,void* element);
 
 #endif //SOL_2017_LISTSYNCHRONIZED_H

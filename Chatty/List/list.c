@@ -208,6 +208,15 @@ bool List_find(List* list,void* key,void* out_element){
   return found;
 }
 
+bool List_update_by_find(List* list,void* key,void* element){
+  ListNode* node;
+  bool found = _find_node(list,key,&node);
+  if(found && out_element != NULL){
+    list->cpyFn(node->data, element);
+  }
+  return found;
+}
+
 bool _find_node(List* list,void* key,ListNode** out_element){
   assert(list != NULL);
 
