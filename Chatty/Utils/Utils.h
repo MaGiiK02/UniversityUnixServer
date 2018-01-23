@@ -7,6 +7,7 @@
  */
 
 #include "../Booleans/Booleans.h"
+#include "../MemoryHelper/MemoryHelper.h"
 
 void Utils_str_remove_character(char* str,const char c);
 
