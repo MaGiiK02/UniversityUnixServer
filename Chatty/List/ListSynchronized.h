@@ -42,7 +42,8 @@ void ListSync_drop_tail_S(ListSync* list);
 bool ListSync_remove_element_S(ListSync* list,void* el,void* out_element);
 void ListSync_destroy_element_S(ListSync* list,void* el);
 
-bool ListSync_find_S(ListSync* list,void* key,void* out_element);
-bool ListSync_update_by_find_S(List* list,void* key,void* element);
+void ListSync_find_S(ListSync* list,void* key,void* out_element);
+void ListSync_update_by_find_S(ListSync* list,void* key,void* element);
+void ListSync_iterate_S(ListSync* list,ListIterateFunction iFn);
 
 #endif //SOL_2017_LISTSYNCHRONIZED_H

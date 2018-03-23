@@ -81,21 +81,24 @@ bool ListSync_remove_element_S(ListSync* list,void* el,void* out_element){
 }
 void ListSync_destroy_element_S(ListSync* list,void* el){
   LOCK_MUTEX_EXIT(list->mutex);
-  bool ris = List_destroy_element(list,el);
+  List_destroy_element(list,el);
   UNLOCK_MUTEX_EXIT(list->mutex);
-  return ris;
 }
 
-bool ListSync_find_S(ListSync* list,void* key,void* out_element){
+void ListSync_find_S(ListSync* list,void* key,void* out_element){
   LOCK_MUTEX_EXIT(list->mutex);
-  bool ris = List_find(list,key,out_element);
+  List_find(list,key,out_element);
   UNLOCK_MUTEX_EXIT(list->mutex);
-  return ris;
 }
 
-bool ListSync_update_by_find_S(ListSync* list,void* key,void* element){
+void ListSync_update_by_find_S(ListSync* list,void* key,void* element){
   LOCK_MUTEX_EXIT(list->mutex);
-  bool ris = List_update_by_find(list,key,element);
+  List_update_by_find(list,key,element);
   UNLOCK_MUTEX_EXIT(list->mutex);
-  return ris;
+}
+
+void ListSync_iterate_S(ListSync* list,ListIterateFunction iFn){
+  LOCK_MUTEX_EXIT(list->mutex);
+  List_iterate(list,iFn);
+  UNLOCK_MUTEX_EXIT(list->mutex);
 }

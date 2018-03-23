@@ -113,6 +113,10 @@ void List_get_head(List* list, void* out_element){
   List_head(list,out_element,false);
 }
 
+void* List_get_head_pointer(List* list){
+  return list->head->data;
+}
+
 void List_remove_head(List* list, void* out_element){
   List_head(list,out_element,true);
 }
@@ -133,6 +137,10 @@ void List_head(List* list, void* out_element,bool remove_el){
 
 void List_get_tail(List* list, void* out_element){
   List_tail(list,out_element,false);
+}
+
+void* List_get_tail_pointer(List* list){
+  return list->tail->data;
 }
 
 void List_remove_tail(List* list, void* out_element){
@@ -208,13 +216,30 @@ bool List_find(List* list,void* key,void* out_element){
   return found;
 }
 
+void* List_find_and_get_pointer(List* list,void* key){
+  ListNode* node;
+  bool found = _find_node(list,key,&node);
+  if(!found){
+    return NULL;
+  }
+  return node->data;
+}
+
 bool List_update_by_find(List* list,void* key,void* element){
   ListNode* node;
   bool found = _find_node(list,key,&node);
-  if(found && out_element != NULL){
+  if(found && element != NULL){
     list->cpyFn(node->data, element);
   }
   return found;
+}
+
+void List_iterate(List* list,ListIterateFunction iFn){
+  ListNode* i = list->head;
+  while (i != NULL){
+    iFn(i->data);
+    i=i->next;
+  }
 }
 
 bool _find_node(List* list,void* key,ListNode** out_element){
