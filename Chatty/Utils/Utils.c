@@ -11,6 +11,7 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <math.h>
 #include <ctype.h>
 #include <stdio.h>
 
@@ -46,31 +47,16 @@ void Utils_str_remove_characters(char* str,const char *to_be_removed){
     *writer = '\0';
 }
 
-int Utils_str_split_by_first_char(char* str,const char* cutter_character,char* left_part,char* right_part){
+int Utils_str_split_by_first_char(char* str,const char* cutter_character,char** left_part,char** right_part){
 
-    char* saveptr;
-
-    left_part = Utils_str_tokenize(str, cutter_character,&saveptr);
-    right_part= Utils_str_tokenize(NULL, cutter_character,&saveptr);
+    *left_part = strtok(str, cutter_character);
+    *right_part = strtok(NULL,cutter_character);
 
     if(*left_part == 0 || *right_part == 0){
         return -1;
     }
 
     return 0;
-}
-
-char* Utils_str_tokenize(char* str,const char* cutter_character,char** pos){
-    if(str != NULL){
-        *pos = str;    
-    }
-    int readed = 0;
-    while((pos+readed)!='\0' && (pos+readed)!=NULL){    
-        readed++;
-    }
-    char* token = malloc(sizeof(char)*readed);
-    strncpy(token,*pos,readed);
-    return token;
 }
 
 int Utils_string_to_integer(const char* str){
@@ -123,4 +109,8 @@ int Utils_str_compare_case_insensitive(const char* str_1,const char* str_2){
 
 void Utils_str_clear(char* str){
     memset(str,0,strlen(str));
+}
+
+int Utils_calculate_mutex_array_size(long size){
+    return ceil(sqrt((double)size)); // Maybe a logarithmic function it's better
 }

@@ -26,9 +26,7 @@ void Utils_str_remove_special_chars(char* str);
  * the string will be splitted in a left and right parts retuned in the relative parameters.
  * The function return a integer that can be thus 0 or 1, where 0 mean no problem, 1 vice versa.
  */
-int Utils_str_split_by_first_char(char* str,const char* cutter_character,char* left_part,char* right_part);
-
-char* Utils_str_tokenize(char* str,const char* cutter_character,char** pos);
+int Utils_str_split_by_first_char(char* str,const char* cutter_character,char** left_part,char** right_part);
 
 int Utils_string_to_integer(const char* str);
 
@@ -37,5 +35,7 @@ void Utils_str_lowercase(char* str);
 int Utils_str_compare_case_insensitive(const char* str_1, const char* str_2);
 
 void Utils_str_clear(char* str);
+
+int Utils_calculate_mutex_array_size(long size);
 
 #endif

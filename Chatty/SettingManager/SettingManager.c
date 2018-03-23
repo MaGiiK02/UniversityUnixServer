@@ -25,6 +25,7 @@ Settings* _load_settings_from_file_ptr(FILE* fptr);
 /* Header's functions definition */
 Settings* SettingManager_new_settings_struct(){
     Settings* settings = malloc(sizeof(Settings));
+    memset(settings,0,sizeof(Settings));
     settings->dirName =  malloc(sizeof(char)*256);
     settings->statFileName = malloc(sizeof(char)*256);
     settings->unixPath = malloc(sizeof(char)*256);
@@ -124,16 +125,13 @@ Settings* _load_settings_from_file_ptr(FILE* fptr){
         Utils_str_remove_spaces(file_line);
 
         if(_is_a_setting_line(file_line)){
-            if( Utils_str_split_by_first_char(file_line,"=",setting_name,setting_value) == 0 ){     /* If no problem occoured in the splitting, the function return a 0 code */
+            if( Utils_str_split_by_first_char(file_line,"=",&setting_name,&setting_value) == 0 ){     /* If no problem occoured in the splitting, the function return a 0 code */
                 _settings_set_value_by_field_name(settings,setting_name,setting_value);
             }
         }
     }
 
     free(file_line);
-    free(setting_value);
-    free(setting_name);
-
     return settings;
 }
 
@@ -170,5 +168,7 @@ void _settings_set_value_by_field_name(Settings* settings,const char* field_name
     } else if ( Utils_str_compare_case_insensitive(field_name,SETTING_FIELD_NAME_STAT_FILE_NAME) == 0){
         SettingManager_settings_set_stat_file_name(settings,value);
 
+    } else {
+        printf("Invalid Setting: $s\n",field_name);
     }
 }

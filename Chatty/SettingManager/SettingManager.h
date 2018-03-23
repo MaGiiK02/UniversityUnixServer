@@ -22,11 +22,11 @@
 
 
 #define SETTING_FIELD_NAME_UNIX_PATH "unixpath"
-#define SETTING_FIELD_NAME_MAX_CONNECTIONS "servermaxconnections"
+#define SETTING_FIELD_NAME_MAX_CONNECTIONS "maxconnections"
 #define SETTING_FIELD_NAME_THREADS_IN_POOL "threadsinpool"
 #define SETTING_FIELD_NAME_MAX_MSG_SIZE "maxmsgsize"
 #define SETTING_FIELD_NAME_MAX_FILE_SIZE "maxfilesize"
-#define SETTING_FIELD_NAME_MAX_HITS_MSG "clientmaxhistmsgs"
+#define SETTING_FIELD_NAME_MAX_HITS_MSG "maxhistmsgs"
 #define SETTING_FIELD_NAME_DIR_NAME "dirname"
 #define SETTING_FIELD_NAME_STAT_FILE_NAME "statfilename"
 
