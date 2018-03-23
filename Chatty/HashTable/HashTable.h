@@ -11,7 +11,7 @@
 #include "../List/list.h"
 
 typedef void (*HashFreeFunction)(void*);
-typedef void (*HashCopyFunction)(void*, void*);
+typedef void (*HashCopyFunction)(void* , void*);
 
 typedef struct{
   char* key;
@@ -42,6 +42,8 @@ void Hash_remove_element(HashTable* hash,char* key,void* out_removed);
 void Hash_destroy_element(HashTable* hash,char* key);
 
 int Hash_get_element(HashTable* hash,char* key,void* out_element);
+
+void* Hash_get_element_pointer(HashTable* hash,char* key);
 
 int Hash_update_element(HashTable* hash,char* key,void* element);
 

@@ -11,6 +11,7 @@
 #include "HashTable.h"
 #include "../Sync/Sync.h"
 #include "../MemoryHelper/MemoryHelper.h"
+#include "../Utils/Utils.h"
 
 typedef struct{
     List** array;
@@ -35,6 +36,14 @@ void HashSync_destroy_element_S(HashTableSync* hash,char* key);
 
 int HashSync_get_element_S(HashTableSync* hash,char* key,void* out_element);
 
-int HashSync_update_element_S(HashTable* hash,char* key,void* element);
+int HashSync_update_element_S(HashTableSync* hash,char* key,void* element);
+
+void HashSync_lock_by_key(HashTableSync* hash,char* key);
+
+void HashSync_unlock_by_key(HashTableSync* hash,char* key);
+
+int HashSync_lock_by_index(HashTableSync* hash, int i);
+
+int HashSync_unlock_by_index(HashTableSync* hash, int i);
 
 #endif //SOL_2017_HASHTABLESYNCRONIZED_H
