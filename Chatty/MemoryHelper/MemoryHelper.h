@@ -9,4 +9,5 @@
     (ptr_mh_macro)=NULL; \
   }
 
+
 #endif //_MEMORY_HELPER_H_
