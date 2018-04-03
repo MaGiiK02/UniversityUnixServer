@@ -1,1 +1,2 @@
-1.la chiave _S alla fine della funzione è stata usata per identificare le funzioni thread safe
+1.la chiave _S(safe) alla fine della funzione è stata usata per identificare le funzioni thread safe
+2.La chaiave GD(globally_defined) all inizio di variabili vuol dire che sono definiste in ServerGlobalData e usate in più punti
