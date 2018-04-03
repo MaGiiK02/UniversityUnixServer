@@ -52,7 +52,8 @@ int main(){
   client_fd = accept(
     socket_fd,
     (struct sockaddr *) &client_address,
-    &client_address_len);
+    &client_address_len
+  );
   if(is_error(client_fd)){
     perror("Accept");
     exit(EXIT_FAILURE);

@@ -9,6 +9,8 @@
 #include "../Error/Error.h"
 
 #include "connections.h"
+#include "../Message/message.h"
+#include "../Debugger/Debugger.h"
 
 int _writeAll(long fd,char* msg,int size);
 int _readAll(long fd,char* buffer,int size);
@@ -55,15 +57,15 @@ int readHeader(long fd, message_hdr_t *hdr){
   char* buffer = malloc(buffer_size);
 
   int read_result = read(fd,buffer,buffer_size);
-  if(is_error(read_result)){
+  if( read_result<0){
     perror("Error during socket read");
     return -1;
   }
 
   memcpy(hdr,buffer,buffer_size);
   free(buffer);
-
-  return 0;
+  Log(("Read HDR with sender:%s and operation:[%d]\n",hdr->sender,hdr->op));
+  return read_result;
 }
 
 int readData(long fd, message_data_t *data){
@@ -83,16 +85,18 @@ int readData(long fd, message_data_t *data){
   buffer_size = data->hdr.len;
   buffer = realloc(buffer,buffer_size);
 
-  read_result = read(fd,buffer,buffer_size);
+  read_result += _readAll(fd,buffer,buffer_size);
   if(is_error(read_result)){
     perror("Error during socket read");
     return -1;
   }
 
+  data->buf = malloc(sizeof(char*) * data->hdr.len);
+
   memcpy(data->buf,buffer,buffer_size);
   free (buffer);
-
-  return 0;
+  Log(("Read DATA with reciver %s and buffer of size %d : %s \n",data->hdr.receiver,data->hdr.len,data->buf));
+  return read_result;
 }
 
 int readMsg(long fd, message_t *msg){
@@ -116,7 +120,10 @@ int readMsg(long fd, message_t *msg){
 int sendRequest(long fd, message_t *msg){
     int write_result = sendHeader(fd,&msg->hdr);
     if(is_error(write_result)){
-      perror("Error during msg header send");
+      return -1;
+    }
+    write_result = sendData(fd,&msg->data);
+    if(is_error(write_result)){
       return -1;
     }
     return 0;
@@ -125,16 +132,18 @@ int sendRequest(long fd, message_t *msg){
 int sendHeader(long fd, message_hdr_t *data){
   int write_result = _writeAll(fd,(char*) data, sizeof(message_hdr_t));
   if(is_error(write_result)){
-    perror("Error during msg header send");
+    fprintf(stderr,"Error during msg header send (fd:%ld)",fd);
+    perror("");
     return -1;
   }
+  Log(("Sent HDR to %s with operation:[%d]\n",data->sender,data->op));
   return 0;
 }
 
 int sendData(long fd, message_data_t *data){
   int write_result = _writeAll(fd,(char*) data, sizeof(message_data_t));
   if(is_error(write_result)){
-    perror("Error during msg header send");
+    fprintf(stderr,"Error during msg data send (fd:%ld)",fd);
     return -1;
   }
 
@@ -146,6 +155,8 @@ int sendData(long fd, message_data_t *data){
       return -1;
     }
   }
+
+  Log(("Sent DATA to %s with buffer of size %d : %s \n",data->hdr.receiver,data->hdr.len,data->buf));
 
   return 0;
 }
