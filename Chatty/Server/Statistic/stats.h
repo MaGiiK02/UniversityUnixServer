@@ -1,4 +1,4 @@
-#if !defined(MEMBOX_STATS_)
+#ifndef MEMBOX_STATS_
 #define MEMBOX_STATS_
 
 #include <stdio.h>
@@ -18,15 +18,6 @@ struct statistics {
     unsigned long nerrors;                      // n. di messaggi di errore
 };
 
-//Mutex Definite singolarmente per ogni statistica
-pthread_mutex_t MUTEX_NUSER = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t MUTEX_NONLINE = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t MUTEX_NDELIVERED = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t MUTEX_NNOTDELIVERED = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t MUTEX_NFILEDELIVERED = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t MUTEX_NFILENOTDELIVERED = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t MUTEX_NERRORS = PTHREAD_MUTEX_INITIALIZER;
-
 /* aggiungere qui altre funzioni di utilita' per le statistiche */
 
 
@@ -38,214 +29,26 @@ pthread_mutex_t MUTEX_NERRORS = PTHREAD_MUTEX_INITIALIZER;
  *
  * @return 0 in caso di successo, -1 in caso di fallimento
  */
-static inline int printStats(FILE *fout) {
-    extern struct statistics chattyStats;
+int printStats(FILE *fout);
 
-    if (fprintf(fout, "%ld - %ld %ld %ld %ld %ld %ld %ld\n",
-      (unsigned long)time(NULL),
-      chattyStats.nusers,
-      chattyStats.nonline,
-      chattyStats.ndelivered,
-      chattyStats.nnotdelivered,
-      chattyStats.nfiledelivered,
-      chattyStats.nfilenotdelivered,
-      chattyStats.nerrors
-    ) < 0)return -1;
-    fflush(fout);
-    return 0;
-}
-
-static inline int printStats_S(FILE *fout) {
-  LOCK_MUTEX_EXIT(MUTEX_NUSER)
-  LOCK_MUTEX_EXIT(MUTEX_NONLINE)
-  LOCK_MUTEX_EXIT(MUTEX_NDELIVERED)
-  LOCK_MUTEX_EXIT(MUTEX_NNOTDELIVERED)
-  LOCK_MUTEX_EXIT(MUTEX_NFILEDELIVERED)
-  LOCK_MUTEX_EXIT(MUTEX_NFILENOTDELIVERED)
-  LOCK_MUTEX_EXIT(MUTEX_NERRORS)
-
-  int ris = printStats(fout);
-
-  UNLOCK_MUTEX_EXIT(MUTEX_NUSER)
-  UNLOCK_MUTEX_EXIT(MUTEX_NONLINE)
-  UNLOCK_MUTEX_EXIT(MUTEX_NDELIVERED)
-  UNLOCK_MUTEX_EXIT(MUTEX_NNOTDELIVERED)
-  UNLOCK_MUTEX_EXIT(MUTEX_NFILEDELIVERED)
-  UNLOCK_MUTEX_EXIT(MUTEX_NFILENOTDELIVERED)
-  UNLOCK_MUTEX_EXIT(MUTEX_NERRORS)
-
-  return ris;
-}
+int printStats_S(FILE *fout);
 
 /*############### INCREMENTS ##########################*/
-static inline int StatsIncNUser_S() {
-  extern struct statistics chattyStats;
-  int ris = -1;
-  LOCK_MUTEX_EXIT(MUTEX_NUSER)
-    if(chattyStats.nusers != ULONG_MAX){
-      ris = 0;
-      chattyStats.nusers++;
-    }
-  UNLOCK_MUTEX_EXIT(MUTEX_NUSER)
-  return ris;
-}
-
-static inline int StatsIncNOnline_S() {
-  extern struct statistics chattyStats;
-  LOCK_MUTEX_EXIT(MUTEX_NONLINE)
-  int ris = -1;
-    if(chattyStats.nonline != ULONG_MAX){
-      ris = 0;
-      chattyStats.nonline++;
-    }
-  UNLOCK_MUTEX_EXIT(MUTEX_NONLINE)
-  return ris;
-}
-
-static inline int StatsIncNDelivered_S() {
-  extern struct statistics chattyStats;
-  int ris = -1;
-  LOCK_MUTEX_EXIT(MUTEX_NDELIVERED)
-    if(chattyStats.ndelivered != ULONG_MAX){
-      ris = 0;
-      chattyStats.ndelivered++;
-    }
-  UNLOCK_MUTEX_EXIT(MUTEX_NDELIVERED)
-  return ris;
-}
-
-static inline int StatsIncNNotDelivered_S() {
-  extern struct statistics chattyStats;
-  int ris = -1;
-  LOCK_MUTEX_EXIT(MUTEX_NNOTDELIVERED)
-    if(chattyStats.nnotdelivered != ULONG_MAX){
-      ris = 0;
-      chattyStats.nnotdelivered++;
-    }
-  UNLOCK_MUTEX_EXIT(MUTEX_NNOTDELIVERED)
-  return ris;
-}
-
-static inline int StatsIncNFileDelivered_S() {
-  extern struct statistics chattyStats;
-  int ris = -1;
-  LOCK_MUTEX_EXIT(MUTEX_NFILEDELIVERED)
-    if(chattyStats.nfiledelivered != ULONG_MAX){
-      ris = 0;
-      chattyStats.nfiledelivered++;
-    }
-  UNLOCK_MUTEX_EXIT(MUTEX_NFILEDELIVERED)
-  return ris;
-}
-
-static inline int StatsIncNNotFileDelivered_S() {
-  extern struct statistics chattyStats;
-  int ris = -1;
-  LOCK_MUTEX_EXIT(MUTEX_NFILENOTDELIVERED)
-    if(chattyStats.nfilenotdelivered != ULONG_MAX){
-      ris = 0;
-      chattyStats.nfilenotdelivered++;
-    }
-  UNLOCK_MUTEX_EXIT(MUTEX_NFILENOTDELIVERED)
-  return ris;
-}
-
-static inline int StatsIncNErrors(int Inc_val) {
-  extern struct statistics chattyStats;
-  int ris = -1;
-  LOCK_MUTEX_EXIT(MUTEX_NERRORS)
-    if(chattyStats.nerrors != ULONG_MAX){
-      ris = 0;
-      chattyStats.nerrors++;
-    }
-  UNLOCK_MUTEX_EXIT(MUTEX_NERRORS)
-  return ris;
-}
+int StatsIncNUser_S();
+int StatsIncNOnline_S();
+int StatsIncNDelivered_S();
+int StatsIncNNotDelivered_S();
+int StatsIncNFileDelivered_S();
+int StatsIncNNotFileDelivered_S();
+int StatsIncNErrors();
 
 /*############### DECREMENTS ##########################*/
-
-static inline int StatsDecNUser_S() {
-  extern struct statistics chattyStats;
-  int ris = -1;
-  LOCK_MUTEX_EXIT(MUTEX_NUSER)
-  if(chattyStats.nusers != 0){
-    ris = 0;
-    chattyStats.nusers--;
-  }
-  UNLOCK_MUTEX_EXIT(MUTEX_NUSER)
-  return ris;
-}
-
-static inline int StatsDecNOnline_S() {
-  extern struct statistics chattyStats;
-  LOCK_MUTEX_EXIT(MUTEX_NONLINE)
-  int ris = -1;
-  if(chattyStats.nonline != 0){
-    ris = 0;
-    chattyStats.nonline--;
-  }
-  UNLOCK_MUTEX_EXIT(MUTEX_NONLINE)
-  return ris;
-}
-
-static inline int StatsDecNDelivered_S() {
-  extern struct statistics chattyStats;
-  int ris = -1;
-  LOCK_MUTEX_EXIT(MUTEX_NDELIVERED)
-  if(chattyStats.ndelivered != 0){
-    ris = 0;
-    chattyStats.ndelivered--;
-  }
-  UNLOCK_MUTEX_EXIT(MUTEX_NDELIVERED)
-  return ris;
-}
-
-static inline int StatsDecNNotDelivered_S() {
-  extern struct statistics chattyStats;
-  int ris = -1;
-  LOCK_MUTEX_EXIT(MUTEX_NNOTDELIVERED)
-  if(chattyStats.nnotdelivered != 0){
-    ris = 0;
-    chattyStats.nnotdelivered--;
-  }
-  UNLOCK_MUTEX_EXIT(MUTEX_NNOTDELIVERED)
-  return ris;
-}
-
-static inline int StatsDecNFileDelivered_S() {
-  extern struct statistics chattyStats;
-  int ris = -1;
-  LOCK_MUTEX_EXIT(MUTEX_NFILEDELIVERED)
-  if(chattyStats.nfiledelivered != 0){
-    ris = 0;
-    chattyStats.nfiledelivered--;
-  }
-  UNLOCK_MUTEX_EXIT(MUTEX_NFILEDELIVERED)
-  return ris;
-}
-
-static inline int StatsDecNNotFileDelivered_S() {
-  extern struct statistics chattyStats;
-  int ris = -1;
-  LOCK_MUTEX_EXIT(MUTEX_NFILENOTDELIVERED)
-  if(chattyStats.nfilenotdelivered != 0){
-    ris = 0;
-    chattyStats.nfilenotdelivered--;
-  }
-  UNLOCK_MUTEX_EXIT(MUTEX_NFILENOTDELIVERED)
-  return ris;
-}
-
-static inline int StatsDecNErrors_S() {
-  extern struct statistics chattyStats;
-  int ris = -1;
-  LOCK_MUTEX_EXIT(MUTEX_NERRORS)
-  if(chattyStats.nerrors != 0){
-    ris = 0;
-    chattyStats.nerrors--;
-  }
-  UNLOCK_MUTEX_EXIT(MUTEX_NERRORS)
-  return ris;
-}
+int StatsDecNUser_S();
+int StatsDecNOnline_S();
+int StatsDecNDelivered_S();
+int StatsDecNNotDelivered_S();
+int StatsDecNFileDelivered_S();
+int StatsDecNNotFileDelivered_S();
+int StatsDecNErrors_S();
 
 #endif /* MEMBOX_STATS_ */

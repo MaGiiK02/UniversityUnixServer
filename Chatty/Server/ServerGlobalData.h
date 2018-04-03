@@ -10,23 +10,24 @@
 #include "../HashTable/HashTableSynchronized.h"
 #include "../SettingManager/SettingManager.h"
 #include "../Channel/Channel.h"
-#include "Statistic/stats.h"
-#include <unistd.h>
 #include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/un.h>
-#include <sys/socket.h>
-#include <sys/select.h>
+#include <sys/time.h>
+#include <unistd.h>
 
-#define DEFAULT_HASH_SIZE 128
-#define MAX_NAME_LENGHT 32
+extern HashTableSync* GD_ServerGroup;
+extern HashTableSync* GD_ServerUsers;
+extern Settings* GD_ServerSetting;
+extern pthread_mutex_t GD_MU_FdSetRead;
+extern fd_set GD_FdSetRead;
+extern Ch* GD_WorkerCommunicationChannel;
+extern pthread_mutex_t GD_MU_OnlineUsers;
+extern pthread_t* GD_Workers;
 
 
-void Data_Add_OnlineUser_S(char* value);
-void Data_remove_OnlineUser_S(char* value);
-void Data_get_copy_OnlineUsers_S(char* to);
+bool Data_put_in_readSet_S(int fd);
+bool Data_remove_from_readSet_S(int fd);
+bool Data_is_in_readSet_S(int fd);
+void Data_copy_readSet_S(fd_set* set);
 
-
-#define SERVER_SENDER_NAME "ChattyServer"
 
 #endif //SOL_2017_SERVERGLOBALDATA_H

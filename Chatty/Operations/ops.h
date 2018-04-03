@@ -49,12 +49,13 @@ typedef enum {
     TXT_MESSAGE     = 21,  // notifica di messaggio testuale
     FILE_MESSAGE    = 22,  // notifica di messaggio "file disponibile"
 
+
     OP_FAIL         = 25,  // generico messaggio di fallimento
     OP_NICK_ALREADY = 26,  // nickname o groupname gia' registrato
     OP_NICK_UNKNOWN = 27,  // nickname non riconosciuto
     OP_MSG_TOOLONG  = 28,  // messaggio con size troppo lunga
     OP_NO_SUCH_FILE = 29,  // il file richiesto non esiste
-    
+    OP_BROKEN_CONN  = 30,
 
     /* 
      * aggiungere qui altri messaggi di ritorno che possono servire 

@@ -1,3 +1,4 @@
+
 # @Author: angelini.mattia
 # @StudentCode: 502688
 
@@ -8,6 +9,5 @@ COPY . /usr/src/myapp
 
 WORKDIR /usr/src/myapp/Chatty
 
-RUN make chatty
-
+RUN make client
 

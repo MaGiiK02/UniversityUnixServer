@@ -19,7 +19,7 @@
 /* Private functions Def*/
 void _settings_set_value_by_field_name(Settings* settings,const char* field_name,const char* value);
 int _is_a_setting_line(const char* file_line);
-Settings* _load_settings_from_file_ptr(FILE* fptr);
+Settings* _load_settings_from_file_ptr(FILE* fptr,bool useDefault);
 
 
 /* Header's functions definition */
@@ -34,14 +34,20 @@ Settings* SettingManager_new_settings_struct(){
 
 Settings* SettingManager_new_default_settings_struct(){
     Settings* settings = SettingManager_new_settings_struct();
-    settings->dirName = SETTING_DEFAULT_DIR_NAME;
-    settings->statFileName = SETTING_DEFAULT_STAT_FILE_NAME;
-    settings->unixPath = SETTING_DEFAULT_UNIX_PATH;
     settings->maxMsgSize = SETTING_DEFAULT_MAX_MSG_SIZE;
     settings->maxFileSize = SETTING_DEFAULT_MAX_FILE_SIZE;
     settings->maxConnections = SETTING_DEFAULT_MAX_CONNECTIONS;
     settings->threadsInPool = SETTING_DEFAULT_THREADS_IN_POOL;
     settings->maxHistMsgs = SETTING_DEFAULT_MAX_HITS_MSG;
+
+    settings->dirName =  malloc(sizeof(char)*256);
+    settings->statFileName = malloc(sizeof(char)*256);
+    settings->unixPath = malloc(sizeof(char)*256);
+
+    strcpy(settings->unixPath,SETTING_DEFAULT_UNIX_PATH);
+    strcpy(settings->dirName,SETTING_DEFAULT_DIR_NAME);
+    strcpy(settings->statFileName,SETTING_DEFAULT_STAT_FILE_NAME);
+
     return settings;
 }
 
@@ -87,7 +93,7 @@ void SettingManager_print_settings_struct(Settings* settings){
     if(settings == NULL)
         return;
 
-    printf("Printing the Settings object -> %p\n",settings);
+    printf("Printing the Settings object -> %p\n",(void*)settings);
     printf("    unixPath: %s\n",settings->unixPath);
     printf("    maxConnections: %d\n",settings->maxConnections);
     printf("    threadsInPool: %d\n",settings->threadsInPool);
@@ -99,20 +105,27 @@ void SettingManager_print_settings_struct(Settings* settings){
     printf("End Settings struct.\n");
 }
 
-Settings* SettingManager_load_settings_form_file(const char* settingFilePath){
+Settings* SettingManager_load_settings_form_file(const char* settingFilePath,bool useDefault){
     Settings* s = NULL;
-    FILE* fp = fopen(settingFilePath,"r");     /*Open the file to the given path for reading*/
-    s = _load_settings_from_file_ptr(fp);      /*Read the file loading setting in the settings struct*/
-    fclose(fp);                                /*Close the file*/
+    FILE* fp = fopen(settingFilePath,"r");
+    if (fp == NULL) return NULL;
+    s = _load_settings_from_file_ptr(fp,useDefault);/*Read the file while loading the setting in the settings struct*/
+    fclose(fp);
     return s;
 }
 
 /*
  * Load all the settings from a given file pointer, creatiing first a default setting struct that is update as the file is readed.
  */
-Settings* _load_settings_from_file_ptr(FILE* fptr){
+Settings* _load_settings_from_file_ptr(FILE* fptr,bool useDefault){
 
-    Settings* settings = SettingManager_new_settings_struct();
+    Settings* settings = NULL;
+    if(useDefault){
+        settings = SettingManager_new_default_settings_struct();
+    }else{
+        settings = SettingManager_new_settings_struct();
+    }
+
 
     char* file_line = malloc(1024 * sizeof(char));
     char* setting_value =  malloc(1024 * sizeof(char));
@@ -169,6 +182,6 @@ void _settings_set_value_by_field_name(Settings* settings,const char* field_name
         SettingManager_settings_set_stat_file_name(settings,value);
 
     } else {
-        printf("Invalid Setting: $s\n",field_name);
+        printf("Invalid Setting: %s\n",field_name);
     }
 }

@@ -19,6 +19,7 @@
  */
 
 /* Project Include */
+#include "../Booleans/Booleans.h"
 
 
 #define SETTING_FIELD_NAME_UNIX_PATH "unixpath"
@@ -30,14 +31,14 @@
 #define SETTING_FIELD_NAME_DIR_NAME "dirname"
 #define SETTING_FIELD_NAME_STAT_FILE_NAME "statfilename"
 
-#define SETTING_DEFAULT_UNIX_PATH "./tmp/chatty_socket"
+#define SETTING_DEFAULT_UNIX_PATH "./tmp/chatty_socket\0"
 #define SETTING_DEFAULT_MAX_CONNECTIONS 32
 #define SETTING_DEFAULT_THREADS_IN_POOL 8
 #define SETTING_DEFAULT_MAX_MSG_SIZE 512
 #define SETTING_DEFAULT_MAX_FILE_SIZE 1024
 #define SETTING_DEFAULT_MAX_HITS_MSG 16
-#define SETTING_DEFAULT_DIR_NAME "./tmp/chatty"
-#define SETTING_DEFAULT_STAT_FILE_NAME "./tmp/chatty"
+#define SETTING_DEFAULT_DIR_NAME "./tmp/chatty\0"
+#define SETTING_DEFAULT_STAT_FILE_NAME "./tmp/chatty\0"
 
 /* The structure that will be used to store the application settings */
 typedef struct {
@@ -113,6 +114,6 @@ void SettingManager_print_settings_struct(Settings* settings);
  * @throws ...
  * @return The Settings struct's pointer.
  */
-Settings* SettingManager_load_settings_form_file(const char * settingFilePath);
+Settings* SettingManager_load_settings_form_file(const char * settingFilePath,bool useDefault);
 
 #endif /*!_SETTING_MANAGER_H_*/

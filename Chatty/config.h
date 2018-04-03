@@ -16,6 +16,9 @@
 #define MAX_NAME_LENGTH                  32
 
 /* aggiungere altre define qui */
+#define DEFAULT_HASH_SIZE 128
+#define MAX_NAME_LENGHT 32
+#define SERVER_SENDER_NAME "ChattyServer"
 
 
 // to avoid warnings like "ISO C forbids an empty translation unit"x
