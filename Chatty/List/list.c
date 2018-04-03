@@ -85,8 +85,7 @@ void List_append(List* list, void* element){
   }else{
     ListNode* new_node = malloc(sizeof(ListNode));
     new_node->data = malloc(list->elementSize);
-    memcpy(new_node->data,element,list->elementSize);
-
+    list->cpyFn(new_node->data,element);
     list->tail->next = new_node;
     new_node->prev = list->tail;
     new_node->next = NULL;
@@ -99,7 +98,7 @@ void _insert_first_element(List* list,void* element){
   ListNode* new_node = malloc(sizeof(ListNode));
   new_node->prev = new_node->next = NULL;
   new_node->data = malloc(list->elementSize);
-  memcpy(new_node->data,element,list->elementSize);
+  list->cpyFn(new_node->data,element);
   list->head = list->tail = new_node;
   list->logicalLength ++;
 }

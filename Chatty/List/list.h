@@ -15,7 +15,7 @@
 typedef void (*ListFreeFunction)(void *);
 
 typedef int (*ListCompareFunction)(void *,void *);
-typedef int (*ListCopyFunction)(void *,void *);
+typedef void (*ListCopyFunction)(void *,void *);
 typedef int (*ListIterateFunction)(void *);
 
 typedef struct _listNode {

@@ -11,13 +11,7 @@
 #include "../MemoryHelper/MemoryHelper.h"
 
 typedef struct {
-    int logicalLength;
-    int elementSize;
-    ListNode *head;
-    ListNode *tail;
-    ListFreeFunction freeFn;
-    ListCompareFunction cmpFn;
-    ListCopyFunction cpyFn;
+    List* list;
     pthread_mutex_t mutex;
 } ListSync;
 
