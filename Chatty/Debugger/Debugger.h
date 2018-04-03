@@ -13,6 +13,6 @@
 #define ON_DEBUG(code) do{} while(0);
 #endif
 
-
+typedef int make_iso_compilers_happy_debugger;
 
 #endif //SOL_2017_DEBUGGER_H
