@@ -112,5 +112,5 @@ void Utils_str_clear(char* str){
 }
 
 int Utils_calculate_mutex_array_size(long size){
-    return ceil(sqrt((double)size)); // Maybe a logarithmic function it's better
+    return ceil(log2((double)size)+1);
 }
