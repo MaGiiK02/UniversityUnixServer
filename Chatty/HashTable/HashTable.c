@@ -25,11 +25,12 @@ void _hash_element_free(void* hashEl){
 void _hash_element_copy(void* dst, void* src){
   HashElement* destination = (HashElement*) dst;
   HashElement* source = (HashElement*) src;
+  strcpy(destination->key,source->key);
   memcpy(destination,source,sizeof(HashElement));
   source->cpyFn(destination->value,source->value);
 }
 
-HashTable* Hash_new(long size,long elementSize,HashFreeFunction freeFn,HashFreeFunction cpyFn){
+HashTable* Hash_new(long size,long elementSize, HashFreeFunction freeFn,HashCopyFunction cpyFn){
   assert(size > 0);
   assert(freeFn != NULL);
 
@@ -40,9 +41,9 @@ HashTable* Hash_new(long size,long elementSize,HashFreeFunction freeFn,HashFreeF
 
   h->size = size;
   h->array = malloc(sizeof(List*)*size);
+  memset(h->array,0,sizeof(List*)*size);
   h->elementSize = elementSize;
   h->workingElement = malloc(sizeof(HashElement));
-  memset(h->array,0,sizeof(List*)*size);
   h->freeFn = freeFn;
   h->cpyFn = cpyFn;
 
@@ -88,7 +89,7 @@ int Hash_add_element(HashTable* hash,char* key,void* value){
   HashElement* el = hash->workingElement;
   el->value = malloc(hash->elementSize);
   hash->cpyFn(el->value,value);
-  el->key = key;
+  strcpy(el->key,key);
   el->freeFn = hash->freeFn;
   el->cpyFn = hash->cpyFn;
   List_append(value_list,el);

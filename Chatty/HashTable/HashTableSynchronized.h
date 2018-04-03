@@ -14,17 +14,12 @@
 #include "../Utils/Utils.h"
 
 typedef struct{
-    List** array;
-    long size;
-    HashCopyFunction cpyFn;
-    HashFreeFunction freeFn;
-    long elementSize;
-    HashElement* workingElement; //used to avoid the continue malloc and free
+    HashTable* hashTable;
     int mutexCount;
-    pthread_mutex_t* mutex;
+    pthread_mutex_t** mutex;
 } HashTableSync;
 
-HashTableSync* HashSync_new(long size,long elementSize,HashFreeFunction freeFn,HashFreeFunction cpyFn);
+HashTableSync* HashSync_new(long size,long elementSize,HashFreeFunction freeFn,HashCopyFunction cpyFn);
 
 void HashSync_destroy(HashTableSync* hash);
 
@@ -45,5 +40,7 @@ void HashSync_unlock_by_key(HashTableSync* hash,char* key);
 int HashSync_lock_by_index(HashTableSync* hash, int i);
 
 int HashSync_unlock_by_index(HashTableSync* hash, int i);
+
+void* HashSync_get_element_pointer(HashTableSync* hash,char* key);
 
 #endif //SOL_2017_HASHTABLESYNCRONIZED_H

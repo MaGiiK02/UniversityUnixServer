@@ -6,7 +6,9 @@
  * @StudentCode: 502688
  * @Brief: The hash structure (that will be implememented with list when collision happens)
  */
-
+#ifndef HASH_KEY_SIZE
+#define HASH_KEY_SIZE  32
+#endif
 
 #include "../List/list.h"
 
@@ -14,7 +16,7 @@ typedef void (*HashFreeFunction)(void*);
 typedef void (*HashCopyFunction)(void* , void*);
 
 typedef struct{
-  char* key;
+  char key[HASH_KEY_SIZE];
   void* value;
   HashFreeFunction freeFn;
   HashCopyFunction cpyFn;
@@ -26,10 +28,10 @@ typedef struct{
     HashCopyFunction cpyFn;
     HashFreeFunction freeFn;
     long elementSize;
-    HashElement* workingElement; //used to avoid the continue malloc and free
+    HashElement* workingElement;
 } HashTable;
 
-HashTable* Hash_new(long size,long elementSize,HashFreeFunction freeFn,HashFreeFunction cpyFn);
+HashTable* Hash_new(long size,long elementSize,HashFreeFunction freeFn,HashCopyFunction cpyFn);
 
 void Hash_destroy(HashTable* hash);
 
