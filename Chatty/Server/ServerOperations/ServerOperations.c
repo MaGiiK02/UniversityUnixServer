@@ -8,11 +8,6 @@
 #include "../../SettingManager/SettingManager.h"
 #include "../../Message/message.h"
 
-#ifndef  DEFAULT_FILE_NAME
-#define  DEFAULT_FILE_NAME "FILE_"
-#endif
-
-static int _FILE_COUNT = 0;
 
 void Send_ack_to(int clientFd, int reply_code){
   message_hdr_t reply ;
@@ -49,7 +44,9 @@ void _send_file_to_user(User* to_user,User* from_user, char* name){
   if(to_user->online){
     if(SockSync_send_message_SS(to_user->fd,msg)!=0){
       //error delivering the message
+      HashSync_lock_by_key(GD_ServerUsers,to_user->name);
       User_set_offline(to_user);
+      HashSync_lock_by_key(GD_ServerUsers,to_user->name);
     }else{
       StatsDecNNotFileDelivered_S();
       StatsIncNFileDelivered_S();
@@ -85,10 +82,13 @@ int OP_connect(int clientFd,User* clientUser){
   return OP_usrlist(clientFd, clientUser);
 }
 
-int OP_unregister(int clientFd,User* clientUser){
-  if(clientUser->online){
+int OP_unregister(int clientFd,User* clientUser) {
+  if (clientUser->online) {
+    HashSync_lock_by_key(GD_ServerUsers, clientUser->name);
     User_set_offline(clientUser);
+    HashSync_unlock_by_key(GD_ServerUsers, clientUser->name);
   }
+
   StatsDecNUser_S();
   HashSync_destroy_element_S(GD_ServerUsers,clientUser->name);
   Send_ack_to(clientFd,OP_OK);
@@ -191,30 +191,36 @@ int OP_getprevmsgs(int clientFd,User* clientUser){
   return OP_OK;
 }
 int OP_postfile(int clientFd,User* clientUser,message_data_t* data){
+  message_data_t file_info;
+
+  if(readDataNoBuffer(clientFd,&file_info)!=0){
+    return OP_FAIL;
+  }
+
+  if(file_info.hdr.len >= GD_ServerSetting->maxFileSize*KILOBYTE){
+    flushSocket(clientFd,file_info.hdr.len); // remove all socket content
+    return OP_MSG_TOOLONG;
+  }
+
   User* target = HashSync_get_element_pointer(GD_ServerUsers,(data->hdr.receiver));
   if(target == NULL){
     return OP_FAIL;
   }
 
   char filePath[256];
+  Utils_dir_create_if_not_exist(filePath);
   Utils_build_path(filePath,GD_ServerSetting->dirName,data->buf);
   FILE* destination_file = fopen(filePath,"w+");
-  switch(dumpBufferOnStream(clientFd,destination_file,GD_ServerSetting->maxFileSize*KILOBYTE)){
-    case 1:
-      fflush(destination_file);
-      fclose(destination_file);
-      return OP_MSG_TOOLONG;
-
-    case -1:
-      fflush(destination_file);
-      fclose(destination_file);
-      return OP_FAIL;
-
+  if(dumpBufferOnStream(clientFd,destination_file,file_info.hdr.len)!=0){
+    fflush(destination_file);
+    fclose(destination_file);
+    return OP_FAIL;
   }
+
   fflush(destination_file);
   fclose(destination_file);
 
-  _send_file_to_user_S(clientUser,target,filePath);
+  _send_file_to_user_S(target,clientUser,filePath);
   Send_ack_to(clientFd,OP_OK);
   return OP_OK;
 }

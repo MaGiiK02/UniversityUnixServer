@@ -44,6 +44,8 @@ int Utils_build_path(char* target,char* basepath,char* filename);
 
 long Utils_file_size(FILE* f);
 
-bool Utils_dir_create_if_not_exist(char* path);
+void Utils_dir_create_if_not_exist(char* path);
+
+void flushSocket(int fd,int size);
 
 #endif

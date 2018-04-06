@@ -167,49 +167,71 @@ int sendData(long fd, message_data_t *data){
   return 0;
 }
 
-int dumpBufferOnStream(long fd,FILE* stream,int maxBufSize){
+int readDataNoBuffer(long fd,message_data_t* data){
 
   size_t buffer_size = sizeof(message_data_t);
   char* buffer = malloc(buffer_size);
 
   int read_result = read(fd,buffer,buffer_size);
   if(is_error(read_result)){
-    ON_DEBUG(perror("Error during socket read in dumpBuffer");)
+    ON_DEBUG(perror("Error during socket read in readDataNoBuffer");)
     return -1;
   }
 
-  message_data_t* data = (message_data_t*) buffer;
+  memcpy(data,buffer,buffer_size);
+
+  free (buffer);
+  return 0;
+}
+
+int dumpBufferOnStream(long fd,FILE* stream,int size){
+
+  size_t buffer_size = sizeof(message_data_t);
+  char* buffer = malloc(STREAM_BUFFER);
 
 
-  int to_read = data->hdr.len;
-  if(to_read>maxBufSize) return 1;
-  buffer = realloc(buffer,STREAM_BUFFER);
+  int to_read = size;
+  if(to_read>size) return 1;
   //the realloc it's of cause i will not use the data any more
 
-  int readed;
-  int writed;
+  int read_count;
+  int wrote_count;
   while(to_read > 0){ /* While all the message isn't read */
-    readed = read((int) fd, buffer, buffer_size);
-    if(is_error(readed)){
+    read_count = read((int) fd, buffer, buffer_size);
+    if(is_error(read_count)){
       if(errno != EINTR){
         free(buffer);
         return -1;
       }
     }
-    to_read -= readed;/* Remove the written element from the count */
+    to_read -= read_count;/* Remove the written element from the count */
 
-    while(readed > 0){ // Ensure read bytes are correctly wrote down
-      writed = fwrite(buffer,1,readed,stream);
-      if(is_error(writed)){
+    while(read_count > 0){ // Ensure read bytes are correctly wrote down
+      wrote_count = fwrite(buffer,1,read_count,stream);
+      if(is_error(wrote_count)){
         free(buffer);
         return -1;
       }
-      readed-=writed;
+      read_count-=wrote_count;
     }
   }
 
   free (buffer);
   return 0;
+}
+
+void flushSocket(int fd,int size){
+  int readed = -1;
+  char buffer[STREAM_BUFFER];
+  while(size > 0){ /* While all the message isn't read */
+    readed = read(fd, buffer, STREAM_BUFFER);
+    if(is_error(readed)){
+      if(errno != EINTR){
+        return;
+      }
+    }
+    size -= readed; /* Remove the read element from the size */
+  }
 }
 
 int _writeAll(long fd,char* msg,int size){

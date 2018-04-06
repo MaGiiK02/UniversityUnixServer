@@ -119,7 +119,7 @@ int Utils_build_path(char* target,char* basepath,char* fileName){
   return sprintf(target,"%s/%s",basepath,fileName);
 }
 
-bool Utils_dir_create_if_not_exist(char* path){
+void Utils_dir_create_if_not_exist(char* path){
     struct stat st = {0};
     if (stat(path, &st) == -1)
     {

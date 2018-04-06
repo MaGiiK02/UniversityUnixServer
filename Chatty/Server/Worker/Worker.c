@@ -50,21 +50,18 @@ void* Worker_function(void *arg){
       case OP_BROKEN_CONN:
         HashSync_lock_by_key(GD_ServerUsers,request.sender);
         u = HashSync_get_element_pointer(GD_ServerUsers,request.sender);
-        u->online = false;
-        u->fd = -1;
+        User_set_offline(u);
         HashSync_unlock_by_key(GD_ServerUsers,request.sender);
         break;
       default:
         //If an error happen this part of code have the purpose to notify the client
-        StatsIncNErrors();
+        if(ris!= OP_FAIL) StatsIncNErrors();
         msg = Message_build_simple_ack(ris,SERVER_SENDER_NAME);
         SockSync_send_message_SS(fd,msg);
 
         HashSync_lock_by_key(GD_ServerUsers,request.sender);
         if((u = HashSync_get_element_pointer(GD_ServerUsers,request.sender))) {
-          //if it's not null
-          u->online = false;
-          u->fd = -1;
+          User_set_offline(u);
         }
         HashSync_unlock_by_key(GD_ServerUsers,request.sender);
 

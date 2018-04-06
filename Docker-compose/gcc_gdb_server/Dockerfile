@@ -11,3 +11,4 @@ RUN apt-get install -y gdbserver
 RUN apt-get install -y valgrind
 RUN apt-get install -y make
 RUN apt-get install -y psmisc
+RUN apt-get install less

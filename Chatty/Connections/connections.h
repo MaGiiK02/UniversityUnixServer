@@ -62,6 +62,17 @@ int readHeader(long fd, message_hdr_t *hdr);
 int readData(long fd, message_data_t *data);
 
 /**
+ * @function readData
+ * @brief Legge il body del messaggio ma senza il relativo buffer.
+ *
+ * @param fd     descrittore della connessione
+ * @param data   puntatore al body del messaggio
+ *
+ * @return 0 in caso di successo -1 in caso di errore
+ */
+int readDataNoBuffer(long fd, message_data_t *data);
+
+/**
  * @function readMsg
  * @brief Legge l'intero messaggio
  *
@@ -114,12 +125,13 @@ int sendHeader(long fd, message_hdr_t *msg);
  * @brief Copia il contenuto del buffer nello stream passato in input,
  *  si aspetta che sullo stream sia presente un paccetto message_data.
  *
- * @param fd     descrittore della connessione
- * @param strea    puntatore ad uno stream
+ * @param fd      descrittore della connessione
+ * @param stream  untatore ad uno stream
+ * @param size    the size of stream to dump
  *
  * @return 0 in caso di successo -1 in caso di errore
  */
-int dumpBufferOnStream(long fd,FILE* stream,int maxBufSize);
+int dumpBufferOnStream(long fd,FILE* stream, int size);
 
 /* da completare da parte dello studente con eventuali altri metodi di interfaccia */
 

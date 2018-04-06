@@ -11,3 +11,6 @@ WORKDIR /usr/src/myapp/Chatty
 
 RUN make client
 
+#to have something to send during debug
+RUN make libchatty.a
+
