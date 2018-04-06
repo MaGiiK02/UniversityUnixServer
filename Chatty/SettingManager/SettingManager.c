@@ -128,8 +128,8 @@ Settings* _load_settings_from_file_ptr(FILE* fptr,bool useDefault){
 
 
     char* file_line = malloc(1024 * sizeof(char));
-    char* setting_value =  malloc(1024 * sizeof(char));
-    char* setting_name =  malloc(1024 * sizeof(char));
+    char* setting_value;
+    char* setting_name;
 
     // TODO Handle row longer than 1024 characters
     while(fgets(file_line,1024,fptr) != NULL){

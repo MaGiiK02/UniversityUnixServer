@@ -14,6 +14,10 @@
 #define UNIX_PATH_MAX  64
 #endif
 
+#if !defined(STREAM_BUFFER)
+#define STREAM_BUFFER  1024
+#endif
+
 #include "../Message/message.h"
 
 /**
@@ -105,6 +109,17 @@ int sendData(long fd, message_data_t *msg);
  */
 int sendHeader(long fd, message_hdr_t *msg);
 
+/**
+ * @function dumpBufferOnStream
+ * @brief Copia il contenuto del buffer nello stream passato in input,
+ *  si aspetta che sullo stream sia presente un paccetto message_data.
+ *
+ * @param fd     descrittore della connessione
+ * @param strea    puntatore ad uno stream
+ *
+ * @return 0 in caso di successo -1 in caso di errore
+ */
+int dumpBufferOnStream(long fd,FILE* stream,int maxBufSize);
 
 /* da completare da parte dello studente con eventuali altri metodi di interfaccia */
 

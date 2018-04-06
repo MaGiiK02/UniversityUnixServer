@@ -21,6 +21,7 @@ void* Worker_function(void *arg){
   sigset_t blockedSet;
   sigemptyset(&blockedSet);
   sigaddset(&blockedSet,SIGUSR1);
+  sigaddset(&blockedSet,SIGUSR2);
   if(pthread_sigmask(SIG_BLOCK,&blockedSet,NULL)!=0){
     perror("Registering child sigmask");
     pthread_exit(NULL);
@@ -44,7 +45,7 @@ void* Worker_function(void *arg){
     switch (ris=_manageRequest(fd,&request)){
       case OP_OK:
         Data_put_in_readSet_S(fd); //put back the fd in the reading set
-        //TODO SETBK RISE OF SIGUSR2
+        kill(GD_MainThread,SIGUSR2); // notify restoring of an FD
         break;
       case OP_BROKEN_CONN:
         HashSync_lock_by_key(GD_ServerUsers,request.sender);
@@ -81,7 +82,7 @@ int _manageRequest(int clientFd,message_hdr_t* request){
   if(request->op == REGISTER_OP){
     //is the only operation that don't have need about an user
     result = OP_register(clientFd,request);
-  }else {
+  }else{
     if(readData(clientFd,&data) <= 0){
       return OP_BROKEN_CONN;
     }

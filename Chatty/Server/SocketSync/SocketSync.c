@@ -19,7 +19,7 @@ void SockSync_init_socket_sync(int max_concurrent_fds){
 }
 void SockSync_free_socket_sync(){
   if(IS_SOCKET_MUTEX_INIT){
-    for(int i;i<SOCK_MUTEX_SIZE;i++) {
+    for(int i=0;i<SOCK_MUTEX_SIZE;i++) {
       pthread_mutex_destroy(&(SOCKET_MUTEX[i]));
     }
     FREE (SOCKET_MUTEX);

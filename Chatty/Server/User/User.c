@@ -33,7 +33,7 @@ void User_PushHistory(User* u,message_t* msg){
   printf("USER(%s) messages list:\n",u->name);
   while(n){
     message_t* msg = (message_t*) n->data;
-    printf("    ",msg->data.buf);
+    printf("    %s\n",msg->data.buf);
     n = n->next;
   }
   #endif
@@ -45,6 +45,7 @@ HashTableSync* User_NewHashTable(unsigned int size){
 }
 
 void User_copy(void* dst, void* src){
+  if(dst == src)return;
   memcpy(dst,src, sizeof(User));
 }
 

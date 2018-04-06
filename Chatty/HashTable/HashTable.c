@@ -25,6 +25,7 @@ void _hash_element_free(void* hashEl){
 void _hash_element_copy(void* dst, void* src){
   HashElement* destination = (HashElement*) dst;
   HashElement* source = (HashElement*) src;
+  if(src == dst ) return ;
   strcpy(destination->key,source->key);
   memcpy(destination,source,sizeof(HashElement));
   source->cpyFn(destination->value,source->value);

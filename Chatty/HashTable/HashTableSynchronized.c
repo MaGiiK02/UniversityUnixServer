@@ -30,8 +30,7 @@ HashTableSync* HashSync_new(long size,long elementSize,HashFreeFunction freeFn,H
 }
 
 void HashSync_destroy(HashTableSync* hash){
-  int i;
-  for(i=0; i<hash->mutexCount; i++){
+  for(int i=0; i<hash->mutexCount; i++){
     pthread_mutex_destroy(hash->mutex[i]);
   }
   Hash_destroy(hash->hashTable);

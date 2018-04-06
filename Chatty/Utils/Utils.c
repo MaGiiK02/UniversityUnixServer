@@ -14,6 +14,7 @@
 #include <math.h>
 #include <ctype.h>
 #include <stdio.h>
+#include <sys/stat.h>
 
 void Utils_str_remove_spaces(char* str){
     Utils_str_remove_character(str,' ');
@@ -29,17 +30,16 @@ void Utils_str_remove_special_chars(char* str){
     Utils_str_remove_characters(str,special_chars);
 }
 
-void Utils_str_remove_characters(char* str,const char *to_be_removed){
-
-    if( str == NULL )
+void Utils_str_remove_characters(char* str,char* to_be_removed){
+    if( str == NULL || to_be_removed == NULL)
         return;
 
     char* writer = str;
     char* reader = str;
 
     while( *reader != '\0'){
-        if (strchr(to_be_removed,*reader) == NULL){
-            *writer = *reader;
+        if (strchr(to_be_removed,*reader) == NULL){ //check if the current character is in the to remove list
+            *writer = *reader; // copy of the char
             writer++;
         }
         reader++;
@@ -113,4 +113,23 @@ void Utils_str_clear(char* str){
 
 int Utils_calculate_mutex_array_size(long size){
     return ceil(log2((double)size)+1);
+}
+
+int Utils_build_path(char* target,char* basepath,char* fileName){
+  return sprintf(target,"%s/%s",basepath,fileName);
+}
+
+bool Utils_dir_create_if_not_exist(char* path){
+    struct stat st = {0};
+    if (stat(path, &st) == -1)
+    {
+        mkdir(path, 0700);
+    }
+}
+
+long Utils_file_size(FILE* f){
+    fseek(f, 0, SEEK_END);
+    long size = ftell(f);
+    fseek(f, 0, SEEK_SET);
+    return size;
 }

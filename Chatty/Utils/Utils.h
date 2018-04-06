@@ -9,9 +9,11 @@
 #include "../Booleans/Booleans.h"
 #include "../MemoryHelper/MemoryHelper.h"
 
+#define KILOBYTE 1024
+
 void Utils_str_remove_character(char* str,const char c);
 
-void Utils_str_remove_characters(char* str, const char *to_be_removed);
+void Utils_str_remove_characters(char* str, char *to_be_removed);
 
 void Utils_str_remove_spaces(char* str);
 
@@ -37,5 +39,11 @@ int Utils_str_compare_case_insensitive(const char* str_1, const char* str_2);
 void Utils_str_clear(char* str);
 
 int Utils_calculate_mutex_array_size(long size);
+
+int Utils_build_path(char* target,char* basepath,char* filename);
+
+long Utils_file_size(FILE* f);
+
+bool Utils_dir_create_if_not_exist(char* path);
 
 #endif

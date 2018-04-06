@@ -31,6 +31,7 @@
 #include "SocketSync/SocketSync.h"
 #include "Worker/Worker.h"
 #include "Statistic/stats.h"
+#include "../Debugger/Debugger.h"
 
 
 //Functions
@@ -48,17 +49,14 @@ static volatile sig_atomic_t got_PRINTSTAT = 0;
 static volatile sig_atomic_t got_REFRESH_FD= 0;
 static void handlerClose(int sig){
     got_SIGTERM = 1;
-    printf("signalRecived");
 }
 
-/*static void handlerRefreshFd(int sig){
+static void handlerRefreshFd(int sig){
     got_REFRESH_FD = 1;
-    printf("signalRecived");
-}*/
+}
 
 static void handlerPrintStats(int sig){
     got_PRINTSTAT = 1;
-    printf("signalRecived");
 }
 
 int main(int argc, char *argv[]) {
@@ -86,7 +84,7 @@ int main(int argc, char *argv[]) {
     sigignore(SIGPIPE); //Pipe error managed at low level write read operations
 
     /// INSTALL handlers Start
-    struct sigaction saInterupt,saPrint;
+    struct sigaction saInterupt,saPrint,saRefresh;
 
     saInterupt.sa_handler = handlerClose;
     sigemptyset(&saInterupt.sa_mask);
@@ -113,19 +111,20 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
-    /*saRefresh.sa_handler = handlerRefreshFd;
+    saRefresh.sa_handler = handlerRefreshFd;
     sigemptyset(&saRefresh.sa_mask);
     saRefresh.sa_flags = SA_RESTART;
     if (sigaction(SIGUSR2, &saRefresh, NULL) == -1){
         perror("error adding new signal handler");
         exit(1);
-    }*/
+    }
     /// INSTALL handlers END
 
     //Initialize a structure that enable to avoid race in write procedures
     pthread_mutex_init(&GD_MU_OnlineUsers,NULL);
     pthread_mutex_init(&GD_MU_FdSetRead,NULL);
     SockSync_init_socket_sync(GD_ServerSetting->maxConnections);
+    GD_MainThread = getpid();
     GD_WorkerCommunicationChannel = Ch_New(GD_ServerSetting->maxConnections,sizeof(int),_freeForCh);
     if(_bootstrapWorkers(GD_ServerSetting->threadsInPool)!=0){
       perror("unable to start threads");
@@ -143,6 +142,9 @@ int main(int argc, char *argv[]) {
     SockSync_free_socket_sync();
     _freeStructures();
 
+    printf("###########################################\n");
+    printf("# Closing the application without errors! #\n");
+    printf("###########################################\n");
     return 0;
 }
 
@@ -189,15 +191,19 @@ void _freeStructures(){
 
     //HashSync_destroy(GD_ServerGroup);
 
+    Log(("-->Freeing GD_ServerUsers\n"));
     HashSync_destroy(GD_ServerUsers);
 
+    Log(("-->Freeing GD_ServerSetting\n"));
     SettingManager_destroy_settings_struct(&GD_ServerSetting);
 
+    Log(("-->Freeing GD_WorkerCommunicationChannel\n"));
     Ch_Free(GD_WorkerCommunicationChannel);
 
-    pthread_mutex_destroy(&GD_MU_OnlineUsers); //TODO Created with macro maybe it's not needed the free
+    Log(("-->Freeing GD_MU_OnlineUsers\n"));
+    pthread_mutex_destroy(&GD_MU_OnlineUsers);
 
-    //TODO check if needed a free for each pthread in the array
+    Log(("-->Freeing workers\n"));
     FREE(GD_Workers);
 
 }
@@ -252,7 +258,7 @@ int _listenAndServe(int listenerSocketFd) {
     while(!got_SIGTERM){
         Data_copy_readSet_S(&working_rfd);
         max_fd = max_fd >= lastAddedFd ? max_fd : lastAddedFd; // updatefd
-        timer.tv_sec = 1;
+        timer.tv_sec = 300; //5 minutes
         timer.tv_nsec = 0;
         event = pselect(max_fd+1,&working_rfd,NULL,NULL,&timer,&sigIgnore);
 
@@ -263,6 +269,7 @@ int _listenAndServe(int listenerSocketFd) {
                     if(got_PRINTSTAT){
                         FILE* stat_file = fopen(GD_ServerSetting->statFileName, "w+");
                         printStats_S(stat_file);
+                        fflush(stat_file);
                         fclose(stat_file);
                         got_PRINTSTAT = 0;
                     }

@@ -18,7 +18,7 @@ int _readAll(long fd,char* buffer,int size);
 int openConnection(char* path, unsigned int ntimes, unsigned int secs){
   int socket_fd = socket(AF_UNIX, SOCK_STREAM, 0);
   if (is_error(socket_fd)){
-    perror("Problems with the socket creation");
+    ON_DEBUG(perror("Problems with the socket creation");)
     return -1;
   }
 
@@ -35,7 +35,7 @@ int openConnection(char* path, unsigned int ntimes, unsigned int secs){
 
     if(is_error(connection_result)){
       if(errno != ENOENT){
-        perror("Unhandled error in the connection");
+        ON_DEBUG(perror("Unhandled error in the connection");)
         return -1;
       }
 
@@ -58,7 +58,8 @@ int readHeader(long fd, message_hdr_t *hdr){
 
   int read_result = read(fd,buffer,buffer_size);
   if( read_result<0){
-    perror("Error during socket read");
+    ON_DEBUG(perror("Error during socket read");)
+    free(buffer);
     return -1;
   }
 
@@ -76,7 +77,8 @@ int readData(long fd, message_data_t *data){
 
   int read_result = read(fd,buffer,buffer_size);
   if(is_error(read_result)){
-    perror("Error during socket read");
+    ON_DEBUG(perror("Error during socket read");)
+    free(buffer);
     return -1;
   }
 
@@ -87,7 +89,8 @@ int readData(long fd, message_data_t *data){
 
   read_result += _readAll(fd,buffer,buffer_size);
   if(is_error(read_result)){
-    perror("Error during socket read");
+    ON_DEBUG(perror("Error during socket read");)
+    free(buffer);
     return -1;
   }
 
@@ -104,13 +107,13 @@ int readMsg(long fd, message_t *msg){
 
   int headerResult = readHeader(fd,&msg->hdr);
   if(is_error(headerResult)){
-    perror("Error during read message header");
+    ON_DEBUG(perror("Error during read message header");)
     return -1;
   }
 
   int headerData = readData(fd,&msg->data);
   if(is_error(headerData)){
-    perror("Error during read message data");
+    ON_DEBUG(perror("Error during read message data");)
     return -1;
   }
 
@@ -132,8 +135,10 @@ int sendRequest(long fd, message_t *msg){
 int sendHeader(long fd, message_hdr_t *data){
   int write_result = _writeAll(fd,(char*) data, sizeof(message_hdr_t));
   if(is_error(write_result)){
-    fprintf(stderr,"Error during msg header send (fd:%ld)",fd);
-    perror("");
+    ON_DEBUG(
+            fprintf(stderr,"Error during msg header send (fd:%ld)",fd);
+            perror("");
+    )
     return -1;
   }
   Log(("Sent HDR to %s with operation:[%d]\n",data->sender,data->op));
@@ -143,21 +148,67 @@ int sendHeader(long fd, message_hdr_t *data){
 int sendData(long fd, message_data_t *data){
   int write_result = _writeAll(fd,(char*) data, sizeof(message_data_t));
   if(is_error(write_result)){
-    fprintf(stderr,"Error during msg data send (fd:%ld)",fd);
+    ON_DEBUG(fprintf(stderr,"Error during msg data send (fd:%ld)",fd);)
     return -1;
   }
 
   //Write dataBuffer
   if(data->hdr.len > 0){
+    if(data->buf == NULL) return -1;
     write_result = _writeAll(fd,(char*) data->buf, data->hdr.len);
     if(is_error(write_result)){
-      perror("Error during msg header send");
+      ON_DEBUG(perror("Error during msg header send");)
       return -1;
     }
   }
 
   Log(("Sent DATA to %s with buffer of size %d : %s \n",data->hdr.receiver,data->hdr.len,data->buf));
 
+  return 0;
+}
+
+int dumpBufferOnStream(long fd,FILE* stream,int maxBufSize){
+
+  size_t buffer_size = sizeof(message_data_t);
+  char* buffer = malloc(buffer_size);
+
+  int read_result = read(fd,buffer,buffer_size);
+  if(is_error(read_result)){
+    ON_DEBUG(perror("Error during socket read in dumpBuffer");)
+    return -1;
+  }
+
+  message_data_t* data = (message_data_t*) buffer;
+
+
+  int to_read = data->hdr.len;
+  if(to_read>maxBufSize) return 1;
+  buffer = realloc(buffer,STREAM_BUFFER);
+  //the realloc it's of cause i will not use the data any more
+
+  int readed;
+  int writed;
+  while(to_read > 0){ /* While all the message isn't read */
+    readed = read((int) fd, buffer, buffer_size);
+    if(is_error(readed)){
+      if(errno != EINTR){
+        free(buffer);
+        return -1;
+      }
+    }
+    to_read -= readed;/* Remove the written element from the count */
+
+    while(readed > 0){ // Ensure read bytes are correctly wrote down
+      writed = fwrite(buffer,1,readed,stream);
+      if(is_error(writed)){
+        free(buffer);
+        return -1;
+      }
+      readed-=writed;
+    }
+  }
+
+  free (buffer);
   return 0;
 }
 
@@ -171,8 +222,8 @@ int _writeAll(long fd,char* msg,int size){
       }
     }
 
-    size -= writed; /* Remove the writed element from the size */
-    msg += writed; /* move the buffer poiter after the last byte writed */
+    size -= writed; /* Remove the written element from the size */
+    msg += writed; /* move the buffer pointer after the last byte wrote */
   }
 
   return 0;

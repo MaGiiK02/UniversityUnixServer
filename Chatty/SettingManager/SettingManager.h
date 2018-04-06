@@ -21,7 +21,6 @@
 /* Project Include */
 #include "../Booleans/Booleans.h"
 
-
 #define SETTING_FIELD_NAME_UNIX_PATH "unixpath"
 #define SETTING_FIELD_NAME_MAX_CONNECTIONS "maxconnections"
 #define SETTING_FIELD_NAME_THREADS_IN_POOL "threadsinpool"

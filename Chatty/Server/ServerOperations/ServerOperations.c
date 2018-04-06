@@ -5,6 +5,14 @@
 #include "../User/User.h"
 #include "ServerOperations.h"
 #include "../ServerMessages/ServerMessages.h"
+#include "../../SettingManager/SettingManager.h"
+#include "../../Message/message.h"
+
+#ifndef  DEFAULT_FILE_NAME
+#define  DEFAULT_FILE_NAME "FILE_"
+#endif
+
+static int _FILE_COUNT = 0;
 
 void Send_ack_to(int clientFd, int reply_code){
   message_hdr_t reply ;
@@ -13,23 +21,6 @@ void Send_ack_to(int clientFd, int reply_code){
   SockSync_send_header_SS(clientFd,&reply);
 }
 
-void _send_message_to_user_S(User* to_user,User* from_user, char* text){
-  message_t* msg = Message_build(TXT_MESSAGE,from_user->name,from_user->name,text,strlen(text));
-  HashSync_lock_by_key(GD_ServerUsers,to_user->name);
-  StatsIncNNotDelivered_S();
-  if(to_user->online){
-    if(SockSync_send_message_SS(to_user->fd,msg)!=0){
-      //error delivering the message
-      User_set_offline(to_user);
-    }else{
-      StatsDecNNotDelivered_S();
-      StatsIncNDelivered_S();
-    }
-  }
-  User_PushHistory(to_user,msg);
-  HashSync_unlock_by_key(GD_ServerUsers,to_user->name);
-  Message_free(msg);
-}
 void _send_message_to_user(User* to_user,User* from_user, char* text){
   message_t* msg = Message_build(TXT_MESSAGE,from_user->name,from_user->name,text,strlen(text));
   StatsIncNNotDelivered_S();
@@ -45,6 +36,35 @@ void _send_message_to_user(User* to_user,User* from_user, char* text){
   User_PushHistory(to_user,msg);
   Message_free(msg);
 }
+
+void _send_message_to_user_S(User* to_user,User* from_user, char* text){
+  HashSync_lock_by_key(GD_ServerUsers,to_user->name);
+  _send_message_to_user(to_user,from_user,text);
+  HashSync_unlock_by_key(GD_ServerUsers,to_user->name);
+}
+
+void _send_file_to_user(User* to_user,User* from_user, char* name){
+  message_t* msg = Message_build(FILE_MESSAGE,from_user->name,from_user->name,name,strlen(name));
+  StatsIncNNotFileDelivered_S();
+  if(to_user->online){
+    if(SockSync_send_message_SS(to_user->fd,msg)!=0){
+      //error delivering the message
+      User_set_offline(to_user);
+    }else{
+      StatsDecNNotFileDelivered_S();
+      StatsIncNFileDelivered_S();
+    }
+  }
+  User_PushHistory(to_user,msg);
+  Message_free(msg);
+}
+
+void _send_file_to_user_S(User* to_user,User* from_user, char* name){
+  HashSync_lock_by_key(GD_ServerUsers,to_user->name);
+  _send_file_to_user(to_user,from_user,name);
+  HashSync_unlock_by_key(GD_ServerUsers,to_user->name);
+}
+
 
 int OP_register(int clientFd,message_hdr_t* data){ //when the user is just registered is seen as online until the connection ends
   if(strcmp(data->sender,"")==0) return OP_FAIL; //names can't be empty
@@ -71,6 +91,7 @@ int OP_unregister(int clientFd,User* clientUser){
   }
   StatsDecNUser_S();
   HashSync_destroy_element_S(GD_ServerUsers,clientUser->name);
+  Send_ack_to(clientFd,OP_OK);
   return OP_OK;
 }
 
@@ -112,6 +133,7 @@ int OP_usrlist(int clientFd,User* clientUser){
 
 int OP_posttxt(int clientFd, User* clientUser, message_data_t* data){
   if(strcmp(data->hdr.receiver,clientUser->name)==0) return OP_FAIL;
+  if(data->hdr.len > GD_ServerSetting->maxMsgSize) return OP_MSG_TOOLONG;
   User* target = HashSync_get_element_pointer(GD_ServerUsers,(data->hdr.receiver));
   if(target == NULL){
     return OP_FAIL;
@@ -122,6 +144,7 @@ int OP_posttxt(int clientFd, User* clientUser, message_data_t* data){
 }
 
 int OP_posttxtall(int clientFd,User* clientUser,message_data_t* data){
+  if(data->hdr.len > GD_ServerSetting->maxMsgSize) return OP_MSG_TOOLONG;
   for(int i=0; i< GD_ServerUsers->hashTable->size;i++){
     List* l = GD_ServerUsers->hashTable->array[i];
     if(l == NULL) continue;
@@ -131,11 +154,14 @@ int OP_posttxtall(int clientFd,User* clientUser,message_data_t* data){
     User* tmp_usr;
     while(el != NULL) {
       tmp_usr = (User *) ((HashElement*)el->data)->value;
-      _send_message_to_user(tmp_usr,clientUser,data->buf);//only the S version execute the locks
+      if(strcmp(clientUser->name,tmp_usr->name)!=0) {
+        _send_message_to_user(tmp_usr, clientUser, data->buf);//only the S version execute the locks
+      }
       el=el->next;
     }
     HashSync_unlock_by_index(GD_ServerUsers,i);
   }
+  Send_ack_to(clientFd,OP_OK);
   return OP_OK;
 }
 
@@ -165,11 +191,60 @@ int OP_getprevmsgs(int clientFd,User* clientUser){
   return OP_OK;
 }
 int OP_postfile(int clientFd,User* clientUser,message_data_t* data){
+  User* target = HashSync_get_element_pointer(GD_ServerUsers,(data->hdr.receiver));
+  if(target == NULL){
+    return OP_FAIL;
+  }
 
+  char filePath[256];
+  Utils_build_path(filePath,GD_ServerSetting->dirName,data->buf);
+  FILE* destination_file = fopen(filePath,"w+");
+  switch(dumpBufferOnStream(clientFd,destination_file,GD_ServerSetting->maxFileSize*KILOBYTE)){
+    case 1:
+      fflush(destination_file);
+      fclose(destination_file);
+      return OP_MSG_TOOLONG;
+
+    case -1:
+      fflush(destination_file);
+      fclose(destination_file);
+      return OP_FAIL;
+
+  }
+  fflush(destination_file);
+  fclose(destination_file);
+
+  _send_file_to_user_S(clientUser,target,filePath);
+  Send_ack_to(clientFd,OP_OK);
+  return OP_OK;
 }
 int OP_getfile(int clientFd,User* clientUser,message_data_t* data){
+    // READ FILE IF EXIST sed to user with an ack ok!
+    FILE* f;
+    if(!(f=fopen(data->buf,"r"))){
+      return OP_NO_SUCH_FILE;
+    }
 
+    long size = Utils_file_size(f);
+    char* buffer = malloc(size);
+    if(fread(buffer,size,1,f)<=0){
+      fflush(f);
+      fclose(f);
+      perror("error reading the file in OP_getfile");
+      return OP_FAIL;
+    }
+    fflush(f);
+    fclose(f);
+
+    message_t* msg = Message_build(OP_OK,SERVER_SENDER_NAME,clientUser->name,NULL,0); //evito la copia di tutto il file
+    msg->data.hdr.len = size;
+    msg->data.buf = buffer;
+    SockSync_send_message_SS(clientFd,msg);
+    Message_free(msg); //fa anche la free del buffer
+
+    return OP_OK;
 }
+
 
 int OP_creategroup(int clientFd,User* clientUser,message_data_t* data);
 int OP_addgroup(int clientFd,User* clientUser,message_data_t* data);
@@ -193,9 +268,9 @@ int OP_manage(int clientFd,User* clientUser,message_hdr_t* request,message_data_
     case GETPREVMSGS_OP:
       return OP_getprevmsgs(clientFd,clientUser);
     case POSTFILE_OP:
-
+      return OP_postfile(clientFd,clientUser,data);
     case GETFILE_OP:
-
+      return OP_getfile(clientFd,clientUser,data);
     case CREATEGROUP_OP:
 
     case ADDGROUP_OP:

@@ -15,6 +15,7 @@ Ch* GD_WorkerCommunicationChannel;
 pthread_t* GD_Workers;
 pthread_mutex_t GD_MU_FdSetRead;
 pthread_mutex_t GD_MU_OnlineUsers;
+pid_t GD_MainThread;
 
 bool Data_put_in_readSet_S(int fd){
   LOCK_MUTEX_EXIT(GD_MU_FdSetRead);
