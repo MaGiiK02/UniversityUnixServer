@@ -20,9 +20,11 @@ void _send_message_to_user(User* to_user,User* from_user, char* text){
   message_t* msg = Message_build(TXT_MESSAGE,from_user->name,from_user->name,text,strlen(text));
   StatsIncNNotDelivered_S();
   if(to_user->online){
-    if(SockSync_send_message_SS(to_user->fd,msg)!=0){
+    if(SockSync_send_message_SS(to_user->fd,msg)!=0) {
       //error delivering the message
+      HashSync_lock_by_key(GD_ServerUsers,to_user->name);
       User_set_offline(to_user);
+      HashSync_unlock_by_key(GD_ServerUsers,to_user->name);
     }else{
       StatsDecNNotDelivered_S();
       StatsIncNDelivered_S();
@@ -46,7 +48,7 @@ void _send_file_to_user(User* to_user,User* from_user, char* name){
       //error delivering the message
       HashSync_lock_by_key(GD_ServerUsers,to_user->name);
       User_set_offline(to_user);
-      HashSync_lock_by_key(GD_ServerUsers,to_user->name);
+      HashSync_unlock_by_key(GD_ServerUsers,to_user->name);
     }else{
       StatsDecNNotFileDelivered_S();
       StatsIncNFileDelivered_S();
