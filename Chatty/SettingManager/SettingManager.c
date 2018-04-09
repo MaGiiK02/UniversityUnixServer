@@ -40,10 +40,6 @@ Settings* SettingManager_new_default_settings_struct(){
     settings->threadsInPool = SETTING_DEFAULT_THREADS_IN_POOL;
     settings->maxHistMsgs = SETTING_DEFAULT_MAX_HITS_MSG;
 
-    settings->dirName =  malloc(sizeof(char)*256);
-    settings->statFileName = malloc(sizeof(char)*256);
-    settings->unixPath = malloc(sizeof(char)*256);
-
     strcpy(settings->unixPath,SETTING_DEFAULT_UNIX_PATH);
     strcpy(settings->dirName,SETTING_DEFAULT_DIR_NAME);
     strcpy(settings->statFileName,SETTING_DEFAULT_STAT_FILE_NAME);
