@@ -43,11 +43,7 @@ void Ch_Close(Ch* ch,bool forceClose){
 }
 
 void Ch_Free(Ch* ch){
-  for(int i = 0; i<ch->size; i++){
-    if(ch->queue[i]!= NULL){
-      ch->freeFn(ch->queue[i]);
-    }
-  }
+  
   pthread_cond_destroy(&(ch->condWaitFull));
   pthread_cond_destroy(&(ch->condWaitEmpty));
   pthread_mutex_destroy(&(ch->mu));
