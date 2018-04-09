@@ -32,6 +32,7 @@
 #include "Worker/Worker.h"
 #include "Statistic/stats.h"
 #include "../Debugger/Debugger.h"
+#include "../SettingManager/SettingManager.h"
 
 
 //Functions
@@ -41,7 +42,7 @@ int _buildSocket(char* socketPath,bool forceBind);
 int _listenAndServe(int listenerSocketFd);
 void _freeForCh(void* ptr);
 int _bootstrapWorkers(int worker_count);
-void _closeWorkers();
+void _closeWorkers(int worker_count);
 void _freeStructures();
 
 void _installSignalHandlers(struct sigaction* saInterupt,struct sigaction* saPrint,struct sigaction*saRefresh);
@@ -105,8 +106,8 @@ int main(int argc, char *argv[]) {
     if(_listenAndServe(listenerFD)!=0){
       exit(1);
     }
-
-    _closeWorkers();
+    Ch_Close(GD_WorkerCommunicationChannel,true);
+    _closeWorkers(GD_ServerSetting->threadsInPool);
     unlink(GD_ServerSetting->unixPath);
     SockSync_free_socket_sync();
     _freeStructures();
@@ -179,17 +180,23 @@ int _argsGetStrFromFlag(const char* flag, int argc, char* argv[],char** out_ris)
 }
 
 int _bootstrapWorkers(int worker_count){
-    GD_Workers = calloc(worker_count,sizeof(pthread_t)); //watch maybe we need to fix it a little maybe we had to use a pointer
     int ris;
+    GD_Workers = malloc(worker_count * sizeof(pthread_t*));
     for(int i=0;i<worker_count;i++){
-        ris = Worker_Start_new(&(GD_Workers[i]));
+      GD_Workers[i] = malloc(sizeof(pthread_t));
+        ris = Worker_Start_new((GD_Workers[i]));
         if(ris !=0) return ris;
     }
     return 0;
 }
 
-void _closeWorkers(){
- //TODO
+void _closeWorkers(int worker_count){
+  for (int i = 0; i < worker_count; i++) {
+    pthread_join(*(GD_Workers[i]), NULL);
+    FREE(GD_Workers[i]);
+  }
+  Log(("-->Freeing workers\n"));
+  FREE(GD_Workers);
 }
 
 void _freeStructures(){
@@ -205,9 +212,6 @@ void _freeStructures(){
     Log(("-->Freeing GD_WorkerCommunicationChannel\n"));
     Ch_Free(GD_WorkerCommunicationChannel);
 
-    /*Log(("-->Freeing workers\n"));
-    FREE(GD_Workers);
-    */
 }
 
 int _buildSocket(char* socketPath,bool forceBind){
@@ -278,8 +282,7 @@ int _listenAndServe(int listenerSocketFd) {
                     if(got_SIGTERM) {
                         break;
                     }
-                    if(got_REFRESH_FD)
-                      got_REFRESH_FD = 0;
+                    if(got_REFRESH_FD) got_REFRESH_FD = 0;
                     break;
             }
             continue;

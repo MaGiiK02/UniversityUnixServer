@@ -21,7 +21,7 @@ extern pthread_mutex_t GD_MU_FdSetRead;
 extern fd_set GD_FdSetRead;
 extern Ch* GD_WorkerCommunicationChannel;
 extern pthread_mutex_t GD_MU_OnlineUsers;
-extern pthread_t* GD_Workers;
+extern pthread_t** GD_Workers;
 extern pid_t GD_MainThread;
 
 

@@ -12,7 +12,7 @@ HashTableSync* GD_ServerUsers;
 Settings* GD_ServerSetting;
 fd_set GD_FdSetRead;
 Ch* GD_WorkerCommunicationChannel;
-pthread_t* GD_Workers;
+pthread_t** GD_Workers;
 pthread_mutex_t GD_MU_FdSetRead;
 pthread_mutex_t GD_MU_OnlineUsers;
 pid_t GD_MainThread;

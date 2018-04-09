@@ -71,7 +71,7 @@ chatty_memdebug:
   volumes:
     - tmp:/tmp
   privileged: true
-  entrypoint: "valgrind --leak-check=yes --track-origins=yes ./chatty -f Config/chatty.conf1"
+  entrypoint: "valgrind --leak-check=yes --leak-check=full --track-origins=yes ./chatty -f Config/chatty.conf1"
 
 client:
   build: .
