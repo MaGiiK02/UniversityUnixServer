@@ -44,6 +44,7 @@ int _bootstrapWorkers(int worker_count);
 void _closeWorkers();
 void _freeStructures();
 
+void _installSignalHandlers(struct sigaction* saInterupt,struct sigaction* saPrint,struct sigaction*saRefresh);
 static volatile sig_atomic_t got_SIGTERM = 0;
 static volatile sig_atomic_t got_PRINTSTAT = 0;
 static volatile sig_atomic_t got_REFRESH_FD= 0;
@@ -84,40 +85,8 @@ int main(int argc, char *argv[]) {
     sigignore(SIGPIPE); //Pipe error managed at low level write read operations
 
     /// INSTALL handlers Start
-    struct sigaction saInterupt,saPrint,saRefresh;
-
-    saInterupt.sa_handler = handlerClose;
-    sigemptyset(&saInterupt.sa_mask);
-    saInterupt.sa_flags = SA_RESTART;
-
-    if (sigaction(SIGINT, &saInterupt, NULL) == -1){
-        perror("error adding new signal handler");
-        exit(1);
-    }
-    if (sigaction(SIGTERM, &saInterupt, NULL) == -1){
-        perror("error adding new signal handler");
-        exit(1);
-    }
-    if (sigaction(SIGQUIT, &saInterupt, NULL) == -1){
-        perror("error adding new signal handler");
-        exit(1);
-    }
-
-    saPrint.sa_handler = handlerPrintStats;
-    sigemptyset(&saPrint.sa_mask);
-    saPrint.sa_flags = SA_RESTART;
-    if (sigaction(SIGUSR1, &saPrint, NULL) == -1){
-        perror("error adding new signal handler");
-        exit(1);
-    }
-
-    saRefresh.sa_handler = handlerRefreshFd;
-    sigemptyset(&saRefresh.sa_mask);
-    saRefresh.sa_flags = SA_RESTART;
-    if (sigaction(SIGUSR2, &saRefresh, NULL) == -1){
-        perror("error adding new signal handler");
-        exit(1);
-    }
+    struct sigaction saInterupt,saPrint,saRefresh; // in order to keep the in the stack
+    _installSignalHandlers(&saInterupt,&saPrint,&saRefresh);
     /// INSTALL handlers END
 
     //Initialize a structure that enable to avoid race in write procedures
@@ -156,6 +125,42 @@ static void _usagePrint(const char *prog_name) {
 void _freeForCh(void* ptr){
     int* int_ptr = (int*)ptr;
     FREE(int_ptr)
+}
+
+void _installSignalHandlers(struct sigaction* saInterupt,struct sigaction* saPrint,struct sigaction*saRefresh){
+
+  saInterupt->sa_handler = handlerClose;
+  sigemptyset(&(saInterupt->sa_mask));
+  saInterupt->sa_flags = SA_RESTART;
+
+  if (sigaction(SIGINT, saInterupt, NULL) == -1){
+    perror("error adding new signal handler");
+    exit(1);
+  }
+  if (sigaction(SIGTERM, saInterupt, NULL) == -1){
+    perror("error adding new signal handler");
+    exit(1);
+  }
+  if (sigaction(SIGQUIT, saInterupt, NULL) == -1){
+    perror("error adding new signal handler");
+    exit(1);
+  }
+
+  saPrint->sa_handler = handlerPrintStats;
+  sigemptyset(&(saPrint->sa_mask));
+  saPrint->sa_flags = SA_RESTART;
+  if (sigaction(SIGUSR1, saPrint, NULL) == -1){
+    perror("error adding new signal handler");
+    exit(1);
+  }
+
+  saRefresh->sa_handler = handlerRefreshFd;
+  sigemptyset(&(saRefresh->sa_mask));
+  saRefresh->sa_flags = SA_RESTART;
+  if (sigaction(SIGUSR2, saRefresh, NULL) == -1){
+    perror("error adding new signal handler");
+    exit(1);
+  }
 }
 
 int _argsGetStrFromFlag(const char* flag, int argc, char* argv[],char** out_ris){
@@ -200,12 +205,9 @@ void _freeStructures(){
     Log(("-->Freeing GD_WorkerCommunicationChannel\n"));
     Ch_Free(GD_WorkerCommunicationChannel);
 
-    Log(("-->Freeing GD_MU_OnlineUsers\n"));
-    pthread_mutex_destroy(&GD_MU_OnlineUsers);
-
-    Log(("-->Freeing workers\n"));
+    /*Log(("-->Freeing workers\n"));
     FREE(GD_Workers);
-
+    */
 }
 
 int _buildSocket(char* socketPath,bool forceBind){

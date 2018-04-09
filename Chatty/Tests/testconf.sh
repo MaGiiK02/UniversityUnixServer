@@ -48,6 +48,10 @@ sleep 1
 
 read reg online deliv notdeliv filedeliv filenotdeliv errors <<< $(tail -1 $2 | cut -d\  -f 3,4,5,6,7,8,9)
 
+echo "STAT_FILE ##############################"
+echo "$reg $online $deliv $notdeliv $filedeliv $filenotdeliv $errors"
+echo "#########################################"
+
 if [[ $reg != 1 || $online != 1 || $deliv != 0 || $notdeliv != 100 || $filedeliv != 0 || $filenotdeliv != 100 || $errors != 2 ]]; then 
     echo "Test FALLITO"
     exit 1
