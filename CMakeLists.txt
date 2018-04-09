@@ -26,7 +26,7 @@ set(SOURCE_FILE
         Chatty/Utils/Utils.h
         Chatty/config.h
         Chatty/MemoryHelper/MemoryHelper.h
-        Chatty/Debugger/Debugger.h Chatty/HashTable/HashTableSynchronized.c Chatty/HashTable/HashTableSynchronized.h Chatty/List/ListSynchronized.c Chatty/List/ListSynchronized.h Chatty/Server/Worker/Worker.c Chatty/Server/Worker/Worker.h Chatty/Server/WorkerPool/WorkerPool.c Chatty/Server/WorkerPool/WorkerPool.h Chatty/Server/ServerGlobalData.h Chatty/Server/SocketSync/SocketSync.c Chatty/Server/SocketSync/SocketSync.h Chatty/Server/ServerGlobalData.c Chatty/Server/ServerOperations/ServerOperations.c Chatty/Server/ServerOperations/ServerOperations.h Chatty/Server/Statistic/stats.c)
+        Chatty/Debugger/Debugger.h Chatty/HashTable/HashTableSynchronized.c Chatty/HashTable/HashTableSynchronized.h Chatty/List/ListSynchronized.c Chatty/List/ListSynchronized.h Chatty/Server/Worker/Worker.c Chatty/Server/Worker/Worker.h Chatty/Server/ServerGlobalData.h Chatty/Server/SocketSync/SocketSync.c Chatty/Server/SocketSync/SocketSync.h Chatty/Server/ServerGlobalData.c Chatty/Server/ServerOperations/ServerOperations.c Chatty/Server/ServerOperations/ServerOperations.h Chatty/Server/Statistic/stats.c)
 
 #add_executable(TEST-CHANNEL "${SOURCE_FILE}" Chatty/Channel/Channel_Test.c)
 add_executable(TEST-HASH-TABLES  "${SOURCE_FILE}" Chatty/HashTable/HashTable_Test.c)
