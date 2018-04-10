@@ -16,7 +16,7 @@ void Message_free(void* el);
 void Message_copy(void* dst,void* src);
 int Message_cmp(void* el1,void* el2);
 message_t* Message_build(int operation,char* sender,char* reciver,char* buf,int size);
-
+message_t*  Message_build_no_copy(int operation,char* sender,char* reciver,char* buf,int size);
 message_t* Message_build_simple_ack(int operation,char* sender);
 
 

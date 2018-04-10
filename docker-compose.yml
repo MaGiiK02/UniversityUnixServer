@@ -71,7 +71,7 @@ chatty_memdebug:
   volumes:
     - tmp:/tmp
   privileged: true
-  entrypoint: "valgrind --leak-check=yes --leak-check=full --track-origins=yes ./chatty -f Config/chatty.conf1"
+  entrypoint: "valgrind --leak-check=yes --leak-check=full --show-leak-kinds=all --track-origins=yes ./chatty -f Config/chatty.conf1"
 
 client:
   build: .
@@ -91,3 +91,11 @@ make:
   privileged: true
   entrypoint: "make"
 
+workspace:
+  build: .
+  dockerfile: ./Docker-compose/make/Dockerfile
+  container_name: workspace
+  volumes:
+    - tmp:/tmp
+  privileged: true
+  entrypoint: ""

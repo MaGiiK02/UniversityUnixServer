@@ -7,6 +7,7 @@
 #include "../SocketSync/SocketSync.h"
 #include "../ServerOperations/ServerOperations.h"
 #include "../ServerMessages/ServerMessages.h"
+#include "../../Message/message.h"
 #include <signal.h>
 
 int _manageRequest(int clientFd,message_hdr_t* request);
@@ -57,13 +58,14 @@ void* Worker_function(void *arg){
         //If an error happen this part of code have the purpose to notify the client
         if(ris!= OP_FAIL) StatsIncNErrors();
         msg = Message_build_simple_ack(ris,SERVER_SENDER_NAME);
-        SockSync_send_message_SS(fd,msg);
-
-        HashSync_lock_by_key(GD_ServerUsers,request.sender);
-        if((u = HashSync_get_element_pointer(GD_ServerUsers,request.sender))) {
-          User_set_offline(u);
+        if(SockSync_send_message_SS(fd,msg) != 0) {
+          // reply error on the socket
+          HashSync_lock_by_key(GD_ServerUsers, request.sender);
+          if ((u = HashSync_get_element_pointer(GD_ServerUsers, request.sender))) {
+            User_set_offline(u);
+          }
+          HashSync_unlock_by_key(GD_ServerUsers, request.sender);
         }
-        HashSync_unlock_by_key(GD_ServerUsers,request.sender);
 
         Message_free(msg);
         break;
@@ -76,6 +78,7 @@ int _manageRequest(int clientFd,message_hdr_t* request){
   message_data_t data;
   User* usr;
   int result = 0;
+  data.buf = NULL;
   if(request->op == REGISTER_OP){
     //is the only operation that don't have need about an user
     result = OP_register(clientFd,request);
@@ -89,6 +92,7 @@ int _manageRequest(int clientFd,message_hdr_t* request){
     }else{
       result = OP_NICK_UNKNOWN;
     }
+    FREE(data.buf)
   }
   return result;
 }

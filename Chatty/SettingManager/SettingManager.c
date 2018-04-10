@@ -40,6 +40,7 @@ Settings* SettingManager_new_default_settings_struct(){
     settings->threadsInPool = SETTING_DEFAULT_THREADS_IN_POOL;
     settings->maxHistMsgs = SETTING_DEFAULT_MAX_HITS_MSG;
 
+
     strcpy(settings->unixPath,SETTING_DEFAULT_UNIX_PATH);
     strcpy(settings->dirName,SETTING_DEFAULT_DIR_NAME);
     strcpy(settings->statFileName,SETTING_DEFAULT_STAT_FILE_NAME);
@@ -123,12 +124,15 @@ Settings* _load_settings_from_file_ptr(FILE* fptr,bool useDefault){
     }
 
 
-    char* file_line = malloc(1024 * sizeof(char));
+    char file_line[SETTING_MAX_SETTING_LINE_LENGTH];
+    #ifdef MAKE_VALGRIND_HAPPY
+    memset(file_line, 0, SETTING_MAX_SETTING_LINE_LENGTH * sizeof(char));
+    #endif
+
     char* setting_value;
     char* setting_name;
-
-    // TODO Handle row longer than 1024 characters
-    while(fgets(file_line,1024,fptr) != NULL){
+    
+    while(fgets(file_line,SETTING_MAX_SETTING_LINE_LENGTH,fptr) != NULL){
 
         Utils_str_remove_special_chars(file_line);
         Utils_str_remove_spaces(file_line);
@@ -140,7 +144,6 @@ Settings* _load_settings_from_file_ptr(FILE* fptr,bool useDefault){
         }
     }
 
-    free(file_line);
     return settings;
 }
 

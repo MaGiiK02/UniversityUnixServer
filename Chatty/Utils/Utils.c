@@ -26,7 +26,7 @@ void Utils_str_remove_character(char* str,const char c){
 }
 
 void Utils_str_remove_special_chars(char* str){
-    char special_chars[7] = {'\n', '\a', '\b', '\f', '\r', '\t', '\v'};
+    char special_chars[8] = {'\n', '\a', '\b', '\f', '\r', '\t', '\v',0};
     Utils_str_remove_characters(str,special_chars);
 }
 
@@ -37,7 +37,7 @@ void Utils_str_remove_characters(char* str,char* to_be_removed){
     char* writer = str;
     char* reader = str;
 
-    while( *reader != '\0'){
+    while( *reader != '\0' && reader != NULL){
         if (strchr(to_be_removed,*reader) == NULL){ //check if the current character is in the to remove list
             *writer = *reader; // copy of the char
             writer++;

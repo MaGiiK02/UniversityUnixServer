@@ -54,7 +54,12 @@ message_t* Message_build(int operation,char* sender,char* reciver,char* buf,int 
   setData(&(msg->data),reciver,buffer_copy,size);//WARNING: Can generate problem with bad formatted strings
   return msg;
 }
-
+message_t*  Message_build_no_copy(int operation,char* sender,char* reciver,char* buf,int size){
+  message_t* msg = malloc(sizeof(message_t));
+  setHeader(&(msg->hdr),operation,sender);
+  setData(&(msg->data),reciver,buf,size);//WARNING: Can generate problem with bad formatted strings
+  return msg;
+}
 
 message_t* Message_build_simple_ack(int operation,char* sender){
   message_t* msg = malloc(sizeof(message_t));

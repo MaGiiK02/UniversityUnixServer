@@ -58,6 +58,8 @@ kill -TERM $pid
 
 sleep 2
 
+less ./valgrind_out
+
 r=$(tail -10 ./valgrind_out | grep "ERROR SUMMARY" | cut -d: -f 2 | cut -d" " -f 2)
 
 if [[ $r != 0 ]]; then

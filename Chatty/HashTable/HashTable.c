@@ -58,7 +58,6 @@ void Hash_destroy(HashTable* hash){
       List_destroy(hash->array[i]);
     }
   }
-  FREE(hash->workingElement->value);
   FREE(hash->workingElement) //the inner pointed values are already freed in List_destroy called before
   FREE(hash->array)
   FREE(hash)

@@ -10,7 +10,7 @@
 #include "../SocketSync/SocketSync.h"
 
 
-void Send_ack_to(int clientFd, int reply_code);
+int Send_ack_to(int clientFd, int reply_code);
 
 int OP_manage(int clientFd,User* clientUser,message_hdr_t* request,message_data_t* data);
 
@@ -26,6 +26,7 @@ int OP_posttxtall(int clientFd,User* clientUser,message_data_t* request_data);
 int OP_getprevmsgs(int clientFd,User* clientUser);
 int OP_postfile(int clientFd,User* clientUser,message_data_t* request_data);
 int OP_getfile(int clientFd,User* clientUser,message_data_t* request_data);
+int OP_user_online(int clientFd,User* clientUser,message_data_t* request_data);
 int OP_creategroup(int clientFd,User* clientUser,message_data_t* request_data);
 int OP_addgroup(int clientFd,User* clientUser,message_data_t* request_data);
 int OP_delgroup(int clientFd,User* clientUser,message_data_t* request_data);

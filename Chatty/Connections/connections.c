@@ -136,8 +136,8 @@ int sendHeader(long fd, message_hdr_t *data){
   int write_result = _writeAll(fd,(char*) data, sizeof(message_hdr_t));
   if(is_error(write_result)){
     ON_DEBUG(
-            fprintf(stderr,"Error during msg header send (fd:%ld)",fd);
-            perror("");
+        fprintf(stderr,"Error during msg header send (fd:%ld)",fd);
+        perror("");
     )
     return -1;
   }
@@ -186,37 +186,35 @@ int readDataNoBuffer(long fd,message_data_t* data){
 
 int dumpBufferOnStream(long fd,FILE* stream,int size){
 
-  size_t buffer_size = sizeof(message_data_t);
-  char* buffer = malloc(STREAM_BUFFER);
-
+  char buffer[STREAM_BUFFER];
+  memset(buffer, 0, sizeof(char)*STREAM_BUFFER);
 
   int to_read = size;
   if(to_read>size) return 1;
-  //the realloc it's of cause i will not use the data any more
 
   int read_count;
   int wrote_count;
+  int write_ptr =0;
+
   while(to_read > 0){ /* While all the message isn't read */
-    read_count = read((int) fd, buffer, buffer_size);
+    read_count = read((int) fd, buffer, STREAM_BUFFER*sizeof(char));
     if(is_error(read_count)){
       if(errno != EINTR){
-        free(buffer);
         return -1;
       }
     }
     to_read -= read_count;/* Remove the written element from the count */
-
+    write_ptr = 0;
     while(read_count > 0){ // Ensure read bytes are correctly wrote down
-      wrote_count = fwrite(buffer,1,read_count,stream);
+      wrote_count = fwrite(buffer+write_ptr, sizeof(char), read_count, stream);
       if(is_error(wrote_count)){
-        free(buffer);
         return -1;
       }
+      write_ptr+=wrote_count;
       read_count-=wrote_count;
     }
   }
 
-  free (buffer);
   return 0;
 }
 
@@ -245,7 +243,7 @@ int _writeAll(long fd,char* msg,int size){
     }
 
     size -= writed; /* Remove the written element from the size */
-    msg += writed; /* move the buffer pointer after the last byte wrote */
+    msg += writed; /* move the buffer pointer after the last byte written */
   }
 
   return 0;

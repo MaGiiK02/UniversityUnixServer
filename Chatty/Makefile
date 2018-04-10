@@ -236,7 +236,7 @@ test5:
 	make cleanall
 	\mkdir -p $(DIR_PATH)
 	make all
-	./chatty -f Config/chatty.conf1&
+	/usr/bin/valgrind --leak-check=full ./chatty -f Config/chatty.conf1&
 	./Tests/teststress.sh $(UNIX_PATH)
 	killall -QUIT -w chatty
 	@echo "********** Test5 superato!"

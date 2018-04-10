@@ -81,9 +81,9 @@ typedef struct {
  * @param sender mittente del messaggio
  */
 static inline void setHeader(message_hdr_t *hdr, op_t op, char *sender) {
-#if defined(MAKE_VALGRIND_HAPPY)
+    #if defined(MAKE_VALGRIND_HAPPY)
     memset((char*)hdr, 0, sizeof(message_hdr_t));
-#endif
+    #endif
     hdr->op  = op;
     strncpy(hdr->sender, sender, strlen(sender)+1);
 }

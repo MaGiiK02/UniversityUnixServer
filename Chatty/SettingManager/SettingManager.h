@@ -39,6 +39,8 @@
 #define SETTING_DEFAULT_DIR_NAME "./tmp/chatty\0"
 #define SETTING_DEFAULT_STAT_FILE_NAME "./tmp/chatty\0"
 
+#define SETTING_MAX_SETTING_LINE_LENGTH 1024
+
 /* The structure that will be used to store the application settings */
 typedef struct {
     char* unixPath;
