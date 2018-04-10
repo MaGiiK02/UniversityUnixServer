@@ -50,15 +50,11 @@ if [[ $? != 0 ]]; then
     exit 1
 fi
 
-echo "Tutti i messaggi inviati aspeto la chiusura di minni"
-
 wait $pid
 if [[ $? != 0 ]]; then
     echo "ESCO8"
     exit 1
 fi
-
-echo "Minni ha finito ->> test deregistrazione"
 
 # messaggio di errore che mi aspetto
 OP_NICK_ALREADY=26
@@ -94,17 +90,14 @@ if [[ $? != 0 ]]; then
 fi
 
 # pippo e pluto si scambiano files
-./client -l $1 -k pippo -S "Ti mando un file":pluto -s ./client:pluto -R 2 &
-pid=$!
+./client -l $1 -k pippo -S "Ti mando un file":pluto -s ./client:pluto
+if [[ $? != 0 ]]; then
+    exit 1
+fi
 ./client -l $1 -k pluto -S "Ti mando un file":pippo -s ./chatty:pippo -s ./libchatty.a:pippo
 if [[ $? != 0 ]]; then
     exit 1
 fi
-wait $pid
-if [[ $? != 0 ]]; then
-    exit 1
-fi
-
 
 # controllo che i file siano arrivati al server e che siano corretti
 md51=$(md5sum ./client | cut -d " " -f 1)
