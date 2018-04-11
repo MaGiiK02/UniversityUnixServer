@@ -10,6 +10,7 @@
  * @brief File principale del server chatterbox
  */
 #define _POSIX_C_SOURCE 200809L
+//For
 #define _XOPEN_SOURCE 500
 #include <stdio.h>
 #include <unistd.h>
@@ -102,7 +103,10 @@ int main(int argc, char *argv[]) {
     }
 
     int listenerFD = _buildSocket(GD_ServerSetting->unixPath, true);
-    if(listenerFD == 1){/*TODO if error exit!!*/}
+    if(listenerFD < 1){
+      perror("error in _buildSocket");
+      exit(1);
+    }
     if(_listenAndServe(listenerFD)!=0){
       exit(1);
     }
@@ -237,6 +241,7 @@ int _buildSocket(char* socketPath,bool forceBind){
         perror("error in address bind");
         return -1;
     }
+
     return listenerfd;
 }
 

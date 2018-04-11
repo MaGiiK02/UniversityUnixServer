@@ -115,9 +115,9 @@ int OP_usrlist(int clientFd,User* clientUser){
       while(ln) {
         User *u = (User *) ((HashElement*)ln->data)->value;
         if (u->online) {
-          user_list = realloc(user_list, (count+1) * (MAX_NAME_LENGHT + 1));
-          memset(user_list+(count) * (MAX_NAME_LENGHT + 1),0,(MAX_NAME_LENGHT + 1));
-          strcpy(user_list+(count * (MAX_NAME_LENGHT + 1)), u->name);
+          user_list = realloc(user_list, (count+1) * (MAX_NAME_LENGTH + 1));
+          memset(user_list+(count) * (MAX_NAME_LENGTH + 1),0,(MAX_NAME_LENGTH + 1));
+          strcpy(user_list+(count * (MAX_NAME_LENGTH + 1)), u->name);
           count++;
         }
         ln=ln->next;
@@ -125,7 +125,7 @@ int OP_usrlist(int clientFd,User* clientUser){
       HashSync_unlock_by_index(GD_ServerUsers,i);
     }
   }
-  message_t* msg = Message_build(OP_OK,SERVER_SENDER_NAME,clientUser->name,user_list,count*(MAX_NAME_LENGHT+1));
+  message_t* msg = Message_build(OP_OK,SERVER_SENDER_NAME,clientUser->name,user_list,count*(MAX_NAME_LENGTH+1));
   int result = SockSync_send_message_SS(clientFd,msg) != 0 ? OP_BROKEN_CONN : OP_OK;
   Message_free(msg);
   FREE(user_list);

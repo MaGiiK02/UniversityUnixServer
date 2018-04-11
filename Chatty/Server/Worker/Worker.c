@@ -50,8 +50,9 @@ void* Worker_function(void *arg){
         break;
       case OP_BROKEN_CONN:
         HashSync_lock_by_key(GD_ServerUsers,request.sender);
-        u = HashSync_get_element_pointer(GD_ServerUsers,request.sender);
-        User_set_offline(u);
+        if ((u = HashSync_get_element_pointer(GD_ServerUsers,request.sender))){
+          User_set_offline(u);
+        }
         HashSync_unlock_by_key(GD_ServerUsers,request.sender);
         break;
       default:
