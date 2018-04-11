@@ -28,7 +28,6 @@ typedef struct{
     HashCopyFunction cpyFn;
     HashFreeFunction freeFn;
     long elementSize;
-    HashElement* workingElement;
 } HashTable;
 
 HashTable* Hash_new(long size,long elementSize,HashFreeFunction freeFn,HashCopyFunction cpyFn);

@@ -59,7 +59,6 @@ int Ch_Push_S(Ch* ch,void* el){
     LOCK_MUTEX_EXIT(ch->mu)
     if(!ch->closed){
       while(_isChFull(ch)){
-        UNLOCK_MUTEX_EXIT(ch->mu);
         pthread_cond_wait(&(ch->condWaitFull),&(ch->mu));
       }
       memcpy(ch->queue[ch->next_insert],el,ch->elSize);
@@ -76,9 +75,7 @@ int  Ch_Pop_S(Ch* ch,void* out_el){
 
   //IF empty the function wait for a push call on the same
   while(_isChEmpty(ch) && !ch->closed){
-    UNLOCK_MUTEX_EXIT(ch->mu)
     pthread_cond_wait(&(ch->condWaitEmpty),&(ch->mu));
-    LOCK_MUTEX_EXIT(ch->mu)
     //can happen that more thread are awakened at the same time
   }
   if((_isChEmpty(ch) && ch->closed) || ch->forcedClose){

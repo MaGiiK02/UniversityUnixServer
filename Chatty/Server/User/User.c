@@ -55,10 +55,23 @@ void User_set_online(User* u,int fd){
 }
 
 void User_set_offline(User* u){
-  close(u->fd);
-  u->fd = -1;
+  if(u->fd>0) {
+    close(u->fd);
+    u->fd = -1;
+  }
   if(u->online){
     u->online = false;
     StatsDecNOnline_S();
   }
 }
+
+void User_set_offline_leave_sock(User* u){
+  if(u->fd>0) {
+    u->fd = -1;
+  }
+  if(u->online){
+    u->online = false;
+    StatsDecNOnline_S();
+  }
+}
+

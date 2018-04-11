@@ -88,5 +88,13 @@ void HashSync_unlock_by_key(HashTableSync* hash,char* key){
 }
 
 void* HashSync_get_element_pointer(HashTableSync* hash,char* key){
- return Hash_get_element_pointer(hash->hashTable,key);
+  return Hash_get_element_pointer(hash->hashTable,key);
+}
+
+void* HashSync_get_element_pointer_S(HashTableSync* hash,char* key){
+  int hashValue = Hash_function(hash->hashTable,key);
+  HashSync_lock_by_index(hash,hashValue);
+  void* res = HashSync_get_element_pointer(hash,key);
+  HashSync_unlock_by_index(hash,hashValue);
+  return res;
 }

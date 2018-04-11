@@ -42,5 +42,6 @@ int HashSync_lock_by_index(HashTableSync* hash, int i);
 int HashSync_unlock_by_index(HashTableSync* hash, int i);
 
 void* HashSync_get_element_pointer(HashTableSync* hash,char* key);
+void* HashSync_get_element_pointer_S(HashTableSync* hash,char* key);
 
 #endif //SOL_2017_HASHTABLESYNCRONIZED_H

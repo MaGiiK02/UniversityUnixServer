@@ -26,7 +26,6 @@ void _hash_element_copy(void* dst, void* src){
   HashElement* destination = (HashElement*) dst;
   HashElement* source = (HashElement*) src;
   if(src == dst ) return ;
-  strcpy(destination->key,source->key);
   memcpy(destination,source,sizeof(HashElement));
   source->cpyFn(destination->value,source->value);
 }
@@ -44,7 +43,6 @@ HashTable* Hash_new(long size,long elementSize, HashFreeFunction freeFn,HashCopy
   h->array = malloc(sizeof(List*)*size);
   memset(h->array,0,sizeof(List*)*size);
   h->elementSize = elementSize;
-  h->workingElement = malloc(sizeof(HashElement));
   h->freeFn = freeFn;
   h->cpyFn = cpyFn;
 
@@ -58,7 +56,7 @@ void Hash_destroy(HashTable* hash){
       List_destroy(hash->array[i]);
     }
   }
-  FREE(hash->workingElement) //the inner pointed values are already freed in List_destroy called before
+  //the inner pointed values are already freed in List_destroy called before
   FREE(hash->array)
   FREE(hash)
 }
@@ -86,13 +84,13 @@ int Hash_add_element(HashTable* hash,char* key,void* value){
     return 1;//Key already exist
   }
 
-  HashElement* el = hash->workingElement;
-  el->value = malloc(hash->elementSize);
-  hash->cpyFn(el->value,value);
-  strcpy(el->key,key);
-  el->freeFn = hash->freeFn;
-  el->cpyFn = hash->cpyFn;
-  List_append(value_list,el);
+  HashElement el = {0};
+  el.value = malloc(hash->elementSize);
+  hash->cpyFn(el.value,value);
+  strcpy(el.key,key);
+  el.freeFn = hash->freeFn;
+  el.cpyFn = hash->cpyFn;
+  List_append(value_list,&el);
   return 0;
 }
 
@@ -100,9 +98,9 @@ void Hash_remove_element(HashTable* hash,char* key,void* out_removed){
   int index = Hash_function(hash,key);
   List* value_list = hash->array[index];
   if(value_list != NULL){
-    HashElement* el = hash->workingElement;
-    if(List_remove_element(value_list,(void*)key,(void*)el)){
-      hash->cpyFn(out_removed,el->value);
+    HashElement el = {0};
+    if(List_remove_element(value_list,(void*)key,(void*)&el)){
+      hash->cpyFn(out_removed,el.value);
     }
   }
 }
@@ -124,12 +122,12 @@ int Hash_get_element(HashTable* hash,char* key,void* out_element){
     return -1;
   }
   
-  HashElement* el = hash->workingElement;
-  if(!List_find(value_list,key,(void*)el)){
+  HashElement el = {0};
+  if(!List_find(value_list,key,(void*)&el)){
     return -1; // some ide can give unreachable code but it's not the case
   }
 
-  hash->cpyFn(out_element, el->value);
+  hash->cpyFn(out_element, el.value);
 
   return 0;
 }
@@ -142,12 +140,12 @@ void* Hash_get_element_pointer(HashTable* hash,char* key){
     return NULL;
   }
 
-  HashElement* el = hash->workingElement;
-  if(!List_find(value_list,key,(void*)el)){
+  HashElement el ={0};
+  if(!List_find(value_list,key,(void*)&el)){
     return NULL; // some ide can give unreachable code but it's not the case
   }
 
-  return el->value;
+  return el.value;
 }
 
 int Hash_update_element(HashTable* hash,char* key,void* element){
@@ -158,12 +156,12 @@ int Hash_update_element(HashTable* hash,char* key,void* element){
     return -1;
   }
 
-  HashElement* el = hash->workingElement;
-  if(!List_find(value_list,key,(void*)el)){
+  HashElement el = {0};
+  if(!List_find(value_list,key,(void*)&el)){
     return -1; // some ide can give unreachable code but it's not the case
   }
 
-  hash->cpyFn(el->value,element);
+  hash->cpyFn(el.value,element);
 
   return 0;
 }

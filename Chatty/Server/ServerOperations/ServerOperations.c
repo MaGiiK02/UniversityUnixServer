@@ -65,7 +65,7 @@ void _send_file_to_user_S(User* to_user,User* from_user, char* name){
 
 int OP_register(int clientFd,message_hdr_t* data){ //when the user is just registered is seen as online until the connection ends
   if(strcmp(data->sender,"")==0) return OP_FAIL; //names can't be empty
-  if(HashSync_get_element_pointer(GD_ServerUsers,data->sender) != NULL){
+  if(HashSync_get_element_pointer_S(GD_ServerUsers,data->sender) != NULL){
     return OP_NICK_ALREADY;
   }
   User* u =User_new(data->sender,GD_ServerSetting->maxHistMsgs);
@@ -87,7 +87,7 @@ int OP_connect(int clientFd,User* clientUser){
 int OP_unregister(int clientFd,User* clientUser) {
   if (clientUser->online) {
     HashSync_lock_by_key(GD_ServerUsers, clientUser->name);
-    User_set_offline(clientUser);
+    User_set_offline_leave_sock(clientUser);
     HashSync_unlock_by_key(GD_ServerUsers, clientUser->name);
   }
 
@@ -109,8 +109,8 @@ int OP_usrlist(int clientFd,User* clientUser){
   int count=0;
   char* user_list= malloc(0);
   for(int i=0;i<GD_ServerUsers->hashTable->size;i++){
+    HashSync_lock_by_index(GD_ServerUsers,i);
     if((l=GD_ServerUsers->hashTable->array[i])!=NULL){
-      HashSync_lock_by_index(GD_ServerUsers,i);
       ln = l->head;
       while(ln) {
         User *u = (User *) ((HashElement*)ln->data)->value;
@@ -122,8 +122,8 @@ int OP_usrlist(int clientFd,User* clientUser){
         }
         ln=ln->next;
       }
-      HashSync_unlock_by_index(GD_ServerUsers,i);
     }
+    HashSync_unlock_by_index(GD_ServerUsers,i);
   }
   message_t* msg = Message_build(OP_OK,SERVER_SENDER_NAME,clientUser->name,user_list,count*(MAX_NAME_LENGTH+1));
   int result = SockSync_send_message_SS(clientFd,msg) != 0 ? OP_BROKEN_CONN : OP_OK;
@@ -174,6 +174,7 @@ int OP_getprevmsgs(int clientFd,User* clientUser){
   memcpy(buffer,&(clientUser->msg_history->logicalLength), sizeof(int));
   setData(&prevMessagesData,clientUser->name,(char*)buffer, sizeof(int));
   if(SockSync_send_data_SS(clientFd,&prevMessagesData)!=0){
+    HashSync_unlock_by_key(GD_ServerUsers,clientUser->name);
     return OP_BROKEN_CONN;
   }
 
@@ -182,11 +183,12 @@ int OP_getprevmsgs(int clientFd,User* clientUser){
   while(el != NULL) {
     msg = (message_t*)el->data;
     if(SockSync_send_message_SS(clientFd,msg)!= 0){
+      HashSync_unlock_by_key(GD_ServerUsers,clientUser->name);
       return OP_BROKEN_CONN;
     }
     el=el->prev ;
   }
-  HashSync_lock_by_key(GD_ServerUsers,clientUser->name);
+  HashSync_unlock_by_key(GD_ServerUsers,clientUser->name);
   return OP_OK;
 }
 int OP_postfile(int clientFd,User* clientUser,message_data_t* data){
@@ -200,9 +202,10 @@ int OP_postfile(int clientFd,User* clientUser,message_data_t* data){
     flushSocket(clientFd,file_info.hdr.len); // remove all socket content
     return OP_MSG_TOOLONG;
   }
-
+  HashSync_lock_by_key(GD_ServerUsers,(data->hdr.receiver));
   User* target = HashSync_get_element_pointer(GD_ServerUsers,(data->hdr.receiver));
   if(target == NULL){
+    HashSync_unlock_by_key(GD_ServerUsers,(data->hdr.receiver));
     return OP_NICK_UNKNOWN;
   }
 
@@ -211,18 +214,21 @@ int OP_postfile(int clientFd,User* clientUser,message_data_t* data){
   Utils_build_path(filePath,GD_ServerSetting->dirName,data->buf);
   FILE* destination_file = fopen(filePath,"w+");
   if(destination_file == NULL){
+    HashSync_unlock_by_key(GD_ServerUsers,(data->hdr.receiver));
     return OP_FAIL;
   }
   if(dumpBufferOnStream(clientFd,destination_file,file_info.hdr.len)!=0){
     fflush(destination_file);
     fclose(destination_file);
+    HashSync_unlock_by_key(GD_ServerUsers,(data->hdr.receiver));
     return OP_FAIL;
   }
 
   fflush(destination_file);
   fclose(destination_file);
 
-  _send_file_to_user_S(target,clientUser,filePath);
+  _send_file_to_user(target,clientUser,filePath);
+  HashSync_unlock_by_key(GD_ServerUsers,(data->hdr.receiver));
   return Send_ack_to(clientFd,OP_OK);
 }
 int OP_getfile(int clientFd,User* clientUser,message_data_t* data){

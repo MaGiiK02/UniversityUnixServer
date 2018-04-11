@@ -62,7 +62,7 @@ chatty:
   volumes:
     - tmp:/tmp
   privileged: true
-  entrypoint: "gdb --args ./chatty -f Config/chatty.conf1"
+  entrypoint: "gdb --eval-command=\"handle SIGPIPE SIGUSR1 SIGUSR2 noprint nostop\" --args ./chatty -f Config/chatty.conf1 "
 
 chatty_memdebug:
   build: .
@@ -71,7 +71,17 @@ chatty_memdebug:
   volumes:
     - tmp:/tmp
   privileged: true
-  entrypoint: "valgrind --leak-check=yes --leak-check=full --show-leak-kinds=all --track-origins=yes ./chatty -f Config/chatty.conf1"
+  entrypoint: "valgrind  --leak-check=yes --leak-check=full --show-leak-kinds=all --track-origins=yes ./chatty -f Config/chatty.conf1"
+
+chatty_helgrind:
+  build: .
+  dockerfile: ./Docker-compose/chatty_server/Dockerfile
+  container_name: chatty_server_memdebug
+  volumes:
+    - tmp:/tmp
+  privileged: true
+  entrypoint: "valgrind --tool=helgrind ./chatty -f Config/chatty.conf1"
+
 
 client:
   build: .

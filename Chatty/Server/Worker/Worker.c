@@ -87,7 +87,7 @@ int _manageRequest(int clientFd,message_hdr_t* request){
     if(readData(clientFd,&data) <= 0){
       return OP_BROKEN_CONN;
     }
-    usr = HashSync_get_element_pointer(GD_ServerUsers,request->sender);
+    usr = HashSync_get_element_pointer_S(GD_ServerUsers,request->sender);
     if(usr != NULL){
       result = OP_manage(clientFd,usr,request,&data);
     }else{

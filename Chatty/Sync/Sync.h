@@ -6,7 +6,7 @@
 #include <stdio.h>
 
 #define LOCK_MUTEX_EXIT(mutex) \
-  if(pthread_mutex_unlock(&(mutex))!=0){ \
+  if(pthread_mutex_lock(&(mutex))!=0){ \
     perror("Error locking the mutex"); \
     exit(1); \
   }
@@ -18,7 +18,7 @@
   }
 
 #define LOCK_MUTEX_RETURN(mutex,ret_val) \
-  if(pthread_mutex_unlock(&(mutex))!=0){ \
+  if(pthread_mutex_lock(&(mutex))!=0){ \
     perror("Error locking the mutex"); \
     return ret_val; \
   }

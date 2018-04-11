@@ -41,4 +41,8 @@ void User_copy(void* dst, void* src);
 
 void User_Free(void* el);
 
+void User_set_offline_leave_sock(User* u);
+
+void User_set_offline(User* u);
+void User_set_online(User* u,int fd);
 #endif
