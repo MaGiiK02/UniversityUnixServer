@@ -28,15 +28,6 @@ void User_PushHistory(User* u,message_t* msg){
     List_drop_tail(u->msg_history);
     List_prepend(u->msg_history,msg);
   }
-  #ifdef DEBUG
-  ListNode* n = u->msg_history->head;
-  printf("USER(%s) messages list:\n",u->name);
-  while(n){
-    message_t* msg = (message_t*) n->data;
-    printf("    %s\n",msg->data.buf);
-    n = n->next;
-  }
-  #endif
 }
 
 HashTableSync* User_NewHashTable(unsigned int size){
@@ -64,6 +55,7 @@ void User_set_online(User* u,int fd){
 }
 
 void User_set_offline(User* u){
+  close(u->fd);
   u->fd = -1;
   if(u->online){
     u->online = false;

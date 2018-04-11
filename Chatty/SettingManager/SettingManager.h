@@ -30,16 +30,34 @@
 #define SETTING_FIELD_NAME_DIR_NAME "dirname"
 #define SETTING_FIELD_NAME_STAT_FILE_NAME "statfilename"
 
+#ifndef SETTING_DEFAULT_UNIX_PATH
 #define SETTING_DEFAULT_UNIX_PATH "./tmp/chatty_socket\0"
+#endif
+#ifndef SETTING_DEFAULT_MAX_CONNECTIONS
 #define SETTING_DEFAULT_MAX_CONNECTIONS 32
+#endif
+#ifndef SETTING_DEFAULT_THREADS_IN_POOL
 #define SETTING_DEFAULT_THREADS_IN_POOL 8
+#endif
+#ifndef SETTING_DEFAULT_MAX_MSG_SIZE
 #define SETTING_DEFAULT_MAX_MSG_SIZE 512
+#endif
+#ifndef SETTING_DEFAULT_MAX_FILE_SIZE
 #define SETTING_DEFAULT_MAX_FILE_SIZE 1024
+#endif
+#ifndef SETTING_DEFAULT_MAX_HITS_MSG
 #define SETTING_DEFAULT_MAX_HITS_MSG 16
+#endif
+#ifndef SETTING_DEFAULT_DIR_NAME
 #define SETTING_DEFAULT_DIR_NAME "./tmp/chatty\0"
+#endif
+#ifndef SETTING_DEFAULT_STAT_FILE_NAME
 #define SETTING_DEFAULT_STAT_FILE_NAME "./tmp/chatty\0"
+#endif
 
+#ifndef SETTING_MAX_SETTING_LINE_LENGTH
 #define SETTING_MAX_SETTING_LINE_LENGTH 1024
+#endif
 
 /* The structure that will be used to store the application settings */
 typedef struct {

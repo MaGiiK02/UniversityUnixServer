@@ -251,6 +251,7 @@ int _writeAll(long fd,char* msg,int size){
 
 int _readAll(long fd,char* buffer,int size){
   int readed = -1;
+  memset(buffer,0,size* sizeof(char));
   while(size > 0){ /* While all the message isn't read */
     readed = read((int) fd, buffer, size);
     if(is_error(readed)){

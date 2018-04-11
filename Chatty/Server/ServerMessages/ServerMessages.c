@@ -23,7 +23,7 @@ void Message_copy(void*dst,void* src){
   message_t* destination=(message_t*)dst;
   memcpy(destination,source, sizeof(message_t));
   if(source->data.hdr.len > 0){
-    destination->data.buf = malloc(source->data.hdr.len);
+    destination->data.buf = calloc(source->data.hdr.len, sizeof(char));
     strncpy(destination->data.buf ,source->data.buf, source->data.hdr.len);
   }else{
     destination->data.buf = NULL;
@@ -47,15 +47,15 @@ int Message_cmp(void* el1,void* el2){
 }
 
 message_t* Message_build(int operation,char* sender,char* reciver,char* buf,int size){
-  message_t* msg = malloc(sizeof(message_t));
+  message_t* msg = calloc(sizeof(message_t),1);
   setHeader(&(msg->hdr),operation,sender);
-  char* buffer_copy = malloc(sizeof(char)*size);
+  char* buffer_copy = calloc(size,sizeof(char));
   memcpy(buffer_copy,buf,size);
   setData(&(msg->data),reciver,buffer_copy,size);//WARNING: Can generate problem with bad formatted strings
   return msg;
 }
 message_t*  Message_build_no_copy(int operation,char* sender,char* reciver,char* buf,int size){
-  message_t* msg = malloc(sizeof(message_t));
+  message_t* msg = calloc(sizeof(message_t),1);
   setHeader(&(msg->hdr),operation,sender);
   setData(&(msg->data),reciver,buf,size);//WARNING: Can generate problem with bad formatted strings
   return msg;
