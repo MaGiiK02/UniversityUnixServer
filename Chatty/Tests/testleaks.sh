@@ -6,7 +6,7 @@ if [[ $# != 1 ]]; then
 fi
 
 rm -f valgrind_out
-/usr/bin/valgrind --leak-check=full ./chatty -f DATA/chatty.conf1 >& ./valgrind_out &
+/usr/bin/valgrind --leak-check=full ./chatty -f Config/chatty.conf1 >& ./valgrind_out &
 pid=$!
 
 # aspetto un po' per far partire valgrind
@@ -41,7 +41,7 @@ pid2=$!
 
 ./client -l $1 -k paperino -p -S "aaaaaaaaaaaaaaaaaaaaaaaaaaa":minni -S "bbbbbbbbbbbbbbbbb":pluto -S "ccccccccccccccccc": -S "ddddddddddddddddddddd":topolino -s ./libchatty.a:minni
 
-./client -l $1 -k pippo -p -s listener.o:minni
+./client -l $1 -k pippo -p -s ./config.h:minni
 
 # invio il segnale per generare le statistiche
 kill -USR1 $pid

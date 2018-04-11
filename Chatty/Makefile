@@ -78,7 +78,7 @@ CORSO=CorsoA
 ###################################################################
 # NOTA: Il nome riportato in UNIX_PATH deve corrispondere al nome
 #       usato per l'opzione UnixPath nel file di configurazione del
-#       server (vedere i file nella directory DATA).
+#       server (vedere i file nella directory DATA // non è presente nel mio progetto, è Config//).
 #       Lo stesso vale per il nome riportato in STAT_PATH e DIR_PATH
 #       che deveno corrispondere con l'opzione StatFileName e
 #       DirName, rispettivamente.
@@ -236,7 +236,7 @@ test5:
 	make cleanall
 	\mkdir -p $(DIR_PATH)
 	make all
-	/usr/bin/valgrind --leak-check=full ./chatty -f Config/chatty.conf1&
+	./chatty -f Config/chatty.conf1&
 	./Tests/teststress.sh $(UNIX_PATH)
 	killall -QUIT -w chatty
 	@echo "********** Test5 superato!"
