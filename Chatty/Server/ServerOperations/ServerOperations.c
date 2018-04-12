@@ -262,9 +262,21 @@ int OP_getfile(int clientFd,User* clientUser,message_data_t* data){
 }
 
 
-int OP_creategroup(int clientFd,User* clientUser,message_data_t* data);
-int OP_addgroup(int clientFd,User* clientUser,message_data_t* data);
-int OP_delgroup(int clientFd,User* clientUser,message_data_t* data);
+int OP_user_online(int clientFd,User* clientUser,message_data_t* request_data){
+  int buffer[1] = {0};
+  buffer[0] = Hash_get_element_pointer(GD_ServerUsers,request_data->buf) != NULL;
+  message_t* msg = Message_build(OP_OK,SERVER_SENDER_NAME,clientUser->name, buffer,sizeof(buffer));
+  if(SockSync_send_message_SS(clientFd,msg)<=0){
+    Message_free(msg);
+    return OP_BROKEN_CONN;
+  }
+  Message_free(msg);
+  return OP_OK;
+}
+
+int OP_creategroup(int clientFd,User* clientUser,message_data_t* request_data);
+int OP_addgroup(int clientFd,User* clientUser,message_data_t* request_data);
+int OP_delgroup(int clientFd,User* clientUser,message_data_t* request_data);
 
 int OP_manage(int clientFd,User* clientUser,message_hdr_t* request,message_data_t* data){
   switch (request->op) {
@@ -287,6 +299,8 @@ int OP_manage(int clientFd,User* clientUser,message_hdr_t* request,message_data_
       return OP_postfile(clientFd,clientUser,data);
     case GETFILE_OP:
       return OP_getfile(clientFd,clientUser,data);
+    case USERONLINE_OP:
+      return  OP_user_online(clientFd,clientUser,data)
     case CREATEGROUP_OP:
 
     case ADDGROUP_OP:

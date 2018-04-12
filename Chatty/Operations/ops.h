@@ -36,6 +36,7 @@ typedef enum {
     ADDGROUP_OP      = 11,  /// richiesta di aggiungersi al gruppo
     DELGROUP_OP      = 12,  /// richiesta di aggiungersi al gruppo
 
+    USERONLINE_OP    = 13,  /// richiesta sull utente online
 
     /* 
      * aggiungere qui eltre operazioni che si vogliono implementare 
