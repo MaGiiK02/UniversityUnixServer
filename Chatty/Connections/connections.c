@@ -117,7 +117,7 @@ int readMsg(long fd, message_t *msg){
     return -1;
   }
 
-  return 0;
+  return headerData+headerResult;
 }
 
 int sendRequest(long fd, message_t *msg){
