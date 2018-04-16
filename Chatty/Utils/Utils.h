@@ -32,7 +32,7 @@ int Utils_str_split_by_first_char(char* str,const char* cutter_character,char** 
 
 int Utils_string_to_integer(const char* str);
 
-void Utils_str_lowercase(char* str);
+void Utils_str_lowercase(char* str,int size);
 
 int Utils_str_compare_case_insensitive(const char* str_1, const char* str_2);
 

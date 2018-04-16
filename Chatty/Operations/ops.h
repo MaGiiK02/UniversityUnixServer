@@ -34,12 +34,14 @@ typedef enum {
 
     CREATEGROUP_OP   = 10,  /// richiesta di creazione di un gruppo
     ADDGROUP_OP      = 11,  /// richiesta di aggiungersi al gruppo
-    DELGROUP_OP      = 12,  /// richiesta di aggiungersi al gruppo
+    DELGROUP_OP      = 12,  /// richiesta di togliersi dal gruppo
+    DESTROYGROUP_OP  = 13,  /// richiesta di distruzione del gruppo
 
-    USERONLINE_OP    = 13,  /// richiesta sull utente online
+    USERONLINE_OP    = 14,  /// richiesta sull utente online
+
 
     /* 
-     * aggiungere qui eltre operazioni che si vogliono implementare 
+     * aggiungere qui le altre operazioni che si vogliono implementare
      */
 
     /* ------------------------------------------ */

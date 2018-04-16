@@ -34,6 +34,7 @@
 #include "Statistic/stats.h"
 #include "../Debugger/Debugger.h"
 #include "../SettingManager/SettingManager.h"
+#include "Group/Group.h"
 
 
 //Functions
@@ -76,23 +77,21 @@ int main(int argc, char *argv[]) {
     // DATA INIT
     printf("Initialing server......");
     GD_ServerSetting = SettingManager_load_settings_form_file(conf_file_path,true);
-    if(errno != 0){
-      perror("error loading setting");
+    if(GD_ServerSetting == NULL){
       exit(1);
     }
     GD_ServerUsers = User_NewHashTable(DEFAULT_HASH_SIZE);
-    //TODO GD_ServerGroup
+    GD_ServerGroup = Group_NewHashTable(DEFAULT_HASH_SIZE);
     printf("End!\n");
 
     sigignore(SIGPIPE); //Pipe error managed at low level write read operations
 
-    /// INSTALL handlers Start
+    // INSTALL handlers Start
     struct sigaction saInterupt,saPrint,saRefresh; // in order to keep the in the stack
     _installSignalHandlers(&saInterupt,&saPrint,&saRefresh);
-    /// INSTALL handlers END
+    // INSTALL handlers END
 
     //Initialize a structure that enable to avoid race in write procedures
-    pthread_mutex_init(&GD_MU_OnlineUsers,NULL);
     pthread_mutex_init(&GD_MU_FdSetRead,NULL);
     SockSync_init_socket_sync(GD_ServerSetting->maxConnections);
     GD_MainThread = getpid();
@@ -205,7 +204,8 @@ void _closeWorkers(int worker_count){
 
 void _freeStructures(){
 
-    //HashSync_destroy(GD_ServerGroup);
+    Log(("-->Freeing GD_ServerGroup\n"));
+    HashSync_destroy(GD_ServerGroup);
 
     Log(("-->Freeing GD_ServerUsers\n"));
     HashSync_destroy(GD_ServerUsers);

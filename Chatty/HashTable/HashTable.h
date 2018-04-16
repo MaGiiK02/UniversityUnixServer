@@ -48,4 +48,6 @@ void* Hash_get_element_pointer(HashTable* hash,char* key);
 
 int Hash_update_element(HashTable* hash,char* key,void* element);
 
+bool Hash_is_element_present(HashTable* hash,char* key);
+
 #endif

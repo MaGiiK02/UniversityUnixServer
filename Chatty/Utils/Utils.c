@@ -85,12 +85,13 @@ int Utils_string_to_integer(const char* str){
     return converted_val;
 }
 
-void Utils_str_lowercase(char* str)
+void Utils_str_lowercase(char* str,int size)
 {
     char* current_char = str;
 
-    while(current_char++){
+    while(current_char++ && size > 0 ){
         *(current_char) = tolower(*current_char);
+        size --;
     }
 }
 

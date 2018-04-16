@@ -98,3 +98,12 @@ void* HashSync_get_element_pointer_S(HashTableSync* hash,char* key){
   HashSync_unlock_by_index(hash,hashValue);
   return res;
 }
+
+bool HashSync_is_element_present_S(HashTableSync* hash,char* key){
+  int hashValue = Hash_function(hash->hashTable,key);
+  HashSync_lock_by_index(hash,hashValue);
+  bool res = Hash_is_element_present(hash->hashTable,key);
+  HashSync_unlock_by_index(hash,hashValue);
+  return res;
+}
+

@@ -148,6 +148,16 @@ void* Hash_get_element_pointer(HashTable* hash,char* key){
   return el.value;
 }
 
+bool Hash_is_element_present(HashTable* hash,char* key){
+  int index = Hash_function(hash,key);
+  List* value_list = hash->array[index];
+
+  if(value_list == NULL){
+    return false;
+  }
+  return List_find(value_list,(void*)key,NULL);
+}
+
 int Hash_update_element(HashTable* hash,char* key,void* element){
   int index = Hash_function(hash,key);
   List* value_list = hash->array[index];

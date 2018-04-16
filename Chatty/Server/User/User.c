@@ -16,11 +16,6 @@ User* User_new(char* name,int historySize){
   return u;
 }
 
-void User_destroy(User* u){
-  List_destroy(u->msg_history);
-  FREE(u);
-}
-
 void User_PushHistory(User* u,message_t* msg){
   if(List_length(u->msg_history)<= u->max_history_size){
     List_prepend(u->msg_history,msg);
@@ -43,6 +38,11 @@ void User_copy(void* dst, void* src){
 void User_Free(void* el){
   User* usr = (User*)el;
   List_destroy(usr->msg_history);
+  FREE(usr);
+}
+
+void User_shallow_Free(void* el){
+  User* usr = (User*)el;
   FREE(usr);
 }
 

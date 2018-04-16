@@ -20,6 +20,8 @@ if [[ $? != 0 ]]; then
     exit 1
 fi
 
+echo "######################################Groups created!"
+
 # aggiungo minni al gruppo1
 ./client -l $1 -k minni -a gruppo1
 if [[ $? != 0 ]]; then
@@ -41,6 +43,8 @@ if [[ $? != 0 ]]; then
     exit 1
 fi
 
+echo "######################################ALL users registered!"
+
 # pippo manda un messaggio a tutti gli iscritti al gruppo1 (pippo, minni e topolino)
 ./client -l $1  -k pippo -S "Ciao a tutti da pippo":gruppo1 -R 1
 if [[ $? != 0 ]]; then
@@ -52,6 +56,8 @@ if [[ $? != 0 ]]; then
     exit 1
 fi
 
+echo "######################################Fine invio messaggi corretti!"
+
 # messaggio di errore che mi aspetto dal prossimo comando
 # l'utente qui non puo' mandare il messaggio perche' non e' inscritto al gruppo1
 OP_NICK_UNKNOWN=27
@@ -62,29 +68,45 @@ if [[ $((256-e)) != $OP_NICK_UNKNOWN ]]; then
     exit 1
 fi
 
+echo "###################################### test messaggio senza essere nel gruppo ok"
+
 # minni manda un file a tutti gli utenti dei gruppi a cui appartiene
 ./client -l $1  -k minni -S "Vi mando un file":gruppo1 -s ./libchatty.a:gruppo1 -s ./libchatty.a:gruppo2 -S "Vi ho mandato un file":gruppo2
 if [[ $? != 0 ]]; then
     exit 1
 fi
 
+
+echo "###################################### Invio file passato"
+
 # ricevo i messaggi che mi sono perso
 ./client -l $1 -k pippo -p
 if [[ $? != 0 ]]; then
+    echo "ERRORE RICEVNDO I MESSAGGI"
     exit 1
 fi
+
+echo "######################################## PIPPO recived the all"
 ./client -l $1 -k pluto -p
 if [[ $? != 0 ]]; then
+echo "ERRORE RICEVNDO I MESSAGGI"
     exit 1
 fi
+echo "######################################## PLUTO recived the all"
+
 ./client -l $1 -k minni -p
 if [[ $? != 0 ]]; then
+echo "ERRORE RICEVNDO I MESSAGGI"
     exit 1
 fi
+echo "######################################## MINNI recived the all"
 ./client -l $1 -k topolino -p
 if [[ $? != 0 ]]; then
+echo "ERRORE RICEVNDO I MESSAGGI"
     exit 1
 fi
+echo "######################################## MINNI topolino the all"
+echo "###################################### ricevimeto dei messaggi"
 
 ./client -l $1 -k topolino -d gruppo1
 if [[ $? != 0 ]]; then
@@ -95,6 +117,8 @@ fi
 if [[ $? != 0 ]]; then
     exit 1
 fi
+
+echo "###################################### deregistrazine dal gruppo"
 
 
 echo "Test OK!"

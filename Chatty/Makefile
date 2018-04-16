@@ -35,7 +35,6 @@ FILE_DA_CONSEGNARE = Makefile \
     List/ListSynchronized.c\
     List/ListSynchronized.h\
     MemoryHelper/MemoryHelper.h\
-    Message/message.c\
     Message/message.h\
     Operations/ops.h\
     Scripts/ServerFileUtil.sh\
@@ -50,10 +49,10 @@ FILE_DA_CONSEGNARE = Makefile \
     Server/Statistic/stats.h\
     Server/User/User.c\
     Server/User/User.h\
+    Server/Group/Group.c\
+    Server/Group/Group.h\
     Server/Worker/Worker.c\
     Server/Worker/Worker.h\
-    Server/WorkerPool/WorkerPool.c\
-    Server/WorkerPool/WorkerPool.h\
     Server/ServerMessages/ServerMessages.h\
     Server/ServerMessages/ServerMessages.c\
     SettingManager/SettingManager.c\
@@ -65,6 +64,7 @@ FILE_DA_CONSEGNARE = Makefile \
     Tests/testfile.sh\
     Tests/testleaks.sh\
     Tests/teststress.sh\
+    Tests/testgroups.sh\
     Utils/Utils.c\
     Utils/Utils.h
 
@@ -119,6 +119,7 @@ OBJECTS		= Server/SocketSync/SocketSync.o\
         Server/ServerMessages/ServerMessages.o\
         Server/ServerOperations/ServerOperations.o\
         Server/User/User.o\
+        Server/Group/Group.o\
         Server/Statistic/stats.o\
         Server/Worker/Worker.o\
         SettingManager/SettingManager.o\
@@ -145,6 +146,7 @@ INCLUDE_FILES   = config.h\
       Server/ServerMessages/ServerMessages.h\
       Server/Statistic/stats.h\
       Server/User/User.h\
+      Server/Group/Group.h\
       Server/Worker/Worker.h\
       SettingManager/SettingManager.h\
       Sync/Sync.h\
@@ -152,7 +154,7 @@ INCLUDE_FILES   = config.h\
 
 
 
-.PHONY: all clean cleanall test1 test2 test3 test4 test5 consegna
+.PHONY: all clean cleanall test1 test2 test3 test4 test5 test6 consegna
 .SUFFIXES: .c .h
 
 %: %.c
@@ -241,6 +243,15 @@ test5:
 	killall -QUIT -w chatty
 	@echo "********** Test5 superato!"
 
+# gestione gruppi
+test6:
+	make cleanall
+	\mkdir -p $(DIR_PATH)
+	make all
+	./chatty -f Config/chatty.conf1&
+	./Tests/testgroups.sh $(UNIX_PATH)
+	killall -QUIT -w chatty
+	@echo "********** Test6 superato!"
 
 # target per la consegna
 consegna:
@@ -253,6 +264,8 @@ consegna:
 	make test4
 	sleep 3
 	make test5
+	sleep 3
+	make test6
 	sleep 3
 	tar -cvf $(TARNAME)_$(CORSO)_chatty.tar $(FILE_DA_CONSEGNARE)
 	@echo "*** TAR PRONTO $(TARNAME)_$(CORSO)_chatty.tar "
