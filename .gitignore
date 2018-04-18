@@ -9,3 +9,10 @@ cmake-build-debug/
 .idea/
 .autotools
 *.gch
+
+#compiled stuff
+*.a
+*.o
+
+#support floders for docker-machine content
+docker-volume/*

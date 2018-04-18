@@ -15,7 +15,7 @@ FILE_DA_CONSEGNARE = Makefile \
     Channel/Channel.c\
     Channel/Channel.h\
     Channel/Channel_Test.c\
-    Client/client.c\
+    ChattyClient/client.c\
     Config/chatty.conf1\
     Config/chatty.conf2\
     Connections/connections.c\
@@ -169,7 +169,7 @@ all		: $(TARGETS)
 chatty: ./Server/chatty.c libchatty.a $(INCLUDE_FILES)
 	$(CC) $(CFLAGS) $(INCLUDES) $(OPTFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-client: ./Client/client.c Connections/connections.o Message/message.h
+client: ./ChattyClient/client.c Connections/connections.o Message/message.h
 	$(CC) $(CFLAGS) $(INCLUDES) $(OPTFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 ############################ non modificare da qui in poi

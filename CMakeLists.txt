@@ -33,7 +33,7 @@ add_executable(TEST-HASH-TABLES  "${SOURCE_FILE}" Chatty/HashTable/HashTable_Tes
 add_executable(TEST-LIST  "${SOURCE_FILE}" Chatty/List/list_test.c)
 add_executable(SERVER  "${SOURCE_FILE}" Chatty/Server/chatty.c Chatty/Server/ServerMessages/ServerMessages.c Chatty/Server/ServerMessages/ServerMessages.h Chatty/Server/Group/Group.c Chatty/Server/Group/Group.h)
 add_executable(SETTING-MANAGER  "${SOURCE_FILE}" Chatty/SettingManager/SettingManager_Test.c)
-add_executable(Client "${SOURCE_FILE}" Chatty/Client/client.c.bak Chatty/Client/client.c)
+add_executable(Client "${SOURCE_FILE}" Chatty/ChattyClient/client.c)
 find_package (Threads)
 target_link_libraries(TEST-HASH-TABLES ${CMAKE_THREAD_LIBS_INIT})
 target_link_libraries(TEST-LIST ${CMAKE_THREAD_LIBS_INIT})
