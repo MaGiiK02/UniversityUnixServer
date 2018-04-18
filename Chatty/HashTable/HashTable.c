@@ -84,7 +84,8 @@ int Hash_add_element(HashTable* hash,char* key,void* value){
     return 1;//Key already exist
   }
 
-  HashElement el = {0};
+  HashElement el;
+  memset(&el,0,sizeof(el));
   el.value = malloc(hash->elementSize);
   hash->cpyFn(el.value,value);
   strcpy(el.key,key);
@@ -98,7 +99,8 @@ void Hash_remove_element(HashTable* hash,char* key,void* out_removed){
   int index = Hash_function(hash,key);
   List* value_list = hash->array[index];
   if(value_list != NULL){
-    HashElement el = {0};
+    HashElement el;
+    memset(&el,0,sizeof(el));
     if(List_remove_element(value_list,(void*)key,(void*)&el)){
       hash->cpyFn(out_removed,el.value);
     }
@@ -122,7 +124,8 @@ int Hash_get_element(HashTable* hash,char* key,void* out_element){
     return -1;
   }
   
-  HashElement el = {0};
+  HashElement el;
+  memset(&el,0,sizeof(el));
   if(!List_find(value_list,key,(void*)&el)){
     return -1; // some ide can give unreachable code but it's not the case
   }
@@ -140,7 +143,8 @@ void* Hash_get_element_pointer(HashTable* hash,char* key){
     return NULL;
   }
 
-  HashElement el ={0};
+  HashElement el;
+  memset(&el,0,sizeof(el));
   if(!List_find(value_list,key,(void*)&el)){
     return NULL; // some ide can give unreachable code but it's not the case
   }
@@ -166,7 +170,8 @@ int Hash_update_element(HashTable* hash,char* key,void* element){
     return -1;
   }
 
-  HashElement el = {0};
+  HashElement el;
+  memset(&el,0,sizeof(el));
   if(!List_find(value_list,key,(void*)&el)){
     return -1; // some ide can give unreachable code but it's not the case
   }
