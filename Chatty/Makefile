@@ -182,6 +182,7 @@ clean		:
 
 cleanall	: clean
 	\rm -f *.o *~ libchatty.a valgrind_out $(STAT_PATH) $(UNIX_PATH)
+	\find . -name "*.o" -type f -delete
 	\rm -fr  $(DIR_PATH)
 
 killchatty:
