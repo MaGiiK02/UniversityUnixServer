@@ -62,7 +62,7 @@ message_t*  Message_build_no_copy(int operation,char* sender,char* reciver,char*
 }
 
 message_t* Message_build_simple_ack(int operation,char* sender){
-  message_t* msg = malloc(sizeof(message_t));
+  message_t* msg = calloc(sizeof(message_t),1);
   setHeader(&(msg->hdr),operation,sender);
   setData(&(msg->data),"",NULL,0);//WARNING: Can generate problem with bad formatted strings
   return msg;

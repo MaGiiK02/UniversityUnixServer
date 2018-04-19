@@ -11,6 +11,7 @@
 #include "../../HashTable/HashTableSynchronized.h"
 #include "../../HashTable/HashTable.h"
 #include "../../List/list.h"
+#include "../../Debugger/Debugger.h"
 
 
 int Send_ack_to(int clientFd, int reply_code){
@@ -86,9 +87,9 @@ void _remove_user_from_groups(char* username){
 }
 
 int _dump_socket_on_file(int fdRead,char* filePath,int size){
-
   FILE* destination_file = fopen(filePath,"w+");
   if(destination_file == NULL){
+    ON_DEBUG(perror("opening dump file");)
     flushSocket(fdRead,size);
     return OP_FAIL;
   }
@@ -276,7 +277,9 @@ int OP_postfile(int clientFd, message_hdr_t* hdr,message_data_t* data){
   char filePath[256];
   Utils_dir_create_if_not_exist(GD_ServerSetting->dirName);
   Utils_build_path(filePath,GD_ServerSetting->dirName,data->buf);
-
+  ON_DEBUG(
+          printf("try to load the file in %s\n",filePath);
+  )
   if(is_group){
     HashSync_lock_by_key(GD_ServerGroup,data->hdr.receiver);
 

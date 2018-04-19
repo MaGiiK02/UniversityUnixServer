@@ -39,7 +39,7 @@ void* Worker_function(void *arg){
     memset(&request,0, sizeof(message_hdr_t));
     if(readHeader(fd,&request) <= 0){
       perror("error readHeader");
-      //then i can't write back to te client and i don't even bother abut manage the request
+      //then i can't write back to te client and i don't even bother about manage the request
       continue;
     }
 
