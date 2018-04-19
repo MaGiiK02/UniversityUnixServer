@@ -20,8 +20,7 @@ questo comando crea nella directory Progetto una directory "chatterbox" con i se
 chatterbox17.pdf       : specifiche del progetto
 
 client.c	       : client fornito dai docenti che deve essere utilizzato
-		       	 per effettuare i tests
-			 (NON MODIFICARE)
+		       	 per effettuare i tests (NON MODIFICARE)
 
 connections.h
 message.h
