@@ -83,8 +83,8 @@ int Utils_string_to_integer(const char* str){
     if (
         (
             errno == ERANGE && (
-                converted_val == LONG_MAX ||
-                converted_val == LONG_MIN
+                converted_val == INT_MAX ||
+                converted_val == INT_MIN
             )
         ) || (
             errno != 0 && converted_val == 0
