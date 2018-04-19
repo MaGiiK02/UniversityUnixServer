@@ -135,11 +135,14 @@ Settings* _load_settings_from_file_ptr(FILE* fptr,bool useDefault){
     while(fgets(file_line,SETTING_MAX_SETTING_LINE_LENGTH,fptr) != NULL){
 
         Utils_str_remove_special_chars(file_line);
-        Utils_str_remove_spaces(file_line);
 
         if(_is_a_setting_line(file_line)){
             if( Utils_str_split_by_first_char(file_line,"=",&setting_name,&setting_value) == 0 ){     /* If no problem occoured in the splitting, the function return a 0 code */
-                _settings_set_value_by_field_name(settings,setting_name,setting_value);
+                setting_name = Utils_str_trim(setting_name);
+                setting_value = Utils_str_trim(setting_value);
+                if(*setting_name != 0  && *setting_value != 0) {
+                    _settings_set_value_by_field_name(settings, setting_name, setting_value);
+                }
             }
         }
     }
@@ -148,7 +151,12 @@ Settings* _load_settings_from_file_ptr(FILE* fptr,bool useDefault){
 }
 
 int _is_a_setting_line(const char* file_line){
-    return (file_line[0] != '\0' && file_line[0] != '#' && file_line[0] != 13);
+    return (
+            file_line[0] != '\0' &&
+            file_line[0] != '#' &&
+            file_line[0] != 13 &&
+            strstr(file_line,"=") != NULL
+    );
 }
 
 /*

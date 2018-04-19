@@ -38,6 +38,8 @@ int Utils_str_compare_case_insensitive(const char* str_1, const char* str_2);
 
 void Utils_str_clear(char* str);
 
+char* Utils_str_trim(char* str);
+
 int Utils_calculate_mutex_array_size(long size);
 
 int Utils_build_path(char* target,char* basepath,char* filename);

@@ -20,6 +20,21 @@ void Utils_str_remove_spaces(char* str){
     Utils_str_remove_character(str,' ');
 }
 
+char* Utils_str_trim(char* str){
+    char *end;
+
+    while(isspace((unsigned char)*str)) str++;
+
+    if(*str == 0) return str; // the string was only spaces
+
+    end = str + strlen(str) - 1;
+    while(end > str && isspace((unsigned char)*end)) end--;
+
+    *(end+1) = '\0';
+
+    return str;
+}
+
 void Utils_str_remove_character(char* str,const char c){
     char space[1] = {c};
     Utils_str_remove_characters(str,space);
