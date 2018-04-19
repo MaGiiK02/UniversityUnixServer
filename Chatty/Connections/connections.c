@@ -57,7 +57,7 @@ int readHeader(long fd, message_hdr_t *hdr){
   char* buffer = malloc(buffer_size);
 
   int read_result = read(fd,buffer,buffer_size);
-  if( read_result<0){
+  if( read_result<=0){
     ON_DEBUG(perror("Error during socket read");)
     free(buffer);
     return -1;
@@ -65,7 +65,6 @@ int readHeader(long fd, message_hdr_t *hdr){
 
   memcpy(hdr,buffer,buffer_size);
   free(buffer);
-  Log(("Read HDR with sender:%s and operation:[%d]\n",hdr->sender,hdr->op));
   return read_result;
 }
 
@@ -98,7 +97,6 @@ int readData(long fd, message_data_t *data){
 
   memcpy(data->buf,buffer,buffer_size);
   free (buffer);
-  Log(("Read DATA with reciver %s and buffer of size %d : %s \n",data->hdr.receiver,data->hdr.len,data->buf));
   return read_result;
 }
 
@@ -141,7 +139,6 @@ int sendHeader(long fd, message_hdr_t *data){
     )
     return -1;
   }
-  Log(("Sent HDR to %s with operation:[%d]\n",data->sender,data->op));
   return 0;
 }
 
@@ -162,7 +159,6 @@ int sendData(long fd, message_data_t *data){
     }
   }
 
-  Log(("Sent DATA to %s with buffer of size %d : %s \n",data->hdr.receiver,data->hdr.len,data->buf));
 
   return 0;
 }
@@ -195,7 +191,7 @@ int dumpBufferOnStream(long fd,FILE* stream,int size){
   int read_count;
   int wrote_count;
   int write_ptr =0;
-
+  ON_DEBUG(printf("Start dumping file :\n");)
   while(to_read > 0){ /* While all the message isn't read */
     read_count = read((int) fd, buffer, STREAM_BUFFER*sizeof(char));
     if(is_error(read_count)){
@@ -214,7 +210,7 @@ int dumpBufferOnStream(long fd,FILE* stream,int size){
       read_count-=wrote_count;
     }
   }
-
+  ON_DEBUG(printf("End the file dumping!!!!!!!\n");)
   return 0;
 }
 
