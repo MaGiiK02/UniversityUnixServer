@@ -52,8 +52,10 @@ in secondo luogo con questa soluzione avrei introdotto problemi di sincronizzazi
 
 * Se invece provavo a effettuare copie per puntatore, avrei velocizzato le operazioni ma d'altro lato avrei introdotto tanti problemi di race condition.
 
-Alla fine dunque ho scelto la soluzione intermedia, ovvero effettuare shallow-copy(copio solo la struttura puntata dai nodi della lista e non eventuali valori puntati dalla stessa),
-assicurandomi, la dove neccessario che le neccessrie lock e unlock venivano effettuate.
+Alla fine dunque ho scelto la soluzione intermedia, ovvero effettuare shallow-copy (copio solo la struttura puntata dai nodi della lista e non eventuali valori puntati dalla stessa),
+assicurandomi, la dove neccessario, che le neccessrie lock e unlock venivano effettuate.
+Per velocizzare alcune parti ho invece usato i puntatori hai dati contenuti, nelle HashTable o Liste,
+effettunado ovviamente le dovute operazioni di sincronizzazione.
 
 Altro problema relativo ad entrabe le strutture, era che erano generiche, ciò non mi permetteva senza informazioni extra,
 di capire come effettuare operazioni di Free, copia o coparazione tra i valori contenuti nelle strutture.
@@ -94,8 +96,35 @@ nel formato specificato caricandole in un apposita struttura.
 Nello specifico il modulo e stato reso il più possibile **Fault tollerable**,
 facendogli ignorare problemi di case (nel nome dei settaggi), spazi (tra i settaggi e i loro valori) e eventuali caratteri speciali.
 
-### Flusso dell applicativo:
+### Soluzioni implementative:
 
+#### Sincronia:
+Come detto sopra facco uso di **"Syncronized Socket"** per evitare race condition nella scrittura delle socket
+(ho pensto in seguito di usare il setema per fettuare il lock esclusivo dei file, cosa più sicura).
+E di **Syncronized Hash** (alla fine non ho usato le **Syncronized List**)  per le race condition sulle hash.
+
+Per far comunicare il main thread con i suoi sotto-thread, ho usato il **Channel**,
+che automaticamte mette in attesa i thread dei quali non può, soddisfare le richieste.
+
+Infine mi sono provvisto di neccessarie mutex, la dove necessario per le variabili globali, come ad esempio le statistiche.
+
+#### Gestione richieste:
+I **Worker** (sotto-thread), hanno il compito di leggere le richieste effettuate dal fd da loropreso in carico.
+La richiesta viene letta e fatta passare per un router che decide che operazione il client voglia effettuare, se la richiesta viene eseguita correttamente,
+la funzione che gestisce la richiesta si assicurera di inviare titti i messagi ed Ack necessari.
+Se l'operazione va a buon fine, il worker si assicura di notificare il main-thread che ha rimesso lo Fd preso in carico nel set degli Fd,
+attraverso un segnale di tipo **SIGUSR2**, che svegliera la pselect del main-thread facendogli aggiornare il suo set degli Fd.
+Ma nel caso di errori sarà annullata la richiesta e deciso dal worker che fare con lo fd :
+* Rispondere al client con il relativo messaggio d'errore, e rimettere lo Fd nel Set.
+* Distruggere la socket (errori gravi quali Broken Pipe), in questo caso lo Fd non sarà reinserito nel set.
+
+#### Main-Thread (Stampa settaggi e ascolto nuove connessioni):
+Il main-thread ha il compito di caricare i settaggi oltre a quello di iniziallizzare tutte le variabili globali,
+e le necessarie strutture per la sincronizzazione.
+Esegue anche la creazione (ovviamente) dei suoi sotto-thread con il compito di eseguire le richieste, che si metto in attesa passiva sul canale in attesa di nuvi Fd da gestire.
+A questo punto, crea la socket e vi ci smette in ascolto di nuove connessioni, che provvederà a invinare nel canale ai sotto-thread.
+Questo fino al ricevimento di un segnale di stampa settaggi (SIGUSR1), che la fa uscire dal ascolto per il tempo di stampare le statistiche,
+o di un segnale di terminazione che fa terminare l'applicativom dopo aver atteso la chiusura dei sotto-thread ed aver effettuato le Free necessarie.
 
 ### Possibili miglioramenti:
  * La funzione di **"hashing"** non è ben distribuita, una sostituzione con una più equiprobabile potrebbe migliorare le performance.
