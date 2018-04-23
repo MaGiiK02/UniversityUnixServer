@@ -10,7 +10,7 @@
  * @brief File principale del server chatterbox
  */
 #define _POSIX_C_SOURCE 200809L
-//For
+//For _XOPEN_SOURCE is needed for sigignore
 #define _XOPEN_SOURCE 500
 #include <stdio.h>
 #include <unistd.h>
@@ -126,6 +126,7 @@ static void _usagePrint(const char *prog_name) {
     fprintf(stderr, "  %s -f conffile\n", prog_name);
 }
 
+//a function given to the Channel in order to understand how free his datas
 void _freeForCh(void* ptr){
     int* int_ptr = (int*)ptr;
     FREE(int_ptr)

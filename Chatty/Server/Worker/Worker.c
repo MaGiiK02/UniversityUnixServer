@@ -18,11 +18,16 @@ int Worker_Start_new(pthread_t *thread){
 
 void* Worker_function(void *arg){
 
-  //SETTING SIGNAL FOR THREADS
+  //SETTING signal block for thread
+  //in order to force th system to deliver them to the main-thread
   sigset_t blockedSet;
   sigemptyset(&blockedSet);
   sigaddset(&blockedSet,SIGUSR1);
   sigaddset(&blockedSet,SIGUSR2);
+  sigaddset(&blockedSet,SIGTERM);
+  sigaddset(&blockedSet,SIGINT);
+  sigaddset(&blockedSet,SIGQUIT);
+
   if(pthread_sigmask(SIG_BLOCK,&blockedSet,NULL)!=0){
     perror("Registering child sigmask");
     pthread_exit(NULL);
