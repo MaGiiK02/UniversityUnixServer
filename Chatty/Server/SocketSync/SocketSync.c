@@ -58,3 +58,11 @@ int SockSync_send_data_SS(long fd, message_data_t* data){
   _unlock_by_fd(fd);
   return result;
 }
+
+int SockSync_close_SS(long fd){
+  _lock_by_fd(fd);
+  int result = close(fd);
+  _unlock_by_fd(fd);
+  return result;
+}
+

@@ -2,6 +2,7 @@
 #define _USER_H_
 
 #include <stdlib.h>
+#include <unistd.h>
 
 #include "../../config.h"
 #include "../../HashTable/HashTableSynchronized.h"
