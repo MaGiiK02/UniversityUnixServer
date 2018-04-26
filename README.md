@@ -104,8 +104,14 @@ facendogli ignorare problemi di case (nel nome dei settaggi), spazi (tra i setta
 #### Sincronia:
 Come detto sopra viene fatto uso di **"Syncronized Socket"** per evitare race condition nella scrittura delle socket
 (ho poi pensato in seguito di usare il le lock sui file messe a disposizione dal sitstema operativo, poiché le socket AF_UNIX non sono altro che file, cosa che mi avrebbe fatto risparimare tempo oltre avere alcuni vantaggi).
+<<<<<<< HEAD
 
 E di **Syncronized Hash** (alla fine non ho usato le **Syncronized List**) per le race condition sulle hash.
+=======
+Mentre in lettura, la sincronia e' assicurata dal fatto che, un Fd viene preso in carico da solamente da un worker alla volta. 
+
+Poi utilizzo le  **Syncronized Hash** (alla fine non ho usato le **Syncronized List**) per le race condition sulle hash, sempre introdotte sopra.
+>>>>>>> develop
 
 Per far comunicare il main thread con i suoi sotto-thread, ho usato il **Channel**,
 che automaticamente mette in attesa i thread dei quali non può, soddisfare le richieste.
@@ -154,4 +160,4 @@ vado ad eplorare la hash delgi utenti( non una grande soluzione ma per lo "scope
 ### Problemi conosciuti:
 * **Il programma ignora le connessioni dopo che gli FD raggiungono raggiungono FD_MAX_SET**: Il problema è intriseco nelle specifiche di FD_SET,
 e visto che il riuso degli FD non è supportato nelle socket af_unix, l'unico modo per risolverlo sarebbe quello di ricreare la socket.
-Ma visto che il problema non si presenta all inteno dei test, e visto che chiudere la socket con conessioni pendenti non è banale ho lasciato il problema.
+Ma il problema non si presenta all inteno dei test, e dato che chiudere la socket con conessioni pendenti non è banale ho tralasciato il problema.
