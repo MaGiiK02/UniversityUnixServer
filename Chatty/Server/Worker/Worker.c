@@ -8,6 +8,7 @@
 #include "../ServerOperations/ServerOperations.h"
 #include "../ServerMessages/ServerMessages.h"
 #include "../../Message/message.h"
+#include "../../Debugger/Debugger.h"
 #include <signal.h>
 
 int _manageRequest(int clientFd,message_hdr_t* request);
@@ -38,8 +39,9 @@ void* Worker_function(void *arg){
     if(fd<=0) continue;
     memset(&request,0, sizeof(message_hdr_t));
     if(readHeader(fd,&request) <= 0){
-      perror("error readHeader");
+      ON_DEBUG(perror("error readHeader");)
       //then i can't write back to te client and i don't even bother about manage the request
+      SockSync_close_SS(fd);
       continue;
     }
 
