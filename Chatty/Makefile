@@ -66,7 +66,8 @@ FILE_DA_CONSEGNARE = Makefile \
     Tests/teststress.sh\
     Tests/testgroups.sh\
     Utils/Utils.c\
-    Utils/Utils.h
+    Utils/Utils.h\
+    Relazione-AMattia(502688).pdf
 
 # inserire il nome del tarball: es. NinoBixio
 TARNAME=MattiaAngelini
