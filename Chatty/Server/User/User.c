@@ -55,8 +55,8 @@ void User_set_online(User* u,int fd){
 }
 
 void User_set_offline(User* u){
-  if(u->fd>0) {
-    close(u->fd);
+  if(u->fd > 0) {
+    SockSync_close_SS(u->fd);
     u->fd = -1;
   }
   if(u->online){

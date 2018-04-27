@@ -24,6 +24,8 @@ void SockSync_free_socket_sync();
 int SockSync_send_message_SS(long fd,message_t* msg);
 int SockSync_send_header_SS(long fd, message_hdr_t* hdr);
 int SockSync_send_data_SS(long fd, message_data_t* data);
+int SockSync_close_SS(long fd);
+  
 
 
 #endif //SOL_2017_SOCKETSYNC_H
