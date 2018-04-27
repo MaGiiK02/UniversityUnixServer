@@ -155,3 +155,4 @@ vado ad eplorare la hash delgi utenti( non una grande soluzione ma per lo "scope
 * **Il programma ignora le connessioni dopo che gli FD raggiungono raggiungono FD_MAX_SET**: Il problema è intriseco nelle specifiche di FD_SET,
 e visto che il riuso degli FD non è supportato nelle socket af_unix, l'unico modo per risolverlo sarebbe quello di ricreare la socket.
 Ma visto che il problema non si presenta all inteno dei test, e visto che chiudere la socket con conessioni pendenti non è banale ho lasciato il problema.
+* **Con alcune versioni di valgrind è possibile che sia rilevato un errore nella pselect per la maschera nulla.**
