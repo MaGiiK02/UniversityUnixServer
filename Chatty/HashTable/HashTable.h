@@ -4,8 +4,10 @@
 /*
  * @Author: angelini.mattia
  * @StudentCode: 502688
- * @Brief: The hash structure (that will be implememented with list when collision happens)
+ * @Brief: The hash structure (that will be implememented with list when collision happens).
+ *         The structure support generic elements, but only string keys.
  */
+
 #ifndef HASH_KEY_SIZE
 #define HASH_KEY_SIZE  32
 #endif

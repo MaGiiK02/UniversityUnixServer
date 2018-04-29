@@ -102,16 +102,10 @@ facendogli ignorare problemi di case (nel nome dei settaggi), spazi (tra i setta
 ### Soluzioni implementative:
 
 #### Sincronia:
-Come detto sopra viene fatto uso di **"Syncronized Socket"** per evitare race condition nella scrittura delle socket
-(ho poi pensato in seguito di usare il le lock sui file messe a disposizione dal sitstema operativo, poiché le socket AF_UNIX non sono altro che file, cosa che mi avrebbe fatto risparimare tempo oltre avere alcuni vantaggi).
-<<<<<<< HEAD
+Come detto sopra viene fatto uso di **"Syncronized Socket"** per evitare race condition nella scrittura delle socket,
+Mentre in lettura, la sincronia e' assicurata dal fatto che, un Fd viene preso in carico da solamente da un worker alla volta.
 
-E di **Syncronized Hash** (alla fine non ho usato le **Syncronized List**) per le race condition sulle hash.
-=======
-Mentre in lettura, la sincronia e' assicurata dal fatto che, un Fd viene preso in carico da solamente da un worker alla volta. 
-
-Poi utilizzo le  **Syncronized Hash** (alla fine non ho usato le **Syncronized List**) per le race condition sulle hash, sempre introdotte sopra.
->>>>>>> 0351dbd33daf9a933d63851d992e7bcb4159ada7
+Faccio invece uso delle **Syncronized Hash** (alla fine non ho usato le **Syncronized List**) per le race condition sulle hash, sempre introdotte sopra.
 
 Per far comunicare il main thread con i suoi sotto-thread, ho usato il **Channel**,
 che automaticamente mette in attesa i thread dei quali non può, soddisfare le richieste.
@@ -151,15 +145,17 @@ vado ad eplorare la hash delgi utenti( non una grande soluzione ma per lo "scope
 ### Possibili miglioramenti:
 * La funzione di **"hashing"** non è ben distribuita, una sostituzione con una più equiprobabile potrebbe migliorare le performance.
 * Ottimizzare la dimensione delle hash.
-* Ottimizzare la dimiensione delle Mutex partizionate, in modo da evitare il più possibile le collisioni, cosa che in questo caso blocca un thread.
+* Ottimizzare la dimiensione delle Mutex partizionate, in modo da evitare per quanto possibile le collisioni, cosa che in questo caso blocca un thread.
 * Alcune strutture possono essere sopostate sullo Stack, rendendo più veloce la loro rimozione*
 * Implementare la soft-close(il programma a meno di SIGTERM si assicura di scodare tutto dal Channel).
 * Ottimizzare il ciclo di ascolto del main-thread, in modo da evitare problemi di signal race.
 * Ottimizzare gli import.
 
 ### Problemi conosciuti:
-* **Il programma ignora le connessioni dopo che gli FD raggiungono raggiungono FD_MAX_SET**: Il problema è intriseco nelle specifiche di FD_SET,
-e visto che il riuso degli FD non è supportato nelle socket af_unix, l'unico modo per risolverlo sarebbe quello di ricreare la socket.
-Ma il problema non si presenta all inteno dei test, e dato che chiudere la socket con conessioni pendenti non è banale ho tralasciato il problema.
-* **Con alcune versioni di valgrind è possibile che sia rilevato un errore nella pselect per la maschera nulla.**
+* **Con alcune versioni di valgrind è possibile che sia rilevato un errore nella pselect per la maschera vuota.**
+* **Non compila con nuove versioni di gcc, per un cambio d'uso di alcuni flag.**
 
+### Sistema e strumenti :
+* **OS:** Ubuntu 16.04 (Linux 3547af374672 4.9.60-linuxkit-aufs #1 SMP Mon Nov 6 16:00:12 UTC 2017 x86_64 x86_64 x86_64 GNU/Linux)
+* **GCC:** gcc version 5.4.0 20160609 (Ubuntu 5.4.0-6ubuntu1~16.04.9)
+* **VALGRIND:** valgrind-3.11.0

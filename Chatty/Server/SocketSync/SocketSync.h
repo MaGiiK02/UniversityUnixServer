@@ -2,6 +2,12 @@
 // Created by Mattia Angelini on 21/02/2018.
 //
 
+
+/*
+* @brief A module used to provide syncronization on sockets FDs.
+        It use a partitioned MutexArray, like the SyncHashTable wrapper using the FDs like index for the array to perform locks.
+*/
+
 #ifndef SOL_2017_SOCKETSYNC_H
 #define SOL_2017_SOCKETSYNC_H
 
@@ -11,6 +17,7 @@
 
 #include <stdlib.h>
 #include <pthread.h>
+#include <unistd.h>
 
 #include "../../Booleans/Booleans.h"
 #include "../../Message/message.h"
@@ -25,6 +32,9 @@ int SockSync_send_message_SS(long fd,message_t* msg);
 int SockSync_send_header_SS(long fd, message_hdr_t* hdr);
 int SockSync_send_data_SS(long fd, message_data_t* data);
 int SockSync_close_SS(long fd);
+
+void SockSync_lock_by_fd(int fd);
+void SockSync_unlock_by_fd(int fd);
   
 
 

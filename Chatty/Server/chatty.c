@@ -93,6 +93,7 @@ int main(int argc, char *argv[]) {
 
     //Initialize a structure that enable to avoid race in write procedures
     pthread_mutex_init(&GD_MU_FdSetRead,NULL);
+    pthread_mutex_init(&GD_MU_Fd_Username,NULL);
     SockSync_init_socket_sync(GD_ServerSetting->maxConnections);
     GD_MainThread = getpid();
     GD_WorkerCommunicationChannel = Ch_New(GD_ServerSetting->maxConnections,sizeof(int),_freeForCh);
@@ -217,6 +218,8 @@ void _freeStructures(){
     Log(("-->Freeing GD_WorkerCommunicationChannel\n"));
     Ch_Free(GD_WorkerCommunicationChannel);
 
+    pthread_mutex_destroy(&GD_MU_FdSetRead);
+    pthread_mutex_destroy(&GD_MU_Fd_Username);
 }
 
 int _buildSocket(char* socketPath,bool forceBind){
@@ -255,7 +258,6 @@ int _listenAndServe(int listenerSocketFd) {
 
     sigset_t sigIgnore;
     sigemptyset(&sigIgnore);
-    //sigaddset(&sigIgnore, SIGPIPE);
 
     int max_fd = listenerSocketFd;
     FD_ZERO(&GD_FdSetRead);

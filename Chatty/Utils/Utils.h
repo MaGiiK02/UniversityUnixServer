@@ -4,6 +4,7 @@
 /*
  * @Author: angelini.mattia
  * @StudentCode: 502688
+ * @brief A collection of generic purpose utils functions used in the project.
  */
 
 #include "../Booleans/Booleans.h"

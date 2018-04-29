@@ -8,7 +8,7 @@
  * @StudentCode: 502688
  * @Brief: An implementation with all the basic functions to navigate,
            manage and modify lists, a good structure if you have to remove or
-           search few times.
+           search few times. It supports generic types of elements.
  */
 
 //in order to create a generic list i have to know how free it's values

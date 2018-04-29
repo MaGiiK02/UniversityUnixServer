@@ -42,7 +42,6 @@ void _send_message_to_user(User* to_user,char* from_user, char* text, int type){
         StatsDecNNotFileDelivered_S();
         StatsIncNFileDelivered_S();
       }
-
     }
   }
   User_PushHistory(to_user,msg);
@@ -93,6 +92,7 @@ int _dump_socket_on_file(int fdRead,char* filePath,int size){
     flushSocket(fdRead,size);
     return OP_FAIL;
   }
+
   if(dumpBufferOnStream(fdRead,destination_file,size)!=0){
     fflush(destination_file);
     fclose(destination_file);
@@ -138,14 +138,18 @@ int OP_unregister(int clientFd,User* clientUser, message_hdr_t* request) {
   _remove_user_from_groups(request->sender);
   StatsDecNUser_S();
   HashSync_destroy_element_S(GD_ServerUsers,request->sender);
-  return Send_ack_to(clientFd,OP_OK);
+  int result = Send_ack_to(clientFd,OP_OK);
+  SockSync_close_SS(clientFd);
+  return result;
 }
 
 int OP_disconnect(int clientFd,User* clientUser,message_hdr_t* request){
   HashSync_lock_by_key(GD_ServerUsers,request->sender);
-  User_set_offline(clientUser);
+  User_set_offline_leave_sock(clientUser);
   HashSync_unlock_by_key(GD_ServerUsers,request->sender);
-  return Send_ack_to(clientFd,OP_OK);
+  int result = Send_ack_to(clientFd,OP_OK);
+  SockSync_close_SS(clientFd);
+  return result;
 }
 
 int OP_usrlist(int clientFd,User* clientUser){

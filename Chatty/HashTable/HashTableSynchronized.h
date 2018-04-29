@@ -2,6 +2,12 @@
 // Created by Mattia Angelini on 03/01/2018.
 //
 
+
+/*
+* @brief It's a wrapper for the HashTable module that ensure no race condidtion on data,
+*       Using an partitoned MutexArray.
+*/
+
 #ifndef SOL_2017_HASHTABLESYNCRONIZED_H
 #define SOL_2017_HASHTABLESYNCRONIZED_H
 

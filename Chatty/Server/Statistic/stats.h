@@ -1,6 +1,12 @@
 #ifndef MEMBOX_STATS_
 #define MEMBOX_STATS_
 
+/*
+* @brief The statistic for the usage of the server, where update to them are ensured to be thread safe,
+*        using a mutex in order to update them.
+*/
+
+
 #include <stdio.h>
 #include <time.h>
 #include <pthread.h>

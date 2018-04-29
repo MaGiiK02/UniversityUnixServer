@@ -3,6 +3,11 @@
 // ispired by Golang Channels
 //
 
+/*
+* @brief The module provide queue in witch threads can operate with push and pop operations.
+*           It ensure that no race condittion happens and it puts thread to passive waiting in case can't insert or retreive an element from the queue.
+*/
+
 #ifndef _CHANNEL_H_
 #define _CHANNEL_H_
 

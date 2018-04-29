@@ -5,6 +5,11 @@
 #ifndef SOL_2017_SERVEROPERATIONS_H
 #define SOL_2017_SERVEROPERATIONS_H
 
+/*
+* @brief All the operations clients can request to the server,
+*       basically all the endpoint the server calls to perform clients requestes.
+*/
+
 #include "../User/User.h"
 #include "../ServerGlobalData.h"
 #include "../SocketSync/SocketSync.h"

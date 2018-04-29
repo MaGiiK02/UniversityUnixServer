@@ -2,6 +2,10 @@
 // Created by Mattia Angelini on 23/11/2017.
 //
 
+/*
+* @brief provide some macros to help the debugging of applications.
+*/
+
 #ifndef SOL_2017_DEBUGGER_H
 #define SOL_2017_DEBUGGER_H
 

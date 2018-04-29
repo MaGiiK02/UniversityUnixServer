@@ -2,6 +2,7 @@
 // Created by Mattia Angelini on 21/02/2018.
 //
 #include "SocketSync.h"
+#include "../../Debugger/Debugger.h"
 
 pthread_mutex_t* SOCKET_MUTEX;
 int SOCK_MUTEX_SIZE=0;
@@ -28,41 +29,42 @@ void SockSync_free_socket_sync(){
   }
 }
 
-void _lock_by_fd(int fd){
+void SockSync_lock_by_fd(int fd){
   int index = fd%SOCK_MUTEX_SIZE;
   LOCK_MUTEX_EXIT(SOCKET_MUTEX[index]);
 }
 
-void _unlock_by_fd(int fd){
+void SockSync_unlock_by_fd(int fd){
   int index = fd%SOCK_MUTEX_SIZE;
   UNLOCK_MUTEX_EXIT(SOCKET_MUTEX[index]);
 }
 
 int SockSync_send_message_SS(long fd, message_t* msg){
-  _lock_by_fd(fd);
+  SockSync_lock_by_fd(fd);
   int result = sendRequest(fd,msg);
-  _unlock_by_fd(fd);
+  SockSync_unlock_by_fd(fd);
   return result;
 }
 
 int SockSync_send_header_SS(long fd, message_hdr_t* hdr){
-  _lock_by_fd(fd);
+  SockSync_lock_by_fd(fd);
   int result = sendHeader(fd,hdr);
-  _unlock_by_fd(fd);
+  SockSync_unlock_by_fd(fd);
   return result;
 }
 
 int SockSync_send_data_SS(long fd, message_data_t* data){
-  _lock_by_fd(fd);
+  SockSync_lock_by_fd(fd);
   int result = sendData(fd,data);
-  _unlock_by_fd(fd);
+  SockSync_unlock_by_fd(fd);
   return result;
 }
 
 int SockSync_close_SS(long fd){
-  _lock_by_fd(fd);
+  SockSync_lock_by_fd(fd);
+  ON_DEBUG(printf("CLOSING FD:[%ld]\n",fd);)
   int result = close(fd);
-  _unlock_by_fd(fd);
+  SockSync_unlock_by_fd(fd);
   return result;
 }
 

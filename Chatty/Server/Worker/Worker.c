@@ -40,27 +40,41 @@ void* Worker_function(void *arg){
   User* u;
   message_t* msg;
   message_hdr_t request;
+  char username_support[MAX_NAME_LENGTH];
   while(Ch_Pop_S(GD_WorkerCommunicationChannel,(void*)&fd) == 0){ //passive wait inside the pop Fn
     if(fd<=0) continue;
     memset(&request,0, sizeof(message_hdr_t));
+    request.op = -1;
     if(readHeader(fd,&request) <= 0){
       ON_DEBUG(perror("error readHeader");)
       //then i can't write back to te client and i don't even bother about manage the request
+      #ifdef MAKE_VALGRIND_HAPPY
+            memset(username_support,0,MAX_NAME_LENGTH *  sizeof(char));
+      #endif
+      Data_get_name_for_fd_S(fd,username_support);
       SockSync_close_SS(fd);
+      HashSync_lock_by_key(GD_ServerUsers,username_support);
+      if ((u = HashSync_get_element_pointer(GD_ServerUsers,username_support))){
+        User_set_offline_leave_sock(u);
+      }
+      HashSync_unlock_by_key(GD_ServerUsers,username_support);
       continue;
     }
 
     switch (ris=_manageRequest(fd,&request)){
       case OP_OK:
-        Data_put_in_readSet_S(fd); //put back the fd in the reading set
-        kill(GD_MainThread,SIGUSR2); // notify restoring of an FD
+        if(request.op != UNREGISTER_OP && request.op != DISCONNECT_OP){
+          Data_put_in_readSet_S(fd); //put back the fd in the reading set
+          kill(GD_MainThread,SIGUSR2); // notify restoring of an FD
+        }
         break;
       case OP_BROKEN_CONN:
         HashSync_lock_by_key(GD_ServerUsers,request.sender);
         if ((u = HashSync_get_element_pointer(GD_ServerUsers,request.sender))){
-          User_set_offline(u);
+          User_set_offline_leave_sock(u);
         }
         HashSync_unlock_by_key(GD_ServerUsers,request.sender);
+        SockSync_close_SS(fd);
         break;
       default:
         //If an error happen this part of code have the purpose to notify the client
@@ -70,9 +84,10 @@ void* Worker_function(void *arg){
           // reply error on the socket
           HashSync_lock_by_key(GD_ServerUsers, request.sender);
           if ((u = HashSync_get_element_pointer(GD_ServerUsers, request.sender))) {
-            User_set_offline(u);
+            User_set_offline_leave_sock(u);
           }
           HashSync_unlock_by_key(GD_ServerUsers, request.sender);
+          SockSync_close_SS(fd);
         }
 
         Message_free(msg);

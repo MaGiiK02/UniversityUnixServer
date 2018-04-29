@@ -90,11 +90,11 @@ int Utils_string_to_integer(const char* str){
             errno != 0 && converted_val == 0
         )
     ){
-        errno == MATH_ERREXCEPT;
+        errno = MATH_ERREXCEPT;
     }
 
    if (endptr == str) {
-     errno == MATH_ERREXCEPT;
+     errno = MATH_ERREXCEPT;
     }
 
     return converted_val;
@@ -132,7 +132,12 @@ int Utils_calculate_mutex_array_size(long size){
 }
 
 int Utils_build_path(char* target,char* basepath,char* fileName){
-  return sprintf(target,"%s/%s",basepath,fileName);
+    int i = strlen(fileName)-1;
+    while (fileName[i] != '/' && i>0){
+        i--;
+    }
+    if(fileName[i] == '/') i++;
+    return sprintf(target,"%s/%s",basepath,fileName+i);
 }
 
 void Utils_dir_create_if_not_exist(char* path){

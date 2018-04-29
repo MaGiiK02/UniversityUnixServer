@@ -57,7 +57,7 @@ int readHeader(long fd, message_hdr_t *hdr){
   char* buffer = malloc(buffer_size);
 
   int read_result = read(fd,buffer,buffer_size);
-  if( read_result<=0){
+  if( read_result < 0){
     ON_DEBUG(perror("Error during socket read");)
     free(buffer);
     return -1;
@@ -154,7 +154,7 @@ int sendData(long fd, message_data_t *data){
     if(data->buf == NULL) return -1;
     write_result = _writeAll(fd,(char*) data->buf, data->hdr.len);
     if(is_error(write_result)){
-      ON_DEBUG(perror("Error during msg header send");)
+      ON_DEBUG(perror("Error during msg data-header send");)
       return -1;
     }
   }

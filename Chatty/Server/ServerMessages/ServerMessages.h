@@ -2,6 +2,11 @@
 // Created by Mattia Angelini on 03/04/2018.
 //
 
+/*
+* @brief An extension of messages used in the server, in order to avoid many import for the client application.
+*/
+
+
 #ifndef SOL_2017_SERVERMESSAGES_H
 #define SOL_2017_SERVERMESSAGES_H
 

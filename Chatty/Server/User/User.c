@@ -4,6 +4,7 @@
 #include "../../Message/message.h"
 #include "../ServerGlobalData.h"
 #include "../ServerMessages/ServerMessages.h"
+#include "../../Debugger/Debugger.h"
 
 
 User* User_new(char* name,int historySize){
@@ -47,7 +48,12 @@ void User_shallow_Free(void* el){
 }
 
 void User_set_online(User* u,int fd){
+  ON_DEBUG(printf("CONNECTING %s[%d--->%d]\n",u->name,u->fd,fd);)
+  if(u->fd > 0) {
+    SockSync_close_SS(u->fd);
+  }
   u->fd = fd;
+  Data_set_name_for_fd_S(fd,u->name);
   if(!u->online){
     u->online = true;
     StatsIncNOnline_S();
@@ -57,6 +63,7 @@ void User_set_online(User* u,int fd){
 void User_set_offline(User* u){
   if(u->fd > 0) {
     SockSync_close_SS(u->fd);
+    Data_clear_name_for_fd_S(u->fd);
     u->fd = -1;
   }
   if(u->online){

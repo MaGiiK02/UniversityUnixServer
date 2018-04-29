@@ -1,3 +1,11 @@
+//
+// Created by Mattia Angelini on 10/09/2017.
+//
+
+/*
+* @brief A module to manage the User data structure.
+*/
+
 #ifndef _USER_H_
 #define _USER_H_
 
@@ -6,6 +14,7 @@
 
 #include "../../config.h"
 #include "../../HashTable/HashTableSynchronized.h"
+#include "../SocketSync/SocketSync.h"
 #include "../../Message/message.h"
 #include "../../MemoryHelper/MemoryHelper.h"
 #include "../../Connections/connections.h"

@@ -2,6 +2,11 @@
 // Created by Mattia Angelini on 09/01/2018.
 //
 
+/*
+* @brief The definition of the application sub-thread launched in chatty.c .
+*/
+
+
 #ifndef SOL_2017_WORKER_H
 #define SOL_2017_WORKER_H
 

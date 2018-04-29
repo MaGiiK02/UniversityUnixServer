@@ -2,6 +2,10 @@
 // Created by Mattia Angelini on 12/04/2018.
 //
 
+/*
+* @brief A module to manage the Group data structure.
+*/
+
 #ifndef SOL_2017_GROUPS_H
 #define SOL_2017_GROUPS_H
 
