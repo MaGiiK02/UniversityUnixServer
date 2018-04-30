@@ -45,7 +45,7 @@ void* Worker_function(void *arg){
     if(fd<=0) continue;
     memset(&request,0, sizeof(message_hdr_t));
     request.op = -1;
-    if(readHeader(fd,&request) <= 0){
+    if(SockSync_read_header_SS(fd,&request) <= 0){
       ON_DEBUG(perror("error readHeader");)
       //then i can't write back to te client and i don't even bother about manage the request
       #ifdef MAKE_VALGRIND_HAPPY
@@ -106,7 +106,7 @@ int _manageRequest(int clientFd,message_hdr_t* request){
     //is the only operation that don't have need about an user
     result = OP_register(clientFd,request);
   }else{
-    if(readData(clientFd,&data) <= 0){
+    if(SockSync_read_data_SS(clientFd,&data) <= 0){
       return OP_BROKEN_CONN;
     }
     usr = HashSync_get_element_pointer_S(GD_ServerUsers,request->sender);

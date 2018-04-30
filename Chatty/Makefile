@@ -96,7 +96,7 @@ DIR_PATH        = /tmp/chatty
 
 CC		=  gcc
 AR              =  ar
-CFLAGS	        += -std=c99 -Wall -pedantic -g -DMAKE_VALGRIND_HAPPY -DDEBUG
+CFLAGS	        += -std=c99 -Wall -pedantic -g -DMAKE_VALGRIND_HAPPY
 ARFLAGS         =  rvs
 INCLUDES	= -I.
 LDFLAGS 	= -L.

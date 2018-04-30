@@ -268,13 +268,17 @@ int OP_postfile(int clientFd, message_hdr_t* hdr,message_data_t* data){
   bool is_group = Group_is_a_valid_groupname(data->hdr.receiver);
   Group* g = NULL;
   User* target = NULL;
-
+  SockSync_lock_read_by_fd(clientFd);
   if(readDataNoBuffer(clientFd,&file_info)!=0){
+    SockSync_unlock_read_by_fd(clientFd);
     return OP_BROKEN_CONN;
   }
+  SockSync_unlock_read_by_fd(clientFd);
 
   if(file_info.hdr.len >= GD_ServerSetting->maxFileSize*KILOBYTE){
+    SockSync_lock_read_by_fd(clientFd);
     flushSocket(clientFd,file_info.hdr.len); // remove all socket content
+    SockSync_unlock_read_by_fd(clientFd);
     return OP_MSG_TOOLONG;
   }
 
@@ -290,17 +294,22 @@ int OP_postfile(int clientFd, message_hdr_t* hdr,message_data_t* data){
     g = HashSync_get_element_pointer(GD_ServerGroup,data->hdr.receiver);
     if(g == NULL){
       HashSync_unlock_by_key(GD_ServerGroup,(data->hdr.receiver));
-      flushSocket(clientFd,file_info.hdr.len);
+      SockSync_lock_read_by_fd(clientFd);
+      flushSocket(clientFd,file_info.hdr.len); // remove all socket content
+      SockSync_unlock_read_by_fd(clientFd);
       return OP_NICK_UNKNOWN;
     }
 
     if(!Group_is_registered_by_name(g,hdr->sender)){
       HashSync_unlock_by_key(GD_ServerGroup,(data->hdr.receiver));
-      flushSocket(clientFd,file_info.hdr.len);
+      SockSync_lock_read_by_fd(clientFd);
+      flushSocket(clientFd,file_info.hdr.len); // remove all socket content
+      SockSync_unlock_read_by_fd(clientFd);
       return OP_NICK_UNKNOWN;
     }
-
+    SockSync_lock_read_by_fd(clientFd);
     int dump_ris = _dump_socket_on_file(clientFd,filePath,file_info.hdr.len);
+    SockSync_unlock_read_by_fd(clientFd);
     if(dump_ris!= OP_OK){
       HashSync_unlock_by_key(GD_ServerGroup,data->hdr.receiver);
       return  dump_ris;
@@ -315,10 +324,14 @@ int OP_postfile(int clientFd, message_hdr_t* hdr,message_data_t* data){
     target = HashSync_get_element_pointer(GD_ServerUsers,data->hdr.receiver);
     if(target == NULL){
       HashSync_unlock_by_key(GD_ServerUsers,(data->hdr.receiver));
-      flushSocket(clientFd,file_info.hdr.len);
+      SockSync_lock_read_by_fd(clientFd);
+      flushSocket(clientFd,file_info.hdr.len); // remove all socket content
+      SockSync_unlock_read_by_fd(clientFd);
       return OP_NICK_UNKNOWN;
     }
+    SockSync_lock_read_by_fd(clientFd);
     int dump_ris = _dump_socket_on_file(clientFd,filePath,file_info.hdr.len);
+    SockSync_unlock_read_by_fd(clientFd);
     if(dump_ris!= OP_OK){
       HashSync_unlock_by_key(GD_ServerUsers,(data->hdr.receiver));
       return dump_ris;
@@ -328,7 +341,6 @@ int OP_postfile(int clientFd, message_hdr_t* hdr,message_data_t* data){
 
     HashSync_unlock_by_key(GD_ServerUsers,(data->hdr.receiver));
   }
-
   return Send_ack_to(clientFd,OP_OK);
 }
 

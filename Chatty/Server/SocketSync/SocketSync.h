@@ -27,14 +27,23 @@
 
 void SockSync_init_socket_sync(int max_concurrent_fds);
 void SockSync_free_socket_sync();
+
 //Send a message to an FD avoiding a concurrent write on it
 int SockSync_send_message_SS(long fd,message_t* msg);
 int SockSync_send_header_SS(long fd, message_hdr_t* hdr);
 int SockSync_send_data_SS(long fd, message_data_t* data);
+
+int SockSync_read_header_SS(long fd, message_hdr_t* hdr_out);
+
+int SockSync_read_data_SS(long fd, message_data_t* hdr_out);
+
 int SockSync_close_SS(long fd);
 
-void SockSync_lock_by_fd(int fd);
-void SockSync_unlock_by_fd(int fd);
+void SockSync_lock_write_by_fd(int fd);
+void SockSync_unlock_write_by_fd(int fd);
+void SockSync_lock_read_by_fd(int fd);
+void SockSync_unlock_read_by_fd(int fd);
+
   
 
 

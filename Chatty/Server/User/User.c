@@ -48,9 +48,14 @@ void User_shallow_Free(void* el){
 }
 
 void User_set_online(User* u,int fd){
+  char tmp_name[MAX_NAME_LENGTH];
+  memset(tmp_name,0,MAX_NAME_LENGTH * sizeof(char));
   ON_DEBUG(printf("CONNECTING %s[%d--->%d]\n",u->name,u->fd,fd);)
   if(u->fd > 0) {
-    SockSync_close_SS(u->fd);
+    Data_get_name_for_fd_S(u->fd,tmp_name);
+    if(strcmp(u->name,tmp_name) == 0 || strlen(tmp_name)==0){
+      SockSync_close_SS(u->fd);
+    }
   }
   u->fd = fd;
   Data_set_name_for_fd_S(fd,u->name);
