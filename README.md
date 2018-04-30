@@ -90,7 +90,7 @@ sul quale vengono effettuate le operazioni di lock in base al indice della chiav
 
 ##### Syncronized Socket:
 Questo modulo va inizializzato prima di poter essere utilizzato, ma una volta creato permette di effettuare operazioni sugli FD,
-senza preoccuparsi di race condition in scrittura in quanto utilizza un array di mutex per evitare il problema.
+senza preoccuparsi di race condition in scrittura e/o lettura in quanto utilizza un array di mutex per evitare il problema separate in lettura e scrittura.
 
 #### SettingManager:
 Si occupa del caricamento delle impostazioni del server, caricando le informazioni contenute in un file,
@@ -102,8 +102,7 @@ facendogli ignorare problemi di case (nel nome dei settaggi), spazi (tra i setta
 ### Soluzioni implementative:
 
 #### Sincronia:
-Come detto sopra viene fatto uso di **"Syncronized Socket"** per evitare race condition nella scrittura delle socket,
-Mentre in lettura, la sincronia e' assicurata dal fatto che, un Fd viene preso in carico da solamente da un worker alla volta.
+Come detto sopra viene fatto uso di **"Syncronized Socket"** per evitare race condition nella scrittura e lettura delle socket.
 
 Faccio invece uso delle **Syncronized Hash** (alla fine non ho usato le **Syncronized List**) per le race condition sulle hash, sempre introdotte sopra.
 
