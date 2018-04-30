@@ -92,6 +92,10 @@ sul quale vengono effettuate le operazioni di lock in base al indice della chiav
 Questo modulo va inizializzato prima di poter essere utilizzato, ma una volta creato permette di effettuare operazioni sugli FD,
 senza preoccuparsi di race condition in scrittura e/o lettura in quanto utilizza un array di mutex per evitare il problema separate in lettura e scrittura.
 
+##### Syncronized File:
+Funziona similmente al modulo sopra citato (Syncronized socket),ma non suddivide le operazioni di lettura da quelle di scrittura,
+e si assicura solamente che un thread non possa cotinuare dopo aver aperto il file, a meno che non ci siano altri thread che lo abbiano ancora aperto.
+
 #### SettingManager:
 Si occupa del caricamento delle impostazioni del server, caricando le informazioni contenute in un file,
 nel formato specificato caricandole in una apposita struttura.
@@ -106,6 +110,7 @@ Come detto sopra viene fatto uso di **"Syncronized Socket"** per evitare race co
 
 Faccio invece uso delle **Syncronized Hash** (alla fine non ho usato le **Syncronized List**) per le race condition sulle hash, sempre introdotte sopra.
 
+I file sono syncronizzati con il modulo **Syncronized File** che limita le letture e le scritture sulo stesso file ad un thread alla volta.
 Per far comunicare il main thread con i suoi sotto-thread, ho usato il **Channel**,
 che automaticamente mette in attesa i thread dei quali non può, soddisfare le richieste.
 

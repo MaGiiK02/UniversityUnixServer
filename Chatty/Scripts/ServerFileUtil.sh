@@ -23,7 +23,7 @@ Script usage:
 
 SETTING_NAME="dirname"
 # A Bash RegEx matching pattner for ( case insensitive ) : [not#]dirname[n-spaces]=[n-spaces][anyting that don't start with "="]
-dirname_setting_row_matcher="^(([Dd][Ii][Rr][Nn][Aa][Mm][Ee])*( )=*( )[^=]*(.))"
+dirname_setting_row_matcher="^(( )*([Dd][Ii][Rr][Nn][Aa][Mm][Ee]){1}( )*=( )*[^=]*(.))"
 
 RED='\033[0;31m'
 NC='\033[0m' # No Color
@@ -81,7 +81,7 @@ printf "Start scanning :$Filename............"
 find=0
 setting_row=""
 while read -r line && [ $find -eq 0 ] ; do
-    if [[ "$line" == *""*$dirname_setting_row_matcher ]]
+    if [[ "$line" =~ $dirname_setting_row_matcher  ]]
     then
        find=1
        setting_row=$line;
@@ -97,7 +97,8 @@ then
 fi
 
 # value cutting
-dirname_path=${setting_row#*=}#Removing the part before the equal
+IFS="=" read name dirname_path <<< $setting_row #Read after the separator IFT = "=" an put it in dirpath_name
+dirname_path="${dirname_path#"${dirname_path%%[![:space:]]*}"}" #Take after the spaces in dirpath
 
 if [ ! -d "$dirname_path" ]
 then
@@ -106,12 +107,12 @@ then
   exit 1
 fi
 
-if [ $Time -eq 0 ]
+if [ $Time -le 0 ]
 then
-  echo "Performing listing operation for directory:$dirname_path."
-  ls -l "$dirname_path"
+  echo "Performing listing operation for directory:$dirname_path"
+  echo $(ls "$dirname_path")
 else
-  echo "Performing cleaning operation for files older than $Time minutes for directory:$dirname_path."
+  echo "Performing cleaning operation for files older than $Time minutes for directory:$dirname_path"
   find  $dirname_path -mmin +$Time -type f -delete
 fi
 

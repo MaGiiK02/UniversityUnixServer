@@ -55,7 +55,7 @@ int readHeader(long fd, message_hdr_t *hdr){
 
   size_t buffer_size = sizeof(message_hdr_t);
   char* buffer = malloc(buffer_size);
-
+  memset(buffer,0,buffer_size);
   int read_result = read(fd,buffer,buffer_size);
   if( read_result < 0){
     ON_DEBUG(perror("Error during socket read");)
@@ -73,6 +73,7 @@ int readData(long fd, message_data_t *data){
 
   size_t buffer_size = sizeof(message_data_t);
   char* buffer = malloc(buffer_size);
+  memset(buffer,0,buffer_size);
 
   int read_result = read(fd,buffer,buffer_size);
   if(is_error(read_result)){
@@ -83,20 +84,23 @@ int readData(long fd, message_data_t *data){
 
   memcpy(data,buffer,buffer_size);
 
-  buffer_size = data->hdr.len;
-  buffer = realloc(buffer,buffer_size);
+  if(data->hdr.len > 0){
+    buffer_size = data->hdr.len * sizeof(char);
+    buffer = realloc(buffer,buffer_size);
+    memset(buffer,0,buffer_size);
+    read_result += _readAll(fd,buffer,buffer_size);
+    if(is_error(read_result)){
+      ON_DEBUG(perror("Error during socket read");)
+      free(buffer);
+      return -1;
+    }
 
-  read_result += _readAll(fd,buffer,buffer_size);
-  if(is_error(read_result)){
-    ON_DEBUG(perror("Error during socket read");)
-    free(buffer);
-    return -1;
+    data->buf = malloc(sizeof(char*) * data->hdr.len);
+
+    memcpy(data->buf,buffer,buffer_size);
   }
-
-  data->buf = malloc(sizeof(char*) * data->hdr.len);
-
-  memcpy(data->buf,buffer,buffer_size);
   free (buffer);
+
   return read_result;
 }
 
@@ -152,7 +156,7 @@ int sendData(long fd, message_data_t *data){
   //Write dataBuffer
   if(data->hdr.len > 0){
     if(data->buf == NULL) return -1;
-    write_result = _writeAll(fd,(char*) data->buf, data->hdr.len);
+    write_result = _writeAll(fd,(char*) data->buf, data->hdr.len * sizeof(char));
     if(is_error(write_result)){
       ON_DEBUG(perror("Error during msg data-header send");)
       return -1;
@@ -185,7 +189,7 @@ int dumpBufferOnStream(long fd,FILE* stream,int size){
   char buffer[STREAM_BUFFER];
   memset(buffer, 0, sizeof(char)*STREAM_BUFFER);
 
-  int to_read = size;
+  int to_read = size* sizeof(char);
   if(to_read>size) return 1;
 
   int read_count;
@@ -247,7 +251,7 @@ int _writeAll(long fd,char* msg,int size){
 
 int _readAll(long fd,char* buffer,int size){
   int readed = -1;
-  memset(buffer,0,size* sizeof(char));
+  memset(buffer,0,size * sizeof(char));
   while(size > 0){ /* While all the message isn't read */
     readed = read((int) fd, buffer, size);
     if(is_error(readed)){

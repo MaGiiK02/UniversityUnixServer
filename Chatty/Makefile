@@ -53,6 +53,8 @@ FILE_DA_CONSEGNARE = Makefile \
     Server/Group/Group.h\
     Server/Worker/Worker.c\
     Server/Worker/Worker.h\
+    Server/FileSync/FileSync.c\
+    Server/FileSync/FileSync.h\
     Server/ServerMessages/ServerMessages.h\
     Server/ServerMessages/ServerMessages.c\
     SettingManager/SettingManager.c\
@@ -120,6 +122,7 @@ OBJECTS		= Server/SocketSync/SocketSync.o\
         Server/ServerMessages/ServerMessages.o\
         Server/ServerOperations/ServerOperations.o\
         Server/User/User.o\
+        Server/FileSync/FileSync.o\
         Server/Group/Group.o\
         Server/Statistic/stats.o\
         Server/Worker/Worker.o\
@@ -131,6 +134,7 @@ OBJECTS		= Server/SocketSync/SocketSync.o\
 INCLUDE_FILES   = config.h\
       Booleans/Booleans.h\
       Server/SocketSync/SocketSync.h\
+      Server/FileSync/FileSync.h\
       Channel/Channel.h\
       Connections/connections.h\
       Debugger/Debugger.h\

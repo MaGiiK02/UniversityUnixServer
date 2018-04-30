@@ -1,3 +1,4 @@
+
 project("sol_2017")
 cmake_minimum_required(VERSION 3.8)
 add_definitions(-DDEBUG)
@@ -26,12 +27,13 @@ set(SOURCE_FILE
         Chatty/Utils/Utils.h
         Chatty/config.h
         Chatty/MemoryHelper/MemoryHelper.h
-        Chatty/Debugger/Debugger.h Chatty/HashTable/HashTableSynchronized.c Chatty/HashTable/HashTableSynchronized.h Chatty/List/ListSynchronized.c Chatty/List/ListSynchronized.h Chatty/Server/Worker/Worker.c Chatty/Server/Worker/Worker.h Chatty/Server/ServerGlobalData.h Chatty/Server/SocketSync/SocketSync.c Chatty/Server/SocketSync/SocketSync.h Chatty/Server/ServerGlobalData.c Chatty/Server/ServerOperations/ServerOperations.c Chatty/Server/ServerOperations/ServerOperations.h Chatty/Server/Statistic/stats.c)
+        Chatty/Debugger/Debugger.h Chatty/HashTable/HashTableSynchronized.c Chatty/HashTable/HashTableSynchronized.h Chatty/List/ListSynchronized.c Chatty/List/ListSynchronized.h Chatty/Server/Worker/Worker.c Chatty/Server/Worker/Worker.h Chatty/Server/ServerGlobalData.h Chatty/Server/SocketSync/SocketSync.c Chatty/Server/SocketSync/SocketSync.h Chatty/Server/ServerGlobalData.c Chatty/Server/ServerOperations/ServerOperations.c Chatty/Server/ServerOperations/ServerOperations.h Chatty/Server/Statistic/stats.c
+        )
 
 #add_executable(TEST-CHANNEL "${SOURCE_FILE}" Chatty/Channel/Channel_Test.c)
 add_executable(TEST-HASH-TABLES  "${SOURCE_FILE}" Chatty/HashTable/HashTable_Test.c)
 add_executable(TEST-LIST  "${SOURCE_FILE}" Chatty/List/list_test.c)
-add_executable(SERVER  "${SOURCE_FILE}" Chatty/Server/chatty.c Chatty/Server/ServerMessages/ServerMessages.c Chatty/Server/ServerMessages/ServerMessages.h Chatty/Server/Group/Group.c Chatty/Server/Group/Group.h)
+add_executable(SERVER  "${SOURCE_FILE}" Chatty/Server/chatty.c Chatty/Server/ServerMessages/ServerMessages.c Chatty/Server/ServerMessages/ServerMessages.h Chatty/Server/Group/Group.c Chatty/Server/Group/Group.h Chatty/Server/FileSync/FileSync.h Chatty/Server/FileSync/FileSync.c)
 add_executable(SETTING-MANAGER  "${SOURCE_FILE}" Chatty/SettingManager/SettingManager_Test.c)
 add_executable(Client "${SOURCE_FILE}" Chatty/ChattyClient/client.c)
 find_package (Threads)

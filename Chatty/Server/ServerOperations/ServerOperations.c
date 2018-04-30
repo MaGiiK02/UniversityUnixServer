@@ -12,6 +12,7 @@
 #include "../../HashTable/HashTable.h"
 #include "../../List/list.h"
 #include "../../Debugger/Debugger.h"
+#include "../FileSync/FileSync.h"
 
 
 int Send_ack_to(int clientFd, int reply_code){
@@ -86,7 +87,7 @@ void _remove_user_from_groups(char* username){
 }
 
 int _dump_socket_on_file(int fdRead,char* filePath,int size){
-  FILE* destination_file = fopen(filePath,"w+");
+  FILE* destination_file = FileSync_open(filePath,"w+");
   if(destination_file == NULL){
     ON_DEBUG(perror("opening dump file");)
     flushSocket(fdRead,size);
@@ -95,12 +96,12 @@ int _dump_socket_on_file(int fdRead,char* filePath,int size){
 
   if(dumpBufferOnStream(fdRead,destination_file,size)!=0){
     fflush(destination_file);
-    fclose(destination_file);
+    FileSync_close(destination_file);
     return OP_FAIL;
   }
 
   fflush(destination_file);
-  fclose(destination_file);
+  FileSync_close(destination_file);
   return OP_OK;
 }
 
@@ -347,7 +348,7 @@ int OP_postfile(int clientFd, message_hdr_t* hdr,message_data_t* data){
 int OP_getfile(int clientFd,message_hdr_t* hdr,message_data_t* data){
     // READ FILE IF EXIST sed to user with an ack ok!
     FILE* f;
-    if(!(f=fopen(data->buf,"r"))){
+    if(!(f=FileSync_open(data->buf,"r"))){
       return OP_NO_SUCH_FILE;
     }
 
@@ -355,12 +356,12 @@ int OP_getfile(int clientFd,message_hdr_t* hdr,message_data_t* data){
     char* buffer = malloc(size);
     if(fread(buffer,size,1,f)<=0){
       fflush(f);
-      fclose(f);
+      FileSync_close(f);
       perror("error reading the file in OP_getfile");
       return OP_FAIL;
     }
     fflush(f);
-    fclose(f);
+    FileSync_close(f);
 
     message_t* msg = Message_build_no_copy(OP_OK,SERVER_SENDER_NAME,hdr->sender,NULL,0); //evito la copia di tutto il file
     msg->data.hdr.len = size;

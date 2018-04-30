@@ -35,6 +35,7 @@
 #include "../Debugger/Debugger.h"
 #include "../SettingManager/SettingManager.h"
 #include "Group/Group.h"
+#include "FileSync/FileSync.h"
 
 
 //Functions
@@ -95,6 +96,7 @@ int main(int argc, char *argv[]) {
     pthread_mutex_init(&GD_MU_FdSetRead,NULL);
     pthread_mutex_init(&GD_MU_Fd_Username,NULL);
     SockSync_init_socket_sync(GD_ServerSetting->maxConnections);
+    FileSync_init_socket_sync(8);
     GD_MainThread = getpid();
     GD_WorkerCommunicationChannel = Ch_New(GD_ServerSetting->maxConnections,sizeof(int),_freeForCh);
     if(_bootstrapWorkers(GD_ServerSetting->threadsInPool)!=0){
@@ -114,6 +116,7 @@ int main(int argc, char *argv[]) {
     _closeWorkers(GD_ServerSetting->threadsInPool);
     unlink(GD_ServerSetting->unixPath);
     SockSync_free_socket_sync();
+    FileSync_free_socket_sync();
     _freeStructures();
 
     printf("###########################################\n");

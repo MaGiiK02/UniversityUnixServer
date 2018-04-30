@@ -99,6 +99,7 @@ void* Worker_function(void *arg){
 
 int _manageRequest(int clientFd,message_hdr_t* request){
   message_data_t data;
+  memset(&data,0, sizeof(message_data_t));
   User* usr;
   int result = 0;
   data.buf = NULL;
