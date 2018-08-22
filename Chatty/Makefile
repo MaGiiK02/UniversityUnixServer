@@ -66,13 +66,12 @@ FILE_DA_CONSEGNARE = Makefile \
     Tests/teststress.sh\
     Tests/testgroups.sh\
     Utils/Utils.c\
-    Utils/Utils.h\
-    Relazione-AMattia-502688.pdf
+    Utils/Utils.h
 
 # inserire il nome del tarball: es. NinoBixio
 TARNAME=MattiaAngelini
 # inserice il corso di appartenenza: CorsoA oppure CorsoB
-CORSO=CorsoA
+CORSO=xxxxx
 #
 ###########################################################
 
