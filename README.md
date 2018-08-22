@@ -2,8 +2,6 @@
 
 **Autore:** Mattia Angelini
 
-**Matricola:** 502688
-
 #### Premessa sui commenti:
 Per abitudine non riempo il codice di commenti, poiché credo sia di gran lunga una soluzione migliore,
 utilizzare il codice stesso per spiegare cosa il codice faccia attraverso l'uso di nomi opportuni.
